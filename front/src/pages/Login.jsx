@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
-import axios from 'axios';
+import axios from '../utils/axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -16,13 +16,13 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:8000/api/login', {
+      const response = await axios.post('/api/login', {
         email,
         password
       });
 
       const { token, user } = response.data;
-      
+
       // Store auth data
       localStorage.setItem('authToken', token);
       localStorage.setItem('isLoggedIn', 'true');
@@ -30,10 +30,8 @@ const Login = () => {
       localStorage.setItem('userEmail', user.email);
       localStorage.setItem('userName', user.name);
       localStorage.setItem('role', user.role);
-      
-      // Set axios default header for future requests
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
+
+
       // Redirect based on role
       if (user.role === 'admin') {
         navigate('/dashboard');
@@ -77,15 +75,15 @@ const Login = () => {
               required
             />
           </div>
-          <button 
-            type="submit" 
-            className="cta-button" 
+          <button
+            type="submit"
+            className="cta-button"
             disabled={isLoading}
           >
             {isLoading ? <LoadingSpinner size="small" /> : 'Login'}
           </button>
         </form>
-        <div style={{display: 'flex', gap: '20px'}} className="login-links">
+        <div style={{ display: 'flex', gap: '20px' }} className="login-links">
           <Link to="/register">Create an Account</Link>
           <Link to="/forgot-password">Forgot Password?</Link>
         </div>

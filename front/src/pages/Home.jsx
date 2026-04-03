@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import ListingCard from "../components/ListingCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from 'prop-types';
-import { 
-  faGlobe, 
-  faUmbrellaBeach, 
-  faCity, 
-  faMountain, 
-  faTree, 
-  faWater, 
+import {
+  faGlobe,
+  faUmbrellaBeach,
+  faCity,
+  faMountain,
+  faTree,
+  faWater,
   faHouseChimney,
   faFire,
   faCampground,
@@ -21,13 +21,8 @@ import {
   faMapMarkedAlt,
   faCompass
 } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+import axios, { API_BASE_URL } from "../utils/axios";
 
-// Configure token-based authentication
-const token = localStorage.getItem('authToken');
-if (token) {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}
 
 const categories = [
   { id: "all", name: "All", icon: faGlobe },
@@ -69,7 +64,7 @@ const Home = ({ searchTerm }) => {
       const iconInterval = setInterval(() => {
         setCurrentIconIndex(prevIndex => (prevIndex + 1) % loadingIcons.length);
       }, 1000);
-      
+
       return () => clearInterval(iconInterval);
     }
   }, [loading, categoryLoading, loadingIcons]);
@@ -86,7 +81,7 @@ const Home = ({ searchTerm }) => {
           return prev + 1;
         });
       }, 30);
-      
+
       return () => clearInterval(progressInterval);
     }
   }, [loading]);
@@ -96,16 +91,16 @@ const Home = ({ searchTerm }) => {
     const fetchListings = async () => {
       setLoading(true);
       setLoadingProgress(0);
-      
+
       try {
-        const response = await axios.get('http://localhost:8000/api/listings');
+        const response = await axios.get('/api/listings');
         console.log('API Response:', response.data);
-        
+
         if (response.data.success && Array.isArray(response.data.data)) {
           const formattedListings = response.data.data.map(listing => {
             const rating = listing.average_rating ? parseFloat(listing.average_rating) : 0;
             const totalRatings = parseInt(listing.total_ratings || 0);
-            
+
             return {
               id: listing.id,
               title: listing.title,
@@ -125,7 +120,7 @@ const Home = ({ searchTerm }) => {
           console.log('Formatted listings with ratings:', formattedListings);
 
           setLoadingProgress(100);
-          
+
           setTimeout(() => {
             setListings(formattedListings);
             setFilteredListings(formattedListings);
@@ -141,7 +136,7 @@ const Home = ({ searchTerm }) => {
         console.error("Error fetching listings:", error);
         setListings([]);
         setFilteredListings([]);
-      setLoading(false);
+        setLoading(false);
       }
     };
 
@@ -151,13 +146,13 @@ const Home = ({ searchTerm }) => {
     const handleReviewUpdate = (event) => {
       const { listingId, averageRating, totalReviews } = event.detail;
       console.log('Updating rating for listing:', { listingId, averageRating, totalReviews });
-      
-      const updateListingRatings = (prevListings) => 
+
+      const updateListingRatings = (prevListings) =>
         prevListings.map(listing => {
           if (listing.id === parseInt(listingId)) {
             const newRating = parseFloat(averageRating);
-            return { 
-              ...listing, 
+            return {
+              ...listing,
               rating: newRating,
               total_ratings: parseInt(totalReviews)
             };
@@ -186,7 +181,7 @@ const Home = ({ searchTerm }) => {
   // Update the filter logic
   useEffect(() => {
     let filtered = [...listings];
-    
+
     // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(listing =>
@@ -195,12 +190,12 @@ const Home = ({ searchTerm }) => {
         listing.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     // Apply category filter
     if (selectedCategory !== "all") {
       filtered = filtered.filter(listing => listing.category === selectedCategory);
     }
-    
+
     setFilteredListings(filtered);
   }, [searchTerm, listings, selectedCategory]);
 
@@ -225,7 +220,7 @@ const Home = ({ searchTerm }) => {
     try {
       const token = localStorage.getItem('authToken');
       const role = localStorage.getItem('role');
-      
+
       if (!token || role !== 'admin') {
         setShowSuccessMsg(false);
         setNotification({
@@ -235,9 +230,8 @@ const Home = ({ searchTerm }) => {
         return;
       }
 
-      const response = await axios.delete(`http://localhost:8000/api/listings/${listingId}`, {
-        headers: { 
-          'Authorization': `Bearer ${token}`,
+      const response = await axios.delete(`/api/listings/${listingId}`, {
+        headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         }
@@ -245,14 +239,14 @@ const Home = ({ searchTerm }) => {
 
       if (response.status === 200 || response.status === 204) {
         // Remove the deleted listing from both listings and filteredListings
-      const updatedListings = listings.filter(listing => listing.id !== listingId);
+        const updatedListings = listings.filter(listing => listing.id !== listingId);
         const updatedFilteredListings = filteredListings.filter(listing => listing.id !== listingId);
-        
-      setListings(updatedListings);
+
+        setListings(updatedListings);
         setFilteredListings(updatedFilteredListings);
-        
-      setShowSuccessMsg(true);
-      setTimeout(() => setShowSuccessMsg(false), 3000);
+
+        setShowSuccessMsg(true);
+        setTimeout(() => setShowSuccessMsg(false), 3000);
       } else {
         throw new Error('Failed to delete listing');
       }
@@ -284,12 +278,12 @@ const Home = ({ searchTerm }) => {
   return (
     <div className="page-wrapper">
       <div className="home-container">
-          {showSuccessMsg && (
-            <div className="success-message" data-aos="fade-down">
-              Listing deleted successfully!
-            </div>
-          )}
-        
+        {showSuccessMsg && (
+          <div className="success-message" data-aos="fade-down">
+            Listing deleted successfully!
+          </div>
+        )}
+
         {notification && (
           <div className={`notification ${notification.type}`}>
             {notification.message}
@@ -360,48 +354,48 @@ const Home = ({ searchTerm }) => {
               ) : filteredListings.length === 0 ? (
                 <div className="no-results" data-aos="fade-up">
                   <p>No listings found for this category.</p>
-              </div>
-            ) : (
+                </div>
+              ) : (
                 <div className="listings-grid">
                   {filteredListings.map((listing, index) => (
-                <div 
-                  key={listing.id} 
-                  data-aos="fade-up"
-                  data-aos-once="true"
-                  data-aos-delay={index * 50}
-                  data-aos-duration="800"
-                  className={`listing-wrapper ${clickedListingId === listing.id ? 'loading' : ''}`}
+                    <div
+                      key={listing.id}
+                      data-aos="fade-up"
+                      data-aos-once="true"
+                      data-aos-delay={index * 50}
+                      data-aos-duration="800"
+                      className={`listing-wrapper ${clickedListingId === listing.id ? 'loading' : ''}`}
                       onClick={() => {
                         setClickedListingId(listing.id);
                         setTimeout(() => {
                           navigate(`/listing/${listing.id}`);
                         }, 500);
                       }}
-                >
-                  <ListingCard 
-                    listing={listing} 
-                    onWishlistUpdate={(message, type) => handleWishlistNotification(message, type)}
-                  />
-                  {isLoggedIn && role === 'admin' && (
-                    <button 
-                          className="delete-button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteClick(listing.id);
-                      }}
-                      disabled={deleteLoading}
                     >
+                      <ListingCard
+                        listing={listing}
+                        onWishlistUpdate={(message, type) => handleWishlistNotification(message, type)}
+                      />
+                      {isLoggedIn && role === 'admin' && (
+                        <button
+                          className="delete-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(listing.id);
+                          }}
+                          disabled={deleteLoading}
+                        >
                           <FontAwesomeIcon icon="trash" className="delete-icon" />
                           <span>Delete</span>
-                    </button>
-                  )}
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
               )}
             </div>
-            )}
-          </div>
+          )}
+        </div>
       </div>
 
       <footer className="footer">
@@ -410,31 +404,31 @@ const Home = ({ searchTerm }) => {
         </div>
       </footer>
 
-          {deleteConfirmation && (
-            <>
+      {deleteConfirmation && (
+        <>
           <div className="modal-overlay" onClick={handleCancelDelete}></div>
-              <div className="delete-confirmation-modal">
-                <h3>Confirm Deletion</h3>
+          <div className="delete-confirmation-modal">
+            <h3>Confirm Deletion</h3>
             <p>Are you sure you want to delete this listing? This action cannot be undone.</p>
-                <div className="confirmation-buttons">
-                  <button 
-                    className="cancel-delete"
-                    onClick={handleCancelDelete}
-                    disabled={deleteLoading}
-                  >
-                    Cancel
-                  </button>
-                  <button 
+            <div className="confirmation-buttons">
+              <button
+                className="cancel-delete"
+                onClick={handleCancelDelete}
+                disabled={deleteLoading}
+              >
+                Cancel
+              </button>
+              <button
                 className={`confirm-delete ${deleteLoading ? 'loading' : ''}`}
-                    onClick={() => handleConfirmDelete(deleteConfirmation)}
-                    disabled={deleteLoading}
-                  >
-                    {deleteLoading ? 'Deleting...' : 'Delete'}
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
+                onClick={() => handleConfirmDelete(deleteConfirmation)}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       <style>{`
         .page-wrapper {

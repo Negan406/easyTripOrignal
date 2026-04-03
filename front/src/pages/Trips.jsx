@@ -5,7 +5,7 @@ import Sidebar from "../components/Sidebar";
 import Notification from "../components/Notification";
 import ConfirmationModal from "../components/ConfirmationModal";
 import LoadingSpinner from "../components/LoadingSpinner";
-import axios from "axios";
+import axios, { API_BASE_URL } from "../utils/axios";
 
 const Trips = () => {
   const [trips, setTrips] = useState([]);
@@ -16,12 +16,12 @@ const Trips = () => {
 
   const getImageUrl = (imageUrl) => {
     if (!imageUrl) return 'https://via.placeholder.com/800x600?text=No+Image+Available';
-    
+
     // If it's already a full URL
     if (imageUrl.startsWith('http')) {
       return imageUrl;
     }
-    
+
     // For storage paths
     if (imageUrl.includes('storage/') || imageUrl.startsWith('profiles/') || imageUrl.startsWith('listings/')) {
       const cleanPath = imageUrl
@@ -29,7 +29,7 @@ const Trips = () => {
         .replace(/^\/+/, '');     // Remove leading slashes
       return `http://localhost:8000/storage/${cleanPath}`;
     }
-    
+
     // For any other case, assume it's a relative path in storage
     const cleanPath = imageUrl.replace(/^\/+/, '');
     return `http://localhost:8000/storage/${cleanPath}`;
@@ -44,18 +44,17 @@ const Trips = () => {
           throw new Error('Authentication required');
         }
 
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const response = await axios.get('http://localhost:8000/api/bookings');
-        
+        const response = await axios.get('/api/bookings');
+
         if (response.data && response.data.data) {
           setTrips(response.data.data);
         } else {
           setTrips([]);
         }
-    } catch (error) {
-      console.error("Failed to load trips:", error);
+      } catch (error) {
+        console.error("Failed to load trips:", error);
         setNotification({
-          message: error.message === 'Authentication required' 
+          message: error.message === 'Authentication required'
             ? 'Please log in to view your trips'
             : 'Failed to load your trips. Please try again.',
           type: "error"
@@ -73,10 +72,10 @@ const Trips = () => {
       const booking = trips.find(trip => trip.id === bookingId);
       if (booking?.payment_status === "completed") {
         setNotification({ message: "Cannot cancel a completed booking.", type: "error" });
-      return;
-    }
+        return;
+      }
       setTripToDelete(bookingId);
-    setShowModal(true);
+      setShowModal(true);
     } catch (error) {
       console.error('Error handling delete:', error);
       setNotification({ message: "Failed to process deletion.", type: "error" });
@@ -88,8 +87,7 @@ const Trips = () => {
       const token = localStorage.getItem('authToken');
       if (!token) throw new Error('Authentication required');
 
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      await axios.delete(`http://localhost:8000/api/bookings/${tripToDelete}`);
+      await axios.delete(`/api/bookings/${tripToDelete}`);
 
       setTrips(prevTrips => prevTrips.filter(trip => trip.id !== tripToDelete));
       setNotification({ message: "Trip cancelled successfully!", type: "success" });
@@ -97,7 +95,7 @@ const Trips = () => {
       console.error('Error deleting trip:', error);
       setNotification({ message: "Failed to cancel trip. Please try again.", type: "error" });
     } finally {
-    setShowModal(false);
+      setShowModal(false);
     }
   };
 
@@ -142,7 +140,7 @@ const Trips = () => {
             onClose={closeNotification}
           />
         )}
-        
+
         {showModal && (
           <ConfirmationModal
             message="Are you sure you want to cancel this trip?"
@@ -150,7 +148,7 @@ const Trips = () => {
             onCancel={() => setShowModal(false)}
           />
         )}
-        
+
         <h1 className="page-title">Your Trips</h1>
 
         {loading ? (
@@ -158,19 +156,19 @@ const Trips = () => {
             <LoadingSpinner />
           </div>
         ) : (
-        <div className="trips-list">
+          <div className="trips-list">
             {!trips || trips.length === 0 ? (
-            <div className="no-trips-message">
+              <div className="no-trips-message">
                 <FontAwesomeIcon icon={faCalendarAlt} />
-              <h2>No trips yet</h2>
-              <p>Time to dust off your bags and start planning your next adventure</p>
-              <a href="/" className="cta-button">Start searching</a>
-            </div>
-          ) : (
+                <h2>No trips yet</h2>
+                <p>Time to dust off your bags and start planning your next adventure</p>
+                <a href="/" className="cta-button">Start searching</a>
+              </div>
+            ) : (
               trips.map((trip) => {
                 const paymentStatus = trip.payment_status || 'pending';
-              
-              return (
+
+                return (
                   <div key={trip.id} className="trip-item">
                     <div className="trip-status" style={{ backgroundColor: getStatusColor(paymentStatus) }}>
                       {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
@@ -210,13 +208,13 @@ const Trips = () => {
                         <img
                           src={getImageUrl(trip.listing?.main_photo)}
                           alt={trip.listing?.title || "Trip Image"}
-                    className="trip-image"
+                          className="trip-image"
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
                           }}
-                  />
-                  <div className="trip-details">
+                        />
+                        <div className="trip-details">
                           <h3>{trip.listing?.title || "Unknown Location"}</h3>
                           <div className="trip-info">
                             <p>
@@ -235,20 +233,20 @@ const Trips = () => {
                         </div>
                       </>
                     )}
-                </div>
-              );
-            })
-          )}
-        </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
         )}
       </div>
-      
+
       <footer className="footer">
         <div className="footer-content">
           <p>&copy; {new Date().getFullYear()} EasyTrip. All rights reserved.</p>
         </div>
       </footer>
-      
+
       <style>{`
         .page-wrapper {
           display: flex;

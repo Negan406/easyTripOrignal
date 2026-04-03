@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
-import axios from 'axios';
+import axios from '../utils/axios';
 
-// Configure axios defaults
-axios.defaults.baseURL = 'http://localhost:8000';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -65,7 +63,7 @@ const Register = () => {
 
       if (response.data.token && response.data.user) {
         const { token, user } = response.data;
-        
+
         // Store auth data
         localStorage.setItem('authToken', token);
         localStorage.setItem('isLoggedIn', 'true');
@@ -74,8 +72,6 @@ const Register = () => {
         localStorage.setItem('userName', user.name);
         localStorage.setItem('role', user.role);
 
-        // Set token for future requests
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
         // Navigate to home page
         navigate('/');

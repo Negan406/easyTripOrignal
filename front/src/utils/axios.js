@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8000',
+    baseURL: API_BASE_URL,
     withCredentials: true,
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -25,7 +27,7 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         if (error.response?.status === 419) {
             // Get new CSRF token
-            await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+            await axios.get(`${API_BASE_URL}/sanctum/csrf-cookie`);
             // Retry the original request
             return axiosInstance(error.config);
         }

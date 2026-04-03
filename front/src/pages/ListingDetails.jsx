@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Comments from "../components/Comments";
 import Notification from "../components/Notification";
-import axios from "axios";
+import axios, { API_BASE_URL } from "../utils/axios";
 
 const ListingDetails = () => {
   const [listing, setListing] = useState(null);
@@ -25,35 +25,35 @@ const ListingDetails = () => {
 
   const getImageUrl = (imageUrl) => {
     if (!imageUrl) return 'https://via.placeholder.com/800x600?text=No+Image+Available';
-    
+
     // If it's already a full URL
     if (imageUrl.startsWith('http')) {
       return imageUrl;
     }
-    
+
     // For storage paths
     if (imageUrl.includes('storage/') || imageUrl.startsWith('profiles/') || imageUrl.startsWith('listings/')) {
       const cleanPath = imageUrl
         .replace('storage/', '')  // Remove 'storage/' if present
         .replace(/^\/+/, '');     // Remove leading slashes
-      return `http://localhost:8000/storage/${cleanPath}`;
+      return `${API_BASE_URL}/storage/${cleanPath}`;
     }
-    
+
     // For any other case, assume it's a relative path in storage
     const cleanPath = imageUrl.replace(/^\/+/, '');
-    return `http://localhost:8000/storage/${cleanPath}`;
+    return `${API_BASE_URL}/storage/${cleanPath}`;
   };
 
   useEffect(() => {
     const fetchListing = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:8000/api/listings/${id}`);
+        const response = await axios.get(`/api/listings/${id}`);
         console.log('API Response:', response.data); // Debug log
-        
+
         if (response.data && response.data.listing) {
           const listingData = response.data.listing;
-          
+
           // Format the listing data
           const formattedListing = {
             id: listingData.id,
@@ -69,11 +69,11 @@ const ListingDetails = () => {
             averageRating: listingData.average_rating ? parseFloat(listingData.average_rating) : 0,
             totalRatings: listingData.total_ratings ? parseInt(listingData.total_ratings) : 0
           };
-          
+
           setListing(formattedListing);
           // Set the main photo as the initially selected photo
           setSelectedPhoto(getImageUrl(listingData.main_photo));
-      } else {
+        } else {
           console.error("Invalid response format:", response.data);
           setNotification({
             message: 'Error: Listing not found',
@@ -101,11 +101,9 @@ const ListingDetails = () => {
       try {
         const token = localStorage.getItem('authToken');
         if (!token) return;
-        
-        const response = await axios.get(`http://localhost:8000/api/bookings/check/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        
+
+        const response = await axios.get(`/api/bookings/check/${id}`);
+
         setIsAlreadyBooked(response.data.isBooked);
       } catch (error) {
         console.error('Error checking booking status:', error);
@@ -126,25 +124,24 @@ const ListingDetails = () => {
 
   const checkDateAvailability = async () => {
     if (!startDate || !endDate || !listing) return;
-    
+
     setCheckingAvailability(true);
-    
+
     try {
       const token = localStorage.getItem('authToken');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      
+
       const response = await axios.post(
-        `http://localhost:8000/api/bookings/check-availability/${id}`,
+        `/api/bookings/check-availability/${id}`,
         {
           start_date: startDate,
           end_date: endDate
-        },
-        { headers }
+        }
       );
-      
+
       if (response.data.success) {
         setAreSelectedDatesAvailable(response.data.is_available);
-        
+
         if (!response.data.is_available) {
           setUnavailableDateRanges(response.data.unavailable_dates);
           setNotification({
@@ -178,7 +175,7 @@ const ListingDetails = () => {
 
   const handleBookNow = async (e) => {
     e.preventDefault();
-    
+
     const token = localStorage.getItem('authToken');
     if (!token) {
       setNotification({ message: 'Please log in to book this listing.', type: 'error' });
@@ -214,26 +211,25 @@ const ListingDetails = () => {
     // Check availability before proceeding to payment
     try {
       setCheckingAvailability(true);
-      
+
       const response = await axios.post(
-        `http://localhost:8000/api/bookings/check-availability/${id}`,
+        `/api/bookings/check-availability/${id}`,
         {
           start_date: startDate,
           end_date: endDate
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        }
       );
-      
+
       if (response.data.success && response.data.is_available) {
         // If dates are available, proceed to payment
-        navigate('/payment', { 
-          state: { 
+        navigate('/payment', {
+          state: {
             listing,
             booking: {
               startDate,
               endDate
             }
-          } 
+          }
         });
       } else {
         // If dates are not available, show error message
@@ -266,7 +262,7 @@ const ListingDetails = () => {
   // Format unavailable date ranges for display
   const formatUnavailableDates = () => {
     if (unavailableDateRanges.length === 0) return '';
-    
+
     return unavailableDateRanges.map((range, index) => {
       const start = new Date(range.start_date).toLocaleDateString();
       const end = new Date(range.end_date).toLocaleDateString();
@@ -287,17 +283,17 @@ const ListingDetails = () => {
         message: location.state.message,
         type: 'success'
       });
-      
+
       // Highlight the review form if redirected from a successful booking
       setHighlightReviewForm(true);
-      
+
       // Scroll to reviews section if requested
       if (location.state.scrollToReviews && reviewsRef.current) {
         setTimeout(() => {
           reviewsRef.current.scrollIntoView({ behavior: 'smooth' });
         }, 1000);
       }
-      
+
       // Clear the state to prevent showing the message again on refresh
       window.history.replaceState({}, document.title);
     }
@@ -307,7 +303,7 @@ const ListingDetails = () => {
   useEffect(() => {
     const handleReviewUpdate = (event) => {
       const { listingId, averageRating, totalReviews } = event.detail;
-      
+
       if (parseInt(listingId) === parseInt(id) && listing) {
         setListing(prevListing => ({
           ...prevListing,
@@ -318,7 +314,7 @@ const ListingDetails = () => {
     };
 
     window.addEventListener('reviewUpdated', handleReviewUpdate);
-    
+
     return () => {
       window.removeEventListener('reviewUpdated', handleReviewUpdate);
     };
@@ -327,7 +323,7 @@ const ListingDetails = () => {
   return (
     <div className="page-wrapper">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      
+
       {notification && (
         <Notification
           message={notification.message}
@@ -335,7 +331,7 @@ const ListingDetails = () => {
           onClose={closeNotification}
         />
       )}
-      
+
       <div className="content-area">
         {loading ? (
           <div className="loading-container">
@@ -362,11 +358,11 @@ const ListingDetails = () => {
             </div>
           </div>
         ) : (
-      <main className="listing-details-page">
-        <div className="listing-gallery">
-          <div className="main-image">
-                <img 
-                  src={selectedPhoto || getImageUrl(listing.mainPhoto)} 
+          <main className="listing-details-page">
+            <div className="listing-gallery">
+              <div className="main-image">
+                <img
+                  src={selectedPhoto || getImageUrl(listing.mainPhoto)}
                   alt={listing.title}
                   onError={(e) => {
                     console.error('Image failed to load:', {
@@ -381,13 +377,13 @@ const ListingDetails = () => {
               {allPhotos.length > 1 && (
                 <div className="photo-grid">
                   {allPhotos.map((photo, index) => (
-                    <div 
-                      key={index} 
+                    <div
+                      key={index}
                       className={`photo-thumbnail ${selectedPhoto === photo ? 'selected' : ''}`}
                       onClick={() => handlePhotoClick(photo)}
                     >
-                      <img 
-                        src={photo} 
+                      <img
+                        src={photo}
                         alt={`${listing.title} - ${index + 1}`}
                         onError={(e) => {
                           console.error('Thumbnail failed to load:', {
@@ -398,40 +394,40 @@ const ListingDetails = () => {
                           e.target.src = 'https://via.placeholder.com/150x150?text=Image+Not+Found';
                         }}
                       />
-              </div>
-            ))}
-          </div>
+                    </div>
+                  ))}
+                </div>
               )}
-        </div>
-
-        <div className="listing-content">
-          <div className="listing-info-container">
-            <div className="listing-header">
-              <h1>{listing.title}</h1>
-              <div className="listing-meta">
-                <div className="location">
-                  <i className="fas fa-map-marker-alt"></i> {listing.location}
-                </div>
-                <div className="category">
-                  Category: {listing.category}
-                </div>
-                {listing.averageRating > 0 && (
-                  <div className="listing-rating">
-                    <i className="fas fa-star"></i> {listing.averageRating.toFixed(1)}
-                    <span className="review-count">
-                      ({listing.totalRatings} {listing.totalRatings === 1 ? 'review' : 'reviews'})
-                    </span>
-                  </div>
-                )}
-              </div>
             </div>
 
-            {listing.host && (
-              <div className="host-info">
+            <div className="listing-content">
+              <div className="listing-info-container">
+                <div className="listing-header">
+                  <h1>{listing.title}</h1>
+                  <div className="listing-meta">
+                    <div className="location">
+                      <i className="fas fa-map-marker-alt"></i> {listing.location}
+                    </div>
+                    <div className="category">
+                      Category: {listing.category}
+                    </div>
+                    {listing.averageRating > 0 && (
+                      <div className="listing-rating">
+                        <i className="fas fa-star"></i> {listing.averageRating.toFixed(1)}
+                        <span className="review-count">
+                          ({listing.totalRatings} {listing.totalRatings === 1 ? 'review' : 'reviews'})
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {listing.host && (
+                  <div className="host-info">
                     <div className="host-photo-container">
-                      <img 
-                        src={getImageUrl(listing.host.profile_photo)} 
-                        alt={listing.host.name} 
+                      <img
+                        src={getImageUrl(listing.host.profile_photo)}
+                        alt={listing.host.name}
                         className="host-avatar"
                         onError={(e) => {
                           console.error('Host photo failed to load:', {
@@ -442,25 +438,25 @@ const ListingDetails = () => {
                         }}
                       />
                     </div>
-                <div className="host-details">
-                  <h3>Hosted by {listing.host.name}</h3>
+                    <div className="host-details">
+                      <h3>Hosted by {listing.host.name}</h3>
                       {listing.host.bio && <p>{listing.host.bio}</p>}
                       {listing.host.phone && (
                         <p className="host-contact">
                           <i className="fas fa-phone"></i> {listing.host.phone}
                         </p>
                       )}
-                </div>
-              </div>
-            )}
+                    </div>
+                  </div>
+                )}
 
-            <div className="listing-description">
-              <p>{listing.description}</p>
-            </div>
+                <div className="listing-description">
+                  <p>{listing.description}</p>
+                </div>
 
                 <div className="reviews-section" ref={reviewsRef}>
-                  <Comments 
-                    listingId={id.toString()} 
+                  <Comments
+                    listingId={id.toString()}
                     userName={localStorage.getItem('userName')}
                     isLoggedIn={localStorage.getItem('isLoggedIn') === 'true'}
                     highlightReviewForm={highlightReviewForm}
@@ -469,57 +465,57 @@ const ListingDetails = () => {
                     key={`reviews-${id}`}
                   />
                 </div>
-          </div>
-
-          <div className="booking-card">
-            <div className="booking-price">
-                  <h2>${listing.price} <span className="per-night">night</span></h2>
-            </div>
-            <form className="booking-form" onSubmit={handleBookNow}>
-              <div className="date-inputs">
-                <input 
-                  type="date" 
-                  placeholder="Check-in" 
-                  value={startDate} 
-                  onChange={handleStartDateChange} 
-                  required 
-                  min={new Date().toISOString().split('T')[0]}
-                />
-                <input 
-                  type="date" 
-                  placeholder="Check-out" 
-                  value={endDate} 
-                  onChange={handleEndDateChange} 
-                  required 
-                  min={startDate || new Date().toISOString().split('T')[0]}
-                />
               </div>
-              <input type="number" min="1" max="16" placeholder="Guests" required />
-              
-              {!areSelectedDatesAvailable && unavailableDateRanges.length > 0 && (
-                <div className="date-error">
-                  <p>Selected dates are not available.</p>
-                  <p>Unavailable dates: {formatUnavailableDates()}</p>
+
+              <div className="booking-card">
+                <div className="booking-price">
+                  <h2>${listing.price} <span className="per-night">night</span></h2>
                 </div>
-              )}
-                  
-              <button 
-                type="submit" 
-                className="book-button" 
-                disabled={isAlreadyBooked || checkingAvailability || !areSelectedDatesAvailable}
-              >
-                {isAlreadyBooked 
-                  ? 'Already Booked' 
-                  : checkingAvailability 
-                    ? 'Checking Availability...' 
-                    : !areSelectedDatesAvailable 
-                      ? 'Dates Not Available' 
-                      : 'Book now'}
-              </button>
-            </form>
-          </div>
-        </div>
-      </main>
+                <form className="booking-form" onSubmit={handleBookNow}>
+                  <div className="date-inputs">
+                    <input
+                      type="date"
+                      placeholder="Check-in"
+                      value={startDate}
+                      onChange={handleStartDateChange}
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                    <input
+                      type="date"
+                      placeholder="Check-out"
+                      value={endDate}
+                      onChange={handleEndDateChange}
+                      required
+                      min={startDate || new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                  <input type="number" min="1" max="16" placeholder="Guests" required />
+
+                  {!areSelectedDatesAvailable && unavailableDateRanges.length > 0 && (
+                    <div className="date-error">
+                      <p>Selected dates are not available.</p>
+                      <p>Unavailable dates: {formatUnavailableDates()}</p>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="book-button"
+                    disabled={isAlreadyBooked || checkingAvailability || !areSelectedDatesAvailable}
+                  >
+                    {isAlreadyBooked
+                      ? 'Already Booked'
+                      : checkingAvailability
+                        ? 'Checking Availability...'
+                        : !areSelectedDatesAvailable
+                          ? 'Dates Not Available'
+                          : 'Book now'}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </main>
         )}
       </div>
 

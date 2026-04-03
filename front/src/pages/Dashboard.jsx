@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
+import {
   faUsers, faExclamationTriangle,
   faDollarSign, faHouseUser, faClipboardList,
   faChartLine, faDatabase, faServer, faUserShield, faChartPie
@@ -19,7 +19,7 @@ import {
   ArcElement,
 } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import axios from 'axios';
+import axios from '../utils/axios';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from "../components/LoadingSpinner";
 
@@ -71,13 +71,13 @@ const Dashboard = () => {
   // Add loading message rotation
   useEffect(() => {
     if (!loading) return;
-    
+
     let messageIndex = 0;
     const intervalId = setInterval(() => {
       messageIndex = (messageIndex + 1) % LOADING_MESSAGES.length;
       setLoadingMessage(LOADING_MESSAGES[messageIndex]);
     }, 2000); // Change message every 2 seconds
-    
+
     return () => {
       clearInterval(intervalId);
     };
@@ -87,18 +87,15 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('authToken');
-      const headers = { 'Authorization': `Bearer ${token}` };
-
-      // Fetch all listings to get total and status counts
-      const listingsResponse = await axios.get('http://localhost:8000/api/listings', { headers });
+      const listingsResponse = await axios.get('/api/listings');
       const allListings = listingsResponse.data.data || [];
-      
+
       // Fetch pending listings
-      const pendingResponse = await axios.get('http://localhost:8000/api/listings/pending', { headers });
+      const pendingResponse = await axios.get('/api/listings/pending');
       const pendingListings = pendingResponse.data.listings || [];
 
       // Fetch all users
-      const usersResponse = await axios.get('http://localhost:8000/api/users', { headers });
+      const usersResponse = await axios.get('/api/users');
       const allUsers = usersResponse.data.users || [];
 
       // Calculate listing statistics
@@ -178,13 +175,13 @@ const Dashboard = () => {
         </div>
         <div className="floating-icons">
           {[
-            faUsers, faHouseUser, faClipboardList, faChartLine, 
+            faUsers, faHouseUser, faClipboardList, faChartLine,
             faDatabase, faServer, faExclamationTriangle, faDollarSign
           ].map((icon, i) => (
-            <FontAwesomeIcon 
-              key={i} 
-              icon={icon} 
-              className={`floating-icon icon-${i + 1}`} 
+            <FontAwesomeIcon
+              key={i}
+              icon={icon}
+              className={`floating-icon icon-${i + 1}`}
             />
           ))}
         </div>
@@ -343,7 +340,7 @@ const Dashboard = () => {
       <div className="dashboard-container">
         <div className="admin-dashboard" data-aos="fade-up">
           <h1>Admin Dashboard</h1>
-          
+
           {error && (
             <div className="error-message">
               {error}
@@ -396,7 +393,7 @@ const Dashboard = () => {
             <div className="chart-card">
               <h3>Listing Status Distribution</h3>
               <div className="doughnut-container">
-                <Doughnut 
+                <Doughnut
                   data={listingStatusData}
                   options={{
                     ...chartOptions,

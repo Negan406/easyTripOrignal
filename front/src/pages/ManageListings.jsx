@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios, { API_BASE_URL } from '../utils/axios';
 import LoadingSpinner from "../components/LoadingSpinner";
 import Sidebar from "../components/Sidebar";
 
@@ -18,9 +18,7 @@ const ManageListings = () => {
   const fetchUserListings = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.get('http://localhost:8000/api/listings/user', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await axios.get('/api/listings/user');
 
       if (response.data.success) {
         setListings(response.data.listings);
@@ -38,9 +36,7 @@ const ManageListings = () => {
   const handleDelete = async (listingId) => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.delete(`http://localhost:8000/api/listings/${listingId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await axios.delete(`/api/listings/${listingId}`);
 
       if (response.data.success) {
         setListings(listings.filter(listing => listing.id !== listingId));
@@ -72,16 +68,16 @@ const ManageListings = () => {
         <div className="content-wrap">
           <div className="container-center">
             <h1 className="page-title">Manage Your Listings</h1>
-            
+
             {notification && (
               <div className={`notification ${notification.type}`}>
                 {notification.message}
-                <button 
-                  className="close-btn" 
+                <button
+                  className="close-btn"
                   onClick={() => setNotification(null)}
                 >
                   ×
-                </button> 
+                </button>
               </div>
             )}
 
@@ -94,8 +90,8 @@ const ManageListings = () => {
                 {listings.map((listing) => (
                   <div key={listing.id} className="listing-card">
                     <div className="listing-image">
-                      <img 
-                        src={`http://localhost:8000/storage/${listing.main_photo}`}
+                      <img
+                        src={`${API_BASE_URL}/storage/${listing.main_photo}`}
                         alt={listing.title}
                         onError={(e) => {
                           e.target.onerror = null;
@@ -113,13 +109,13 @@ const ManageListings = () => {
                         </span>
                       </div>
                       <div className="listing-actions">
-                        <button 
+                        <button
                           className="edit-button"
                           onClick={() => handleModify(listing.id)}
                         >
                           Edit
                         </button>
-                        <button 
+                        <button
                           className="delete-button"
                           onClick={() => setDeleteConfirmation(listing.id)}
                         >
@@ -139,13 +135,13 @@ const ManageListings = () => {
                 <h3>Confirm Delete</h3>
                 <p>Are you sure you want to delete this listing? This action cannot be undone.</p>
                 <div className="modal-buttons">
-                  <button 
+                  <button
                     className="cancel-button"
                     onClick={() => setDeleteConfirmation(null)}
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     className="confirm-button"
                     onClick={() => handleDelete(deleteConfirmation)}
                   >

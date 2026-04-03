@@ -5,7 +5,7 @@ import { faHeart as faRegularHeart } from "@fortawesome/free-regular-svg-icons";
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from "react-router-dom";
 import Notification from './Notification';
-import axios from 'axios';
+import axios, { API_BASE_URL } from '../utils/axios';
 
 const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWishlistUpdate }) => {
   const [isFavorite, setIsFavorite] = useState(isInWishlist);
@@ -18,7 +18,7 @@ const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWi
       const token = localStorage.getItem('authToken');
       if (token && !isInWishlist) {
         try {
-          const response = await axios.get(`http://localhost:8000/api/wishlists/check/${listing.id}`);
+          const response = await axios.get(`/api/wishlists/check/${listing.id}`);
           setIsFavorite(response.data.is_wishlisted);
           if (response.data.wishlist_id) {
             listing.wishlist_id = response.data.wishlist_id;
@@ -44,8 +44,8 @@ const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWi
 
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     if (!isLoggedIn) {
-      setNotification({ 
-        message: 'Please log in to add items to your wishlist.', 
+      setNotification({
+        message: 'Please log in to add items to your wishlist.',
         type: 'info',
         action: () => navigate('/login')
       });
@@ -55,60 +55,56 @@ const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWi
     setIsProcessing(true);
     try {
       const token = localStorage.getItem('authToken');
-    if (!isFavorite) {
+      if (!isFavorite) {
         // Add to wishlist
-        const response = await axios.post('http://localhost:8000/api/wishlists', {
+        const response = await axios.post('/api/wishlists', {
           listing_id: listing.id
-        }, {
-          headers: { 'Authorization': `Bearer ${token}` }
         });
-        
+
         if (response.data && response.data.wishlist_id) {
           listing.wishlist_id = response.data.wishlist_id;
         }
-        
+
         const message = 'Added to wishlist!';
         const type = 'success';
-        
+
         // Use the passed callback if available
         if (onWishlistUpdate) {
           onWishlistUpdate(message, type);
         } else {
-          setNotification({ 
-            message, 
+          setNotification({
+            message,
             type
           });
         }
-        
+
         setIsFavorite(true);
-    } else {
+      } else {
         // Remove from wishlist
         const wishlistId = listing.wishlist_id;
         if (!wishlistId) {
           throw new Error('Wishlist ID not found');
         }
-        
-        const response = await axios.delete(`http://localhost:8000/api/wishlists/${wishlistId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
+
+        const response = await axios.delete(`/api/wishlists/${wishlistId}`);
+
         if (response.status === 200) {
           const message = 'Removed from wishlist.';
           const type = 'info';
-          
+
           // Use the passed callback if available
           if (onWishlistUpdate) {
             onWishlistUpdate(message, type);
           } else {
-            setNotification({ 
+            setNotification({
               message,
               type
             });
           }
-          
+
           setIsFavorite(false);
           listing.wishlist_id = null;
-          
+
           if (onRemoveFromWishlist) {
             onRemoveFromWishlist();
           }
@@ -118,26 +114,26 @@ const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWi
       }
     } catch (error) {
       console.error('Failed to update wishlist:', error);
-      const message = error.message === 'Wishlist ID not found' 
+      const message = error.message === 'Wishlist ID not found'
         ? 'Error: Please try refreshing the page'
         : 'Failed to update wishlist. Please try again.';
       const type = 'error';
-      
+
       // Use the passed callback if available
       if (onWishlistUpdate) {
         onWishlistUpdate(message, type);
       } else {
-        setNotification({ 
+        setNotification({
           message,
           type
         });
       }
-      
+
       // Reset the favorite state if there was an error
       const token = localStorage.getItem('authToken');
       if (token) {
         try {
-          const response = await axios.get(`http://localhost:8000/api/wishlists/check/${listing.id}`);
+          const response = await axios.get(`/api/wishlists/check/${listing.id}`);
           setIsFavorite(response.data.is_wishlisted);
         } catch (checkError) {
           console.error('Error checking wishlist status:', checkError);
@@ -157,28 +153,28 @@ const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWi
 
   const getImageUrl = (imageUrl) => {
     if (!imageUrl) return 'https://via.placeholder.com/400x300?text=No+Image+Available';
-    
+
     // If it's already a full URL
     if (imageUrl.startsWith('http')) {
       return imageUrl;
     }
-    
+
     // For storage/listings paths
     if (imageUrl.includes('storage/listings/') || imageUrl.startsWith('listings/')) {
       const cleanPath = imageUrl
         .replace('storage/', '')  // Remove 'storage/' if present
         .replace(/^\/+/, '');     // Remove leading slashes
-      return `http://localhost:8000/storage/${cleanPath}`;
+      return `${API_BASE_URL}/storage/${cleanPath}`;
     }
-    
+
     // For direct storage paths
     if (imageUrl.startsWith('storage/')) {
-      return `http://localhost:8000/${imageUrl}`;
+      return `${API_BASE_URL}/${imageUrl}`;
     }
-    
+
     // For any other case, assume it's a relative path in storage
     const cleanPath = imageUrl.replace(/^\/+/, '');
-    return `http://localhost:8000/storage/${cleanPath}`;
+    return `${API_BASE_URL}/storage/${cleanPath}`;
   };
 
   return (
@@ -193,9 +189,9 @@ const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWi
       )}
       <Link to={`/listing/${listing.id}`} className="listing-card">
         <div className="listing-image">
-          <img 
+          <img
             src={getImageUrl(listing.main_photo || listing.mainPhoto)}
-            alt={listing.title} 
+            alt={listing.title}
             onError={(e) => {
               console.error('Image failed to load:', {
                 original: listing.main_photo || listing.mainPhoto,
@@ -207,13 +203,13 @@ const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWi
             loading="lazy"
           />
           <div className="image-overlay"></div>
-          <button 
+          <button
             className={`favorite-btn ${isFavorite ? 'active' : ''} ${isProcessing ? 'processing' : ''}`}
             onClick={handleFavoriteClick}
             disabled={isProcessing}
             title={isFavorite ? 'Remove from Wishlist' : 'Add to Wishlist'}
           >
-            <FontAwesomeIcon 
+            <FontAwesomeIcon
               icon={isFavorite ? faHeart : faRegularHeart}
               className={isProcessing ? 'fa-beat' : ''}
             />
@@ -225,7 +221,7 @@ const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWi
             </div>
           )}
         </div>
-        
+
         <div className="listing-info">
           <div className="listing-header">
             <h3 className="listing-title">{listing.title}</h3>
@@ -241,18 +237,18 @@ const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWi
               )}
             </div>
           </div>
-          
+
           <div className="listing-location">
             <FontAwesomeIcon icon={faLocationDot} className="location-icon" />
             <span>{listing.location}</span>
           </div>
-          
+
           <div className="listing-price">
             <strong>${listing.price}</strong><span>/night</span>
           </div>
         </div>
       </Link>
-      
+
       <style>{`
         .listing-card {
           display: flex;

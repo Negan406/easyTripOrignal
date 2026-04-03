@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Notification from "../components/Notification";
 import LoadingSpinner from "../components/LoadingSpinner";
-import axios from "axios";
+import axios, { API_BASE_URL } from "../utils/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 
@@ -12,23 +12,23 @@ const ManageBookings = () => {
 
   const getImageUrl = (imageUrl) => {
     if (!imageUrl) return 'https://via.placeholder.com/800x600?text=No+Image+Available';
-    
+
     // If it's already a full URL
     if (imageUrl.startsWith('http')) {
       return imageUrl;
     }
-    
+
     // For storage paths
     if (imageUrl.includes('storage/') || imageUrl.startsWith('profiles/') || imageUrl.startsWith('listings/')) {
       const cleanPath = imageUrl
         .replace('storage/', '')  // Remove 'storage/' if present
         .replace(/^\/+/, '');     // Remove leading slashes
-      return `http://localhost:8000/storage/${cleanPath}`;
+      return `${API_BASE_URL}/storage/${cleanPath}`;
     }
-    
+
     // For any other case, assume it's a relative path in storage
     const cleanPath = imageUrl.replace(/^\/+/, '');
-    return `http://localhost:8000/storage/${cleanPath}`;
+    return `${API_BASE_URL}/storage/${cleanPath}`;
   };
 
   useEffect(() => {
@@ -40,9 +40,8 @@ const ManageBookings = () => {
           throw new Error('Authentication required');
         }
 
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const response = await axios.get('http://localhost:8000/api/bookings/host');
-        
+        const response = await axios.get('/api/bookings/host');
+
         if (response.data && response.data.data) {
           setBookings(response.data.data);
         } else {
@@ -51,9 +50,9 @@ const ManageBookings = () => {
       } catch (error) {
         console.error("Error loading bookings:", error);
         setNotification({
-          message: error.response?.status === 404 
+          message: error.response?.status === 404
             ? 'No bookings found for your listings'
-            : error.message === 'Authentication required' 
+            : error.message === 'Authentication required'
               ? 'Please log in to view your listings\' bookings'
               : 'Failed to load bookings. Please try again.',
           type: "error"
@@ -62,7 +61,7 @@ const ManageBookings = () => {
         setLoading(false);
       }
     };
-    
+
     fetchHostBookings();
   }, []);
 
@@ -71,17 +70,16 @@ const ManageBookings = () => {
       const token = localStorage.getItem('authToken');
       if (!token) throw new Error('Authentication required');
 
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      await axios.post(`http://localhost:8000/api/bookings/${bookingId}/accept`);
+      await axios.post(`/api/bookings/${bookingId}/accept`);
 
-      setBookings(prevBookings => 
-        prevBookings.map(booking => 
-          booking.id === bookingId 
+      setBookings(prevBookings =>
+        prevBookings.map(booking =>
+          booking.id === bookingId
             ? { ...booking, status: 'accepted' }
             : booking
         )
       );
-      
+
       setNotification({ message: 'Booking accepted successfully!', type: 'success' });
     } catch (error) {
       console.error('Error accepting booking:', error);
@@ -97,17 +95,16 @@ const ManageBookings = () => {
       const token = localStorage.getItem('authToken');
       if (!token) throw new Error('Authentication required');
 
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      await axios.post(`http://localhost:8000/api/bookings/${bookingId}/refuse`);
+      await axios.post(`/api/bookings/${bookingId}/refuse`);
 
-      setBookings(prevBookings => 
-        prevBookings.map(booking => 
-          booking.id === bookingId 
+      setBookings(prevBookings =>
+        prevBookings.map(booking =>
+          booking.id === bookingId
             ? { ...booking, status: 'refused' }
             : booking
         )
       );
-      
+
       setNotification({ message: 'Booking refused successfully!', type: 'success' });
     } catch (error) {
       console.error('Error refusing booking:', error);
@@ -138,16 +135,16 @@ const ManageBookings = () => {
   return (
     <div className="page-wrapper">
       <div className="content-area">
-          {notification && (
-            <Notification
-              message={notification.message}
-              type={notification.type}
-              onClose={closeNotification}
-            />
-          )}
-        
+        {notification && (
+          <Notification
+            message={notification.message}
+            type={notification.type}
+            onClose={closeNotification}
+          />
+        )}
+
         <h1 className="page-title">Manage Listing Bookings</h1>
-        
+
         {loading ? (
           <div className="loading-container">
             <LoadingSpinner />
@@ -161,9 +158,9 @@ const ManageBookings = () => {
                 {bookings.map((booking) => (
                   <div key={booking.id} className="booking-item" data-aos="fade-up">
                     <div className="booking-image-container">
-                      <img 
-                        src={getImageUrl(booking.listing?.main_photo)} 
-                        alt={booking.listing?.title || 'Listing'} 
+                      <img
+                        src={getImageUrl(booking.listing?.main_photo)}
+                        alt={booking.listing?.title || 'Listing'}
                         className="booking-image"
                         onError={(e) => {
                           e.target.onerror = null;
@@ -172,12 +169,12 @@ const ManageBookings = () => {
                       />
                       <div className="booking-status-badge">
                         <span className={`status-${booking.payment_status || 'pending'}`}>
-                          {(booking.payment_status || 'pending').charAt(0).toUpperCase() + 
-                           (booking.payment_status || 'pending').slice(1)}
+                          {(booking.payment_status || 'pending').charAt(0).toUpperCase() +
+                            (booking.payment_status || 'pending').slice(1)}
                         </span>
                       </div>
                     </div>
-                  <div className="booking-details">
+                    <div className="booking-details">
                       <h3>{booking.listing?.title || 'Listing not available'}</h3>
                       <div className="guest-info">
                         <FontAwesomeIcon icon={faUser} className="guest-icon" />
@@ -199,13 +196,13 @@ const ManageBookings = () => {
                       </div>
                       {booking.payment_status === 'pending' && (
                         <div className="booking-actions">
-                          <button 
+                          <button
                             onClick={() => handleAcceptBooking(booking.id)}
                             className="accept-button"
                           >
                             Accept Payment
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleRefuseBooking(booking.id)}
                             className="refuse-button"
                           >
@@ -215,19 +212,19 @@ const ManageBookings = () => {
                       )}
                     </div>
                   </div>
-              ))}
+                ))}
               </div>
-          )}
-        </div>
+            )}
+          </div>
         )}
       </div>
-      
+
       <footer className="footer">
         <div className="footer-content">
           <p>&copy; {new Date().getFullYear()} EasyTrip. All rights reserved.</p>
         </div>
       </footer>
-      
+
       <style>{`
         .page-wrapper {
           display: flex;
