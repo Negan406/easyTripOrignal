@@ -34,29 +34,37 @@ class AuthController extends Controller
         // Retrieve credentials from the request.
         $credentials = $request->only('email', 'password');
 
-        // Attempt authentication with the credentials against the database.
-        if (!Auth::attempt($credentials)) {
+        try {
+            // Attempt authentication with the credentials against the database.
+            if (!Auth::attempt($credentials)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid credentials'
+                ], 401);
+            }
+
+            $user = Auth::user();
+
+            // Generate an API token for token-based authentication.
+            $token = $user->createToken('auth-token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'user'    => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ],
+                'token'   => $token,
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid credentials'
-            ], 401);
+                'message' => 'Login error: ' . $e->getMessage(),
+                'trace' => $e->getTraceAsString() // Adding trace for deeper debugging in this phase
+            ], 500);
         }
-
-        $user = Auth::user();
-
-        // Generate an API token for token-based authentication.
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return response()->json([
-            'success' => true,
-            'user'    => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-            ],
-            'token'   => $token,
-        ]);
     }
 
     /**
