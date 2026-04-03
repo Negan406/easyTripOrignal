@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from "../components/LoadingSpinner";
-import axios from "axios";
+import axios from "../utils/axios";
 
 const AddListing = () => {
   const [newListing, setNewListing] = useState({
@@ -55,14 +55,14 @@ const AddListing = () => {
   const handleAdditionalPhotosChange = (e) => {
     const files = Array.from(e.target.files).slice(0, 3); // Limit to 3 additional photos
     const oversizedFiles = files.filter(file => file.size > 5 * 1024 * 1024);
-    
+
     if (oversizedFiles.length > 0) {
       setError('All photos must be less than 5MB');
       return;
     }
 
     setNewListing({ ...newListing, photos: files });
-    
+
     const newPreviews = [];
     files.forEach(file => {
       const reader = new FileReader();
@@ -94,14 +94,14 @@ const AddListing = () => {
       formData.append('price', newListing.price);
       formData.append('category', newListing.category);
       formData.append('main_photo', newListing.main_photo);
-      
+
       if (newListing.photos.length > 0) {
         newListing.photos.forEach(photo => {
           formData.append('photos[]', photo);
         });
       }
 
-      const response = await axios.post('http://localhost:8000/api/listings', formData, {
+      const response = await axios.post('/api/listings', formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -141,35 +141,35 @@ const AddListing = () => {
           <form onSubmit={handleSubmit} className="listing-form">
             <div className="form-grid">
               <div className="form-left">
-                <input 
-                  type="text" 
-                  name="title" 
-                  placeholder="Title" 
-                  value={newListing.title} 
-                  onChange={handleInputChange} 
-                  required 
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Title"
+                  value={newListing.title}
+                  onChange={handleInputChange}
+                  required
                 />
-                <input 
-                  type="text" 
-                  name="location" 
-                  placeholder="Location" 
-                  value={newListing.location} 
-                  onChange={handleInputChange} 
-                  required 
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="Location"
+                  value={newListing.location}
+                  onChange={handleInputChange}
+                  required
                 />
-                <input 
-                  type="number" 
-                  name="price" 
-                  placeholder="Price per night" 
-                  value={newListing.price} 
-                  onChange={handleInputChange} 
-                  required 
+                <input
+                  type="number"
+                  name="price"
+                  placeholder="Price per night"
+                  value={newListing.price}
+                  onChange={handleInputChange}
+                  required
                   min="0"
                 />
-                <select 
-                  name="category" 
-                  value={newListing.category} 
-                  onChange={handleInputChange} 
+                <select
+                  name="category"
+                  value={newListing.category}
+                  onChange={handleInputChange}
                   required
                 >
                   {categories.map(category => (
@@ -178,25 +178,25 @@ const AddListing = () => {
                     </option>
                   ))}
                 </select>
-                <textarea 
-                  name="description" 
-                  placeholder="Description" 
-                  value={newListing.description} 
-                  onChange={handleInputChange} 
-                  required 
+                <textarea
+                  name="description"
+                  placeholder="Description"
+                  value={newListing.description}
+                  onChange={handleInputChange}
+                  required
                 />
               </div>
-              
+
               <div className="form-right">
                 <div className="photo-upload-section">
                   <div className="main-photo-upload">
                     <h3>Main Photo (Required)</h3>
                     <p className="photo-hint">Max size: 5MB</p>
-                    <input 
-                      type="file" 
-                      accept="image/jpeg,image/png,image/jpg" 
-                      onChange={handleMainPhotoChange} 
-                      required 
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/jpg"
+                      onChange={handleMainPhotoChange}
+                      required
                     />
                     {previews.main && (
                       <img src={previews.main} alt="Main preview" className="main-preview" />
@@ -206,11 +206,11 @@ const AddListing = () => {
                   <div className="additional-photos-upload">
                     <h3>Additional Photos (Optional)</h3>
                     <p className="photo-hint">Max 3 photos, 5MB each</p>
-                    <input 
-                      type="file" 
-                      accept="image/jpeg,image/png,image/jpg" 
-                      multiple 
-                      onChange={handleAdditionalPhotosChange} 
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/jpg"
+                      multiple
+                      onChange={handleAdditionalPhotosChange}
                     />
                     <div className="additional-previews">
                       {previews.additional.map((preview, index) => (

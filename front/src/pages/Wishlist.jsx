@@ -5,7 +5,7 @@ import Sidebar from "../components/Sidebar";
 import ListingCard from "../components/ListingCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios, { API_BASE_URL } from "../utils/axios";
 
 // Add loading animation constants
 const LOADING_MESSAGES = [
@@ -32,7 +32,7 @@ const Wishlist = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:8000/api/wishlists', {
+      const response = await axios.get('/api/wishlists', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -40,7 +40,7 @@ const Wishlist = () => {
 
       // Check various possible response formats
       let wishlistsData = [];
-      
+
       if (response.data.success && Array.isArray(response.data.wishlists)) {
         wishlistsData = response.data.wishlists;
       } else if (response.data.success && response.data.data && Array.isArray(response.data.data)) {
@@ -60,13 +60,13 @@ const Wishlist = () => {
           // Handle different data structures
           const listing = item.listing || item;
           if (!listing || !listing.id) return null;
-          
-          const rating = listing.average_rating ? parseFloat(listing.average_rating) : 
-                       (listing.rating ? parseFloat(listing.rating) : 0);
-                       
-          const totalRatings = listing.total_ratings ? parseInt(listing.total_ratings) : 
-                              (listing.totalRatings ? parseInt(listing.totalRatings) : 0);
-          
+
+          const rating = listing.average_rating ? parseFloat(listing.average_rating) :
+            (listing.rating ? parseFloat(listing.rating) : 0);
+
+          const totalRatings = listing.total_ratings ? parseInt(listing.total_ratings) :
+            (listing.totalRatings ? parseInt(listing.totalRatings) : 0);
+
           return {
             ...listing,
             wishlist_id: item.id || listing.id,
@@ -76,9 +76,9 @@ const Wishlist = () => {
             totalRatings: totalRatings
           };
         }).filter(Boolean);
-        
+
         console.log('Formatted wishlist items:', formattedListings);
-        
+
         setWishlistItems(formattedListings);
         setError(null); // Clear any previous errors
       } else {
@@ -100,7 +100,7 @@ const Wishlist = () => {
   useEffect(() => {
     // Set a flag to check if component is mounted
     let isMounted = true;
-    
+
     const initFetch = async () => {
       try {
         await fetchWishlistItems();
@@ -111,9 +111,9 @@ const Wishlist = () => {
         }
       }
     };
-    
+
     initFetch();
-    
+
     // Cleanup function to prevent memory leaks
     return () => {
       isMounted = false;
@@ -123,13 +123,13 @@ const Wishlist = () => {
   // Add loading message rotation
   useEffect(() => {
     if (!loading) return;
-    
+
     let messageIndex = 0;
     const intervalId = setInterval(() => {
       messageIndex = (messageIndex + 1) % LOADING_MESSAGES.length;
       setLoadingMessage(LOADING_MESSAGES[messageIndex]);
     }, 2000); // Change message every 2 seconds
-    
+
     return () => {
       clearInterval(intervalId);
     };
@@ -159,8 +159,8 @@ const Wishlist = () => {
       }
 
       console.log(`Removing wishlist ID ${wishlistId} for listing ID ${listingId}`);
-      
-      const response = await axios.delete(`http://localhost:8000/api/wishlists/${wishlistId}`, {
+
+      const response = await axios.delete(`/api/wishlists/${wishlistId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
@@ -203,10 +203,10 @@ const Wishlist = () => {
             </div>
             <div className="floating-hearts">
               {[...Array(8)].map((_, i) => (
-                <FontAwesomeIcon 
-                  key={i} 
-                  icon={faHeart} 
-                  className={`floating-heart heart-${i + 1}`} 
+                <FontAwesomeIcon
+                  key={i}
+                  icon={faHeart}
+                  className={`floating-heart heart-${i + 1}`}
                 />
               ))}
             </div>
@@ -229,13 +229,13 @@ const Wishlist = () => {
             <div className="wishlist-grid">
               {wishlistItems.length > 0 ? (
                 wishlistItems.map((listing) => (
-                  <div 
-                    key={listing.id} 
+                  <div
+                    key={listing.id}
                     className="wishlist-item"
                     data-aos="fade-up"
                   >
-                    <ListingCard 
-                      listing={listing} 
+                    <ListingCard
+                      listing={listing}
                       onRemoveFromWishlist={() => handleRemoveFromWishlist(listing.id)}
                       isInWishlist={true}
                     />

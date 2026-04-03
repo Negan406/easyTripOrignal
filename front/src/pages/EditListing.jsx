@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
 import LoadingSpinner from "../components/LoadingSpinner";
-import axios from 'axios';
+import axios, { API_BASE_URL } from '../utils/axios';
 import Sidebar from "../components/Sidebar";
 
 const EditListing = () => {
@@ -40,7 +40,7 @@ const EditListing = () => {
   const fetchListing = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.get(`http://localhost:8000/api/listings/${id}`, {
+      const response = await axios.get(`/api/listings/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -55,12 +55,12 @@ const EditListing = () => {
           category: listingData.category
         });
         setMainPhotoPreview(getImageUrl(listingData.main_photo));
-        
+
         // Set additional photos previews if they exist
         if (listingData.photos && listingData.photos.length > 0) {
           setPreviews(prev => ({
             ...prev,
-            additional: listingData.photos.map(photo => 
+            additional: listingData.photos.map(photo =>
               getImageUrl(photo.photo_path)
             )
           }));
@@ -97,14 +97,14 @@ const EditListing = () => {
   const handleAdditionalPhotosChange = (e) => {
     const files = Array.from(e.target.files).slice(0, 3); // Limit to 3 additional photos
     const oversizedFiles = files.filter(file => file.size > 5 * 1024 * 1024);
-    
+
     if (oversizedFiles.length > 0) {
       setError('All photos must be less than 5MB');
       return;
     }
 
     setAdditionalPhotos(files);
-    
+
     const newPreviews = [];
     files.forEach(file => {
       const reader = new FileReader();
@@ -143,7 +143,7 @@ const EditListing = () => {
       }
 
       const response = await axios.post(
-        `http://localhost:8000/api/listings/${id}?_method=PUT`,
+        `/api/listings/${id}?_method=PUT`,
         updateData,
         {
           headers: {
@@ -164,23 +164,23 @@ const EditListing = () => {
 
   const getImageUrl = (imageUrl) => {
     if (!imageUrl) return 'https://via.placeholder.com/300x200?text=No+Image';
-    
+
     // If it's already a full URL
     if (imageUrl.startsWith('http')) {
       return imageUrl;
     }
-    
+
     // For storage paths
     if (imageUrl.includes('storage/') || imageUrl.startsWith('listings/')) {
       const cleanPath = imageUrl
         .replace('storage/', '')  // Remove 'storage/' if present
         .replace(/^\/+/, '');     // Remove leading slashes
-      return `http://localhost:8000/storage/${cleanPath}`;
+      return `${API_BASE_URL}/storage/${cleanPath}`;
     }
-    
+
     // For any other case, assume it's a relative path in storage
     const cleanPath = imageUrl.replace(/^\/+/, '');
-    return `http://localhost:8000/storage/${cleanPath}`;
+    return `${API_BASE_URL}/storage/${cleanPath}`;
   };
 
   if (loading) return <LoadingSpinner />;
@@ -191,7 +191,7 @@ const EditListing = () => {
       <Sidebar />
       <div className="edit-listing-container">
         <h1>Edit Listing</h1>
-        
+
         {error && (
           <div className="error-message">
             {error}
@@ -201,36 +201,36 @@ const EditListing = () => {
         <form onSubmit={handleSubmit} className="listing-form">
           <div className="form-grid">
             <div className="form-left">
-              <input 
-                type="text" 
-                name="title" 
-                placeholder="Title" 
-                value={formData.title} 
-                onChange={handleInputChange} 
-                required 
+              <input
+                type="text"
+                name="title"
+                placeholder="Title"
+                value={formData.title}
+                onChange={handleInputChange}
+                required
               />
-              <input 
-                type="text" 
-                name="location" 
-                placeholder="Location" 
-                value={formData.location} 
-                onChange={handleInputChange} 
-                required 
+              <input
+                type="text"
+                name="location"
+                placeholder="Location"
+                value={formData.location}
+                onChange={handleInputChange}
+                required
               />
-              <input 
-                type="number" 
-                name="price" 
-                placeholder="Price per night" 
-                value={formData.price} 
-                onChange={handleInputChange} 
-                required 
+              <input
+                type="number"
+                name="price"
+                placeholder="Price per night"
+                value={formData.price}
+                onChange={handleInputChange}
+                required
                 min="0"
                 step="0.01"
               />
-              <select 
-                name="category" 
-                value={formData.category} 
-                onChange={handleInputChange} 
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
                 required
               >
                 {categories.map(category => (
@@ -239,24 +239,24 @@ const EditListing = () => {
                   </option>
                 ))}
               </select>
-              <textarea 
-                name="description" 
-                placeholder="Description" 
-                value={formData.description} 
-                onChange={handleInputChange} 
-                required 
+              <textarea
+                name="description"
+                placeholder="Description"
+                value={formData.description}
+                onChange={handleInputChange}
+                required
                 rows="6"
               />
             </div>
-            
+
             <div className="form-right">
               <div className="photo-upload-section">
                 <div className="main-photo-upload">
                   <h3>Main Photo</h3>
                   <p className="photo-hint">Max size: 5MB</p>
-                  <input 
-                    type="file" 
-                    accept="image/jpeg,image/png,image/jpg" 
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg"
                     onChange={handleMainPhotoChange}
                     className="file-input"
                   />
@@ -276,19 +276,19 @@ const EditListing = () => {
                 <div className="additional-photos-upload">
                   <h3>Additional Photos (Optional)</h3>
                   <p className="photo-hint">Max 3 photos, 5MB each</p>
-                  <input 
-                    type="file" 
-                    accept="image/jpeg,image/png,image/jpg" 
-                    multiple 
-                    onChange={handleAdditionalPhotosChange} 
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg"
+                    multiple
+                    onChange={handleAdditionalPhotosChange}
                     className="file-input"
                   />
                   <div className="additional-previews">
                     {previews.additional.map((preview, index) => (
                       <div key={index} className="photo-preview-container">
-                        <img 
+                        <img
                           src={preview}
-                          alt={`Additional ${index + 1}`} 
+                          alt={`Additional ${index + 1}`}
                           className="additional-preview"
                           onError={(e) => {
                             e.target.onerror = null;

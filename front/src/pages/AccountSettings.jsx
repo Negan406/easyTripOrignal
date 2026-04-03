@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock, faCreditCard, faBell, faShieldAlt, faCamera } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+import axios, { API_BASE_URL } from "../utils/axios";
 
 const AccountSettings = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -31,10 +31,10 @@ const AccountSettings = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:8000/api/user', {
+        const response = await axios.get('/api/user', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        
+
         if (response.data && response.data.success) {
           const userData = response.data.user;
           setFormData(prevState => ({
@@ -46,9 +46,9 @@ const AccountSettings = () => {
             new_password: '',
             confirm_password: ''
           }));
-          
+
           if (userData.profile_photo) {
-            setPreviewUrl(`http://localhost:8000/storage/${userData.profile_photo}`);
+            setPreviewUrl(`${API_BASE_URL}/storage/${userData.profile_photo}`);
           }
         } else {
           // If response.data.success is not present, try to use the user data directly
@@ -64,9 +64,9 @@ const AccountSettings = () => {
               new_password: '',
               confirm_password: ''
             }));
-            
+
             if (userData.profile_photo) {
-              setPreviewUrl(`http://localhost:8000/storage/${userData.profile_photo}`);
+              setPreviewUrl(`${API_BASE_URL}/storage/${userData.profile_photo}`);
             }
           } else {
             throw new Error('Invalid response format from server');
@@ -95,18 +95,18 @@ const AccountSettings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('authToken');
-    
+
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('name', formData.name);
       formDataToSend.append('email', formData.email);
       formDataToSend.append('phone', formData.phone);
-      
+
       if (profilePhoto) {
         formDataToSend.append('profile_photo', profilePhoto);
       }
 
-      const response = await axios.post('http://localhost:8000/api/user/update', 
+      const response = await axios.post('/api/user/update',
         formDataToSend,
         {
           headers: {
@@ -141,7 +141,7 @@ const AccountSettings = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:8000/api/user/change-password',
+      const response = await axios.post('/api/user/change-password',
         {
           current_password: formData.current_password,
           new_password: formData.new_password
@@ -155,7 +155,7 @@ const AccountSettings = () => {
         type: 'success',
         text: 'Password changed successfully!'
       });
-      
+
       // Reset password fields
       setFormData(prev => ({
         ...prev,
@@ -176,7 +176,7 @@ const AccountSettings = () => {
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       <main className="account-container">
         <h1>Account Settings</h1>
-        
+
         {message.text && (
           <div className={`message ${message.type}`}>
             {message.text}
@@ -186,31 +186,31 @@ const AccountSettings = () => {
 
         <div className="account-content">
           <div className="account-menu">
-            <button 
+            <button
               onClick={() => setActiveSection('profile')}
               className={`account-menu-item ${activeSection === 'profile' ? 'active' : ''}`}
             >
               <FontAwesomeIcon icon={faUser} /> Personal Information
             </button>
-            <button 
+            <button
               onClick={() => setActiveSection('security')}
               className={`account-menu-item ${activeSection === 'security' ? 'active' : ''}`}
             >
               <FontAwesomeIcon icon={faLock} /> Password & Security
             </button>
-            <button 
+            <button
               onClick={() => setActiveSection('payments')}
               className={`account-menu-item ${activeSection === 'payments' ? 'active' : ''}`}
             >
               <FontAwesomeIcon icon={faCreditCard} /> Payments & Payouts
             </button>
-            <button 
+            <button
               onClick={() => setActiveSection('notifications')}
               className={`account-menu-item ${activeSection === 'notifications' ? 'active' : ''}`}
             >
               <FontAwesomeIcon icon={faBell} /> Notifications
             </button>
-            <button 
+            <button
               onClick={() => setActiveSection('privacy')}
               className={`account-menu-item ${activeSection === 'privacy' ? 'active' : ''}`}
             >

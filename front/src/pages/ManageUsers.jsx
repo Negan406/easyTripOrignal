@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faTrash, faCrown, faPhone, faUserGear, 
+import {
+  faTrash, faCrown, faPhone, faUserGear,
   faShield, faUserPlus, faEnvelope, faKey, faUser
 } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
+import axios, { API_BASE_URL } from '../utils/axios';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Sidebar from '../components/Sidebar';
@@ -30,13 +30,13 @@ const ManageUsers = () => {
   // Add loading message rotation
   useEffect(() => {
     if (!loading) return;
-    
+
     let messageIndex = 0;
     const intervalId = setInterval(() => {
       messageIndex = (messageIndex + 1) % LOADING_MESSAGES.length;
       setLoadingMessage(LOADING_MESSAGES[messageIndex]);
     }, 2000); // Change message every 2 seconds
-    
+
     return () => {
       clearInterval(intervalId);
     };
@@ -46,8 +46,8 @@ const ManageUsers = () => {
     const fetchDebugLogs = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await axios.get('http://localhost:8000/api/users', {
-          headers: { 
+        const response = await axios.get('/api/users', {
+          headers: {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -58,12 +58,12 @@ const ManageUsers = () => {
           const sampleUser = response.data.users[0];
           console.log('Sample user data format:', sampleUser);
           console.log('Profile photo value:', sampleUser.profile_photo);
-          
+
           // Test the URL format that AccountSettings.jsx uses
           if (sampleUser.profile_photo) {
-            const testUrl = `http://localhost:8000/storage/${sampleUser.profile_photo}`;
+            const testUrl = `${API_BASE_URL}/storage/${sampleUser.profile_photo}`;
             console.log('Test URL format:', testUrl);
-            
+
             // Fetch the image to check if it exists
             fetch(testUrl)
               .then(res => {
@@ -76,7 +76,7 @@ const ManageUsers = () => {
         console.error('Debug log error:', error);
       }
     };
-    
+
     if (localStorage.getItem('role') === 'admin') {
       fetchDebugLogs();
     }
@@ -84,15 +84,15 @@ const ManageUsers = () => {
 
   const getImageUrl = (imageUrl) => {
     if (!imageUrl) return 'https://via.placeholder.com/150x150?text=User';
-    
+
     // If it's already a full URL, return it as is
     if (imageUrl.startsWith('http')) {
       return imageUrl;
     }
-    
+
     // Use the same format as AccountSettings.jsx
     // This assumes the API returns paths without 'storage/' prefix
-    return `http://localhost:8000/storage/${imageUrl.replace(/^\/+/, '')}`;
+    return `${API_BASE_URL}/storage/${imageUrl.replace(/^\/+/, '')}`;
   };
 
   useEffect(() => {
@@ -107,8 +107,8 @@ const ManageUsers = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.get('http://localhost:8000/api/users', {
-        headers: { 
+      const response = await axios.get('/api/users', {
+        headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
           'Content-Type': 'application/json'
@@ -121,7 +121,7 @@ const ManageUsers = () => {
           ...user,
           profile_photo: user.profile_photo || null
         }));
-        
+
         setUsers(processedUsers);
       } else {
         throw new Error(response.data.message || 'Failed to fetch users');
@@ -150,7 +150,7 @@ const ManageUsers = () => {
   const handleConfirmDelete = async (userId) => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.delete(`http://localhost:8000/api/users/${userId}`, {
+      const response = await axios.delete(`/api/users/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -189,13 +189,13 @@ const ManageUsers = () => {
         </div>
         <div className="floating-icons">
           {[
-            faUserGear, faShield, faEnvelope, faPhone, 
+            faUserGear, faShield, faEnvelope, faPhone,
             faUserPlus, faKey, faCrown, faTrash
           ].map((icon, i) => (
-            <FontAwesomeIcon 
-              key={i} 
-              icon={icon} 
-              className={`floating-icon icon-${i + 1}`} 
+            <FontAwesomeIcon
+              key={i}
+              icon={icon}
+              className={`floating-icon icon-${i + 1}`}
             />
           ))}
         </div>
@@ -351,9 +351,9 @@ const ManageUsers = () => {
   return (
     <div className="app-container">
       <Sidebar />
-    <div className="manage-users-container">
+      <div className="manage-users-container">
         <div className="content-wrapper">
-      <h1>Manage Users</h1>
+          <h1>Manage Users</h1>
 
           {error && (
             <div className="error-message">
@@ -364,8 +364,8 @@ const ManageUsers = () => {
           {notification && (
             <div className={`notification ${notification.type}`}>
               {notification.message}
-              <button 
-                className="close-btn" 
+              <button
+                className="close-btn"
                 onClick={() => setNotification(null)}
               >
                 ×
@@ -379,7 +379,7 @@ const ManageUsers = () => {
                 <div className="user-info">
                   <div className="user-photo-container">
                     {user.profile_photo ? (
-                      <img 
+                      <img
                         src={getImageUrl(user.profile_photo)}
                         alt={user.name}
                         className="user-avatar"
@@ -437,13 +437,13 @@ const ManageUsers = () => {
                 <h3>Confirm Delete</h3>
                 <p>Are you sure you want to delete this user? This action cannot be undone.</p>
                 <div className="modal-buttons">
-                  <button 
+                  <button
                     className="cancel-button"
                     onClick={() => setDeleteConfirmation(null)}
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     className="confirm-button"
                     onClick={() => handleConfirmDelete(deleteConfirmation)}
                   >

@@ -5,7 +5,7 @@ import Notification from '../components/Notification';
 import ListingCard from '../components/ListingCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
+import axios from '../utils/axios';
 
 const PendingListings = () => {
   const [pendingListings, setPendingListings] = useState([]);
@@ -26,19 +26,19 @@ const PendingListings = () => {
   const fetchPendingListings = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.get('http://localhost:8000/api/listings/pending', {
+      const response = await axios.get('/api/listings/pending', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
       if (response.data.success) {
         // Format listings to include consistent rating property names
         const formattedListings = (response.data.listings || []).map(listing => {
-          const rating = listing.average_rating ? parseFloat(listing.average_rating) : 
-                       (listing.rating ? parseFloat(listing.rating) : 0);
-                       
-          const totalRatings = listing.total_ratings ? parseInt(listing.total_ratings) : 
-                              (listing.totalRatings ? parseInt(listing.totalRatings) : 0);
-          
+          const rating = listing.average_rating ? parseFloat(listing.average_rating) :
+            (listing.rating ? parseFloat(listing.rating) : 0);
+
+          const totalRatings = listing.total_ratings ? parseInt(listing.total_ratings) :
+            (listing.totalRatings ? parseInt(listing.totalRatings) : 0);
+
           return {
             ...listing,
             rating: rating,
@@ -47,7 +47,7 @@ const PendingListings = () => {
             totalRatings: totalRatings
           };
         });
-        
+
         setPendingListings(formattedListings);
       } else {
         throw new Error(response.data.message);
@@ -67,7 +67,7 @@ const PendingListings = () => {
     setProcessing(listing.id);
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.post(`http://localhost:8000/api/listings/${listing.id}/approve`, {}, {
+      const response = await axios.post(`/api/listings/${listing.id}/approve`, {}, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -94,7 +94,7 @@ const PendingListings = () => {
     setProcessing(listing.id);
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.post(`http://localhost:8000/api/listings/${listing.id}/reject`, {}, {
+      const response = await axios.post(`/api/listings/${listing.id}/reject`, {}, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -127,7 +127,7 @@ const PendingListings = () => {
         ) : (
           <main className="pending-container">
             <h1 className="page-title">Pending Listings</h1>
-            
+
             {notification && (
               <Notification
                 type={notification.type}
@@ -135,7 +135,7 @@ const PendingListings = () => {
                 onClose={() => setNotification(null)}
               />
             )}
-            
+
             {pendingListings.length === 0 ? (
               <div className="no-results-message">
                 <FontAwesomeIcon icon={faCheck} className="check-icon" />
@@ -147,7 +147,7 @@ const PendingListings = () => {
                   <div key={listing.id} className="pending-item" data-aos="fade-up">
                     <ListingCard listing={listing} />
                     <div className="action-container">
-                      <button 
+                      <button
                         className={`action-button approve ${processing === listing.id ? 'processing' : ''}`}
                         onClick={() => handleApprove(listing)}
                         disabled={processing !== null}
@@ -155,7 +155,7 @@ const PendingListings = () => {
                         <FontAwesomeIcon icon={faCheck} />
                         <span>Accept</span>
                       </button>
-                      <button 
+                      <button
                         className={`action-button reject ${processing === listing.id ? 'processing' : ''}`}
                         onClick={() => handleReject(listing)}
                         disabled={processing !== null}

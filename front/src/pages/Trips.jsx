@@ -27,12 +27,12 @@ const Trips = () => {
       const cleanPath = imageUrl
         .replace('storage/', '')  // Remove 'storage/' if present
         .replace(/^\/+/, '');     // Remove leading slashes
-      return `http://localhost:8000/storage/${cleanPath}`;
+      return `${API_BASE_URL}/storage/${cleanPath}`;
     }
 
     // For any other case, assume it's a relative path in storage
     const cleanPath = imageUrl.replace(/^\/+/, '');
-    return `http://localhost:8000/storage/${cleanPath}`;
+    return `${API_BASE_URL}/storage/${cleanPath}`;
   };
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Notification from "../components/Notification";
-import axios from "axios";
+import axios from "../utils/axios";
 
 const Payment = () => {
   const [paymentDetails, setPaymentDetails] = useState({
@@ -42,7 +42,7 @@ const Payment = () => {
       const formattedEndDate = booking.endDate.split('T')[0];
 
       const response = await axios.post(
-        `http://localhost:8000/api/bookings/check-availability/${listing.id}`,
+        `/api/bookings/check-availability/${listing.id}`,
         {
           start_date: formattedStartDate,
           end_date: formattedEndDate
@@ -55,15 +55,15 @@ const Payment = () => {
           message: 'These dates are no longer available. Please choose different dates.',
           type: 'error'
         });
-        
+
         // Redirect back to the listing page after 3 seconds
         setTimeout(() => {
           navigate(`/listing/${listing.id}`);
         }, 3000);
-        
+
         return false;
       }
-      
+
       return true;
     } catch (error) {
       console.error('Availability check error:', error);
@@ -84,7 +84,7 @@ const Payment = () => {
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Check if user is logged in
     const token = localStorage.getItem('authToken');
     if (!token) {
@@ -125,22 +125,22 @@ const Payment = () => {
       const formattedEndDate = booking.endDate.split('T')[0];
 
       // Create the booking
-      const response = await axios.post('http://localhost:8000/api/bookings', {
+      const response = await axios.post('/api/bookings', {
         listing_id: listing.id,
         start_date: formattedStartDate,
         end_date: formattedEndDate
       });
 
       if (response.data && response.data.success) {
-        setNotification({ 
-          message: response.data.message || 'Booking successful!', 
-          type: 'success' 
+        setNotification({
+          message: response.data.message || 'Booking successful!',
+          type: 'success'
         });
-        
+
         // Redirect back to the listing page after successful booking
         setTimeout(() => {
-          navigate(`/listing/${listing.id}`, { 
-            state: { 
+          navigate(`/listing/${listing.id}`, {
+            state: {
               bookingSuccess: true,
               message: 'Booking completed successfully! We hope you enjoy your stay. Don\'t forget to leave a review after your visit.',
               scrollToReviews: true
@@ -152,26 +152,26 @@ const Payment = () => {
       }
     } catch (error) {
       console.error('Booking error:', error);
-      
+
       // Handle 409 Conflict (dates not available)
       if (error.response && error.response.status === 409) {
-        setNotification({ 
+        setNotification({
           message: 'These dates are no longer available. Please choose different dates.',
-          type: 'error' 
+          type: 'error'
         });
-        
+
         // Redirect back to the listing page after 3 seconds
         setTimeout(() => {
           navigate(`/listing/${listing.id}`);
         }, 3000);
       } else {
-        const errorMessage = error.response?.data?.message 
-          || error.response?.data?.error 
+        const errorMessage = error.response?.data?.message
+          || error.response?.data?.error
           || 'Failed to create booking. Please try again.';
-        
-        setNotification({ 
+
+        setNotification({
           message: errorMessage,
-          type: 'error' 
+          type: 'error'
         });
       }
     } finally {
@@ -206,7 +206,7 @@ const Payment = () => {
       <p>Location: {listing.location}</p>
       <p>Price: ${listing.price} per night</p>
       <p>From: {booking.startDate} To: {booking.endDate}</p>
-      
+
       {checkingAvailability ? (
         <div className="availability-checking">
           <p>Checking date availability...</p>
@@ -267,7 +267,7 @@ const Payment = () => {
           </button>
         </form>
       )}
-    
+
       <style>{`
         .payment-container {
           max-width: 600px;

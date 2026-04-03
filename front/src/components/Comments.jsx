@@ -2,7 +2,7 @@ import { useState, useEffect, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faUser, faCheck, faTrash, faPen } from "@fortawesome/free-solid-svg-icons";
-import axios from 'axios';
+import axios, { API_BASE_URL } from '../utils/axios';
 
 const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRating = 0, initialReviewCount = 0 }, ref) => {
   const [reviews, setReviews] = useState([]);
@@ -21,35 +21,35 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
   // Function to get correct image URL for profile photos
   const getImageUrl = (imageUrl) => {
     if (!imageUrl) return null;
-    
+
     // If it's already a full URL
     if (imageUrl.startsWith('http')) {
       return imageUrl;
     }
-    
+
     // For storage paths
     if (imageUrl.includes('storage/') || imageUrl.startsWith('profiles/') || imageUrl.startsWith('listings/')) {
       const cleanPath = imageUrl
         .replace('storage/', '')  // Remove 'storage/' if present
         .replace(/^\/+/, '');     // Remove leading slashes
-      return `http://localhost:8000/storage/${cleanPath}`;
+      return `${API_BASE_URL}/storage/${cleanPath}`;
     }
-    
+
     // For any other case, assume it's a relative path in storage
     const cleanPath = imageUrl.replace(/^\/+/, '');
-    return `http://localhost:8000/storage/${cleanPath}`;
+    return `${API_BASE_URL}/storage/${cleanPath}`;
   };
 
   useEffect(() => {
     const fetchCurrentUserPhoto = async () => {
       const token = localStorage.getItem('authToken');
       if (!token) return;
-      
+
       try {
-        const response = await axios.get('http://localhost:8000/api/user', {
+        const response = await axios.get('/api/user', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        
+
         if (response.data && response.data.user && response.data.user.profile_photo) {
           setCurrentUserPhoto(getImageUrl(response.data.user.profile_photo));
         }
@@ -57,16 +57,16 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
         console.error('Error fetching user profile photo:', error);
       }
     };
-    
+
     fetchCurrentUserPhoto();
   }, []);
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/reviews?listing_id=${listingId}`);
+        const response = await axios.get(`/api/reviews?listing_id=${listingId}`);
         console.log("Reviews API response:", response.data);
-        
+
         let reviewsData;
         // Handle different response formats
         if (response.data.success) {
@@ -76,9 +76,9 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
           // Old format
           reviewsData = response.data.data || response.data || [];
         }
-        
+
         setReviews(reviewsData);
-        
+
         // Calculate average rating and total reviews
         if (reviewsData.length > 0) {
           const total = reviewsData.reduce((sum, review) => sum + review.rating, 0);
@@ -104,7 +104,7 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
       setIsLoggedIn(true);
       try {
         // Check if user has a completed payment for this listing
-        const bookingResponse = await axios.get(`http://localhost:8000/api/bookings/completed/${listingId}`, {
+        const bookingResponse = await axios.get(`/api/bookings/completed/${listingId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -117,16 +117,16 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
         }
 
         // Check if already reviewed
-        const reviewResponse = await axios.get(`http://localhost:8000/api/reviews?listing_id=${listingId}`, {
+        const reviewResponse = await axios.get(`/api/reviews?listing_id=${listingId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        
+
         console.log('Reviews response:', reviewResponse.data);
-        
+
         const userReviews = reviewResponse.data.data || [];
         const currentUserId = parseInt(localStorage.getItem('userId'));
-        
-        const hasAlreadyReviewed = userReviews.some(review => 
+
+        const hasAlreadyReviewed = userReviews.some(review =>
           review.user_id === currentUserId
         );
 
@@ -155,8 +155,8 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
 
     try {
       const token = localStorage.getItem('authToken');
-      
-      const response = await axios.post('http://localhost:8000/api/reviews', {
+
+      const response = await axios.post('/api/reviews', {
         listing_id: listingId,
         rating: rating,
         comment: newReview
@@ -166,17 +166,17 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
 
       if (response.data.success) {
         const newReviewData = response.data.data;
-        
+
         // Update reviews list
         setReviews(prev => [newReviewData, ...prev]);
-        
+
         // Update total reviews and average rating
         const newTotal = totalReviews + 1;
         const newAverage = ((averageRating * totalReviews) + rating) / newTotal;
-        
+
         setTotalReviews(newTotal);
         setAverageRating(newAverage);
-        
+
         // Reset form
         setNewReview('');
         setRating(0);
@@ -210,17 +210,17 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
 
     try {
       const token = localStorage.getItem('authToken');
-      await axios.delete(`http://localhost:8000/api/reviews/${reviewId}`, {
+      await axios.delete(`/api/reviews/${reviewId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       // Remove the review from the list
       setReviews(prev => prev.filter(review => review.id !== reviewId));
-      
+
       // Update stats
       const newTotal = totalReviews - 1;
       let newAverage = 0;
-      
+
       if (newTotal > 0) {
         // Recalculate average excluding the deleted review
         const remainingTotal = (averageRating * totalReviews) - reviewRating;
@@ -257,7 +257,7 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
   return (
     <div className="comments-section" ref={ref}>
       <div className="reviews-header">
-      <h2>Reviews</h2>
+        <h2>Reviews</h2>
         <div className="rating-summary">
           <div className="average-rating">
             <FontAwesomeIcon icon={faStar} className="star active" />
@@ -266,26 +266,26 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
           <span className="total-reviews">({totalReviews} {totalReviews === 1 ? 'review' : 'reviews'})</span>
         </div>
       </div>
-      
+
       {error && (
         <div className="error-message">
           {error}
         </div>
       )}
-      
+
       {reviewStatus && (
         <div className="booking-message">
           <p>{reviewStatus}</p>
         </div>
       )}
-      
+
       {isLoggedIn && canReview && (
         <form onSubmit={handleSubmit} className={`comment-form ${highlightReviewForm ? 'highlight-form' : ''}`}>
           <div className="user-review-header">
             {currentUserPhoto ? (
-              <img 
-                src={currentUserPhoto} 
-                alt="Your profile" 
+              <img
+                src={currentUserPhoto}
+                alt="Your profile"
                 className="user-avatar current-user-avatar"
               />
             ) : (
@@ -330,9 +330,9 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
               <div className="comment-header">
                 <div className="user-info">
                   {review.user && review.user.profile_photo ? (
-                    <img 
-                      src={getImageUrl(review.user.profile_photo)} 
-                      alt={review.user.name} 
+                    <img
+                      src={getImageUrl(review.user.profile_photo)}
+                      alt={review.user.name}
                       className="user-avatar"
                       onError={(e) => {
                         e.target.onerror = null;
@@ -350,17 +350,17 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
                   )}
                 </div>
                 <div className="review-actions">
-                <div className="rating">
+                  <div className="rating">
                     {[...Array(5)].map((_, index) => (
-                    <FontAwesomeIcon
-                      key={index}
-                      icon={faStar}
+                      <FontAwesomeIcon
+                        key={index}
+                        icon={faStar}
                         className={`star ${index < review.rating ? 'active' : ''}`}
-                    />
-                  ))}
+                      />
+                    ))}
                   </div>
                   {review.user_id === parseInt(localStorage.getItem('userId')) && (
-                    <button 
+                    <button
                       onClick={(e) => {
                         e.preventDefault();
                         handleDeleteReview(review.id, review.rating);
