@@ -521,8 +521,8 @@ const ListingDetails = () => {
                   type="submit"
                   disabled={isAlreadyBooked || checkingAvailability || !areSelectedDatesAvailable}
                   className={`w-full py-4 rounded-2xl text-lg font-bold shadow-xl transition-all active:scale-[0.98] ${isAlreadyBooked || !areSelectedDatesAvailable
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100'
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100'
                     }`}
                 >
                   {isAlreadyBooked
