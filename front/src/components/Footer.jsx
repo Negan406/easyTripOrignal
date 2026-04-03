@@ -1,170 +1,88 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faEnvelope, faPhone, faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  
+
   return (
-    <footer>
-      <div className="footer-wrapper">
-        <div className="footer-content">
-          <div className="footer-section">
-            <h4>Support</h4>
-            <div className="footer-links-row">
-              <Link to="#">Help</Link>
-              <Link to="#">Safety</Link>
-              <Link to="#">Cancel</Link>
-            </div>
+    <footer className="bg-gray-50 border-t border-gray-200 pt-16 pb-8 mt-auto">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 pb-12 border-b border-gray-200">
+          <div className="flex flex-col gap-4">
+            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-widest">Support</h4>
+            <ul className="flex flex-col gap-2.5">
+              <li><Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">Help Centre</Link></li>
+              <li><Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">Safety information</Link></li>
+              <li><Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">Cancellation options</Link></li>
+              <li><Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">Our COVID-19 Response</Link></li>
+            </ul>
           </div>
-          <div className="footer-section">
-            <h4>Community</h4>
-            <div className="footer-links-row">
-              <Link to="#">EasyTrip.org</Link>
-              <Link to="#">Inclusion</Link>
-            </div>
+
+          <div className="flex flex-col gap-4">
+            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-widest">Community</h4>
+            <ul className="flex flex-col gap-2.5">
+              <li><Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">EasyTrip.org: disaster relief housing</Link></li>
+              <li><Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">Support Afghan refugees</Link></li>
+              <li><Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">Combating discrimination</Link></li>
+            </ul>
           </div>
-          <div className="footer-section">
-            <h4>Hosting</h4>
-            <div className="footer-links-row">
-              <Link to="#">Host</Link>
-              <Link to="#">Resources</Link>
-            </div>
+
+          <div className="flex flex-col gap-4">
+            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-widest">Hosting</h4>
+            <ul className="flex flex-col gap-2.5">
+              <li><Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">Try hosting</Link></li>
+              <li><Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">AirCover: protection for Hosts</Link></li>
+              <li><Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">Explore hosting resources</Link></li>
+              <li><Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">Visit our community forum</Link></li>
+            </ul>
           </div>
-          <div className="footer-section contact">
-            <h4>Contact</h4>
-            <div className="contact-row">
-              <span><FontAwesomeIcon icon={faPhone} /> +1 (555) 123-4567</span>
-              <span><FontAwesomeIcon icon={faEnvelope} /> contact@easytrip.com</span>
+
+          <div className="flex flex-col gap-4">
+            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-widest">Contact Us</h4>
+            <div className="flex flex-col gap-3">
+              <Link to="tel:+15551234567" className="flex items-center gap-3 text-sm text-gray-600 hover:text-blue-600 transition-colors group">
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                  <FontAwesomeIcon icon={faPhone} className="text-xs" />
+                </div>
+                <span>+1 (555) 123-4567</span>
+              </Link>
+              <Link to="mailto:contact@easytrip.com" className="flex items-center gap-3 text-sm text-gray-600 hover:text-blue-600 transition-colors group">
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                  <FontAwesomeIcon icon={faEnvelope} className="text-xs" />
+                </div>
+                <span>contact@easytrip.com</span>
+              </Link>
             </div>
           </div>
         </div>
-        <div className="footer-bottom">
-          <p>&copy; {currentYear} EasyTrip <FontAwesomeIcon icon={faHeart} className="heart-icon" /></p>
-          <div className="footer-links-row legal">
-            <Link to="#">Privacy</Link>
-            <Link to="#">Terms</Link>
-            <Link to="#">Sitemap</Link>
+
+        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-sm text-gray-500">
+            <p>&copy; {currentYear} EasyTrip, Inc.</p>
+            <span className="hidden sm:inline text-gray-300">·</span>
+            <div className="flex gap-4">
+              <Link to="#" className="hover:underline">Privacy</Link>
+              <Link to="#" className="hover:underline">Terms</Link>
+              <Link to="#" className="hover:underline">Sitemap</Link>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <FontAwesomeIcon icon={faGlobe} className="text-gray-400" />
+              <span>English (US)</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <span>$</span>
+              <span>USD</span>
+            </div>
+            <div className="flex gap-4 text-gray-400">
+              <FontAwesomeIcon icon={faHeart} className="text-red-500 animate-pulse" />
+            </div>
           </div>
         </div>
       </div>
-
-      <style>{`
-        footer {
-          background-color: var(--bg-light);
-          padding: 0;
-          margin-top: auto;
-          width: 100%;
-          font-size: 0.8rem;
-        }
-        
-        .footer-wrapper {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 1rem;
-        }
-
-        .footer-content {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 1rem;
-          padding-bottom: 0.75rem;
-          border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .footer-section h4 {
-          margin-bottom: 0.5rem;
-          font-size: 0.9rem;
-          color: #333;
-        }
-        
-        .footer-links-row {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.75rem;
-        }
-        
-        .footer-links-row a {
-          color: #666;
-          text-decoration: none;
-          transition: color 0.2s;
-          font-size: 0.8rem;
-        }
-        
-        .footer-links-row a:hover {
-          color: var(--primary-color);
-        }
-        
-        .contact-row {
-          display: flex;
-          flex-direction: column;
-          gap: 0.3rem;
-        }
-        
-        .contact-row span {
-          display: flex;
-          align-items: center;
-          gap: 0.3rem;
-          font-size: 0.8rem;
-          color: #666;
-        }
-        
-        .footer-bottom {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding-top: 0.75rem;
-          font-size: 0.8rem;
-        }
-        
-        .heart-icon {
-          color: #ff385c;
-          margin-left: 5px;
-          font-size: 0.7rem;
-        }
-        
-        .legal {
-          gap: 1rem;
-        }
-        
-        @media (max-width: 992px) {
-          .footer-content {
-            grid-template-columns: repeat(4, 1fr);
-          }
-          
-          .footer-section {
-            margin-bottom: 0;
-          }
-        }
-        
-        @media (max-width: 768px) {
-          .footer-content {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem 1rem;
-          }
-        }
-        
-        @media (max-width: 576px) {
-          .footer-wrapper {
-            padding: 0.75rem;
-          }
-          
-          .footer-content {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
-          }
-          
-          .footer-bottom {
-            flex-direction: column;
-            gap: 0.5rem;
-            align-items: flex-start;
-          }
-          
-          .legal {
-            justify-content: flex-start;
-          }
-        }
-      `}</style>
     </footer>
   );
 };

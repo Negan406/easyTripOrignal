@@ -172,380 +172,183 @@ const AccountSettings = () => {
   };
 
   return (
-    <>
+    <div className="flex min-h-screen bg-gray-50/50">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      <main className="account-container">
-        <h1>Account Settings</h1>
 
-        {message.text && (
-          <div className={`message ${message.type}`}>
-            {message.text}
-            <button className="close-message" onClick={() => setMessage({ type: '', text: '' })}>×</button>
-          </div>
-        )}
-
-        <div className="account-content">
-          <div className="account-menu">
-            <button
-              onClick={() => setActiveSection('profile')}
-              className={`account-menu-item ${activeSection === 'profile' ? 'active' : ''}`}
-            >
-              <FontAwesomeIcon icon={faUser} /> Personal Information
-            </button>
-            <button
-              onClick={() => setActiveSection('security')}
-              className={`account-menu-item ${activeSection === 'security' ? 'active' : ''}`}
-            >
-              <FontAwesomeIcon icon={faLock} /> Password & Security
-            </button>
-            <button
-              onClick={() => setActiveSection('payments')}
-              className={`account-menu-item ${activeSection === 'payments' ? 'active' : ''}`}
-            >
-              <FontAwesomeIcon icon={faCreditCard} /> Payments & Payouts
-            </button>
-            <button
-              onClick={() => setActiveSection('notifications')}
-              className={`account-menu-item ${activeSection === 'notifications' ? 'active' : ''}`}
-            >
-              <FontAwesomeIcon icon={faBell} /> Notifications
-            </button>
-            <button
-              onClick={() => setActiveSection('privacy')}
-              className={`account-menu-item ${activeSection === 'privacy' ? 'active' : ''}`}
-            >
-              <FontAwesomeIcon icon={faShieldAlt} /> Privacy & Sharing
-            </button>
+      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 max-w-7xl mx-auto w-full transition-all duration-300">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="mb-10">
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Account Settings</h1>
+            <p className="text-gray-500 font-medium mt-1">Manage your profile, security, and preferences</p>
           </div>
 
-          <div className="account-details">
-            {activeSection === 'profile' && (
-              <div className="profile-section">
-                <div className="profile-header">
-                  <div className="profile-picture-container">
-                    <div className="profile-picture">
-                      {previewUrl ? (
-                        <img src={previewUrl} alt="Profile" />
-                      ) : (
-                        <FontAwesomeIcon icon={faUser} className="default-avatar" />
-                      )}
-                      <label className="photo-upload-label" htmlFor="photo-upload">
-                        <FontAwesomeIcon icon={faCamera} />
+          {message.text && (
+            <div className={`mb-8 p-4 rounded-2xl flex items-center justify-between animate-in slide-in-from-top-4 duration-300 ${message.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'
+              }`}>
+              <div className="flex items-center gap-3 font-semibold">
+                <FontAwesomeIcon icon={message.type === 'success' ? faShieldAlt : faBell} className="opacity-50" />
+                {message.text}
+              </div>
+              <button onClick={() => setMessage({ type: '', text: '' })} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors">×</button>
+            </div>
+          )}
+
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Settings Menu */}
+            <div className="w-full lg:w-72 shrink-0">
+              <div className="bg-white rounded-[32px] p-3 border border-gray-100 shadow-sm space-y-1">
+                {[
+                  { id: 'profile', icon: faUser, label: 'Personal Info' },
+                  { id: 'security', icon: faLock, label: 'Security' },
+                  { id: 'payments', icon: faCreditCard, label: 'Payments' },
+                  { id: 'notifications', icon: faBell, label: 'Notifications' },
+                  { id: 'privacy', icon: faShieldAlt, label: 'Privacy' }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveSection(item.id)}
+                    className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-sm transition-all duration-300 ${activeSection === item.id
+                      ? 'bg-gray-900 text-white shadow-xl shadow-gray-200'
+                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                      }`}
+                  >
+                    <FontAwesomeIcon icon={item.icon} className={`text-base ${activeSection === item.id ? 'text-blue-400' : 'opacity-50'}`} />
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="flex-1">
+              <div className="bg-white rounded-[40px] p-8 md:p-12 border border-gray-100 shadow-sm min-h-[600px] animate-in fade-in zoom-in-95 duration-500">
+                {activeSection === 'profile' && (
+                  <div className="space-y-12">
+                    <div className="flex flex-col md:flex-row items-center gap-10">
+                      <div className="relative group">
+                        <div className="w-32 h-32 rounded-[40px] bg-gray-50 border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
+                          {previewUrl ? (
+                            <img src={previewUrl} alt="Profile" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                          ) : (
+                            <FontAwesomeIcon icon={faUser} className="text-4xl text-gray-200" />
+                          )}
+                        </div>
+                        <label htmlFor="photo-upload" className="absolute -bottom-2 -right-2 w-10 h-10 bg-blue-600 text-white rounded-2xl flex items-center justify-center cursor-pointer shadow-xl hover:bg-blue-700 hover:scale-110 active:scale-95 transition-all">
+                          <FontAwesomeIcon icon={faCamera} className="text-sm" />
+                          <input type="file" id="photo-upload" accept="image/*" onChange={handlePhotoChange} className="hidden" />
+                        </label>
+                      </div>
+                      <div className="text-center md:text-left">
+                        <h2 className="text-2xl font-black text-gray-900 tracking-tight">Personal Information</h2>
+                        <p className="text-gray-500 font-medium mt-1">Update your details to keep your account current.</p>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
                         <input
-                          type="file"
-                          id="photo-upload"
-                          accept="image/*"
-                          onChange={handlePhotoChange}
-                          style={{ display: 'none' }}
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-900 placeholder:text-gray-300"
+                          placeholder="Your full name"
                         />
-                      </label>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+                        <input
+                          type="email"
+                          value={formData.email}
+                          disabled
+                          className="w-full px-6 py-4 bg-gray-100 border border-transparent rounded-2xl font-bold text-gray-400 cursor-not-allowed opacity-60"
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Phone Number</label>
+                        <input
+                          type="tel"
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-900 placeholder:text-gray-300"
+                          placeholder="+1 (555) 000-0000"
+                        />
+                      </div>
+                      <div className="md:col-span-2 pt-6">
+                        <button type="submit" className="px-10 py-5 bg-gray-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-gray-800 transition-all active:scale-95 shadow-2xl shadow-gray-200">
+                          Save Profile Changes
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+
+                {activeSection === 'security' && (
+                  <div className="space-y-12">
+                    <div>
+                      <h2 className="text-2xl font-black text-gray-900 tracking-tight">Password & Security</h2>
+                      <p className="text-gray-500 font-medium mt-1">Manage your credentials and protect your account.</p>
+                    </div>
+
+                    <form onSubmit={handlePasswordChange} className="max-w-2xl space-y-8">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Current Password</label>
+                        <input
+                          type="password"
+                          value={formData.current_password}
+                          onChange={(e) => setFormData({ ...formData, current_password: e.target.value })}
+                          className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-900"
+                          placeholder="••••••••"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">New Password</label>
+                          <input
+                            type="password"
+                            value={formData.new_password}
+                            onChange={(e) => setFormData({ ...formData, new_password: e.target.value })}
+                            className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-900"
+                            placeholder="Min. 8 characters"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Confirm Password</label>
+                          <input
+                            type="password"
+                            value={formData.confirm_password}
+                            onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
+                            className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-900"
+                            placeholder="Repeat new password"
+                          />
+                        </div>
+                      </div>
+                      <div className="pt-6">
+                        <button type="submit" className="px-10 py-5 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95 shadow-2xl shadow-blue-100">
+                          Update Password
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+
+                {['payments', 'notifications', 'privacy'].includes(activeSection) && (
+                  <div className="flex flex-col items-center justify-center py-20 text-center space-y-6">
+                    <div className="w-24 h-24 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-3xl">
+                      <FontAwesomeIcon icon={activeSection === 'payments' ? faCreditCard : activeSection === 'notifications' ? faBell : faShieldAlt} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">Feature Coming Soon</h3>
+                      <p className="text-gray-500 mt-2">We're working hard to bring this feature to EasyTrip. Stay tuned!</p>
                     </div>
                   </div>
-                  <div className="profile-info">
-                    <h2>Personal Information</h2>
-                    <p>Update your information and how it's shared with the EasyTrip community</p>
-                  </div>
-                </div>
-
-                <form onSubmit={handleSubmit} className="profile-form">
-                  <div className="form-group">
-                    <label htmlFor="name">Name</label>
-                    <input
-                      type="text"
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="Enter your name"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="email">Email</label>
-                    <input
-                      type="email"
-                      id="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="Enter your email"
-                      disabled
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="phone">Phone</label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="Enter your phone number"
-                    />
-                  </div>
-                  <button type="submit" className="save-button">Save Changes</button>
-                </form>
+                )}
               </div>
-            )}
-
-            {activeSection === 'security' && (
-              <div className="security-section">
-                <div className="section-header">
-                  <h2>Password & Security</h2>
-                  <p>Manage your password and security preferences</p>
-                </div>
-                <form onSubmit={handlePasswordChange} className="password-form">
-                  <div className="form-group">
-                    <label htmlFor="current_password">Current Password</label>
-                    <input
-                      type="password"
-                      id="current_password"
-                      value={formData.current_password}
-                      onChange={(e) => setFormData({ ...formData, current_password: e.target.value })}
-                      placeholder="Enter your current password"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="new_password">New Password</label>
-                    <input
-                      type="password"
-                      id="new_password"
-                      value={formData.new_password}
-                      onChange={(e) => setFormData({ ...formData, new_password: e.target.value })}
-                      placeholder="Enter your new password"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="confirm_password">Confirm New Password</label>
-                    <input
-                      type="password"
-                      id="confirm_password"
-                      value={formData.confirm_password}
-                      onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
-                      placeholder="Confirm your new password"
-                    />
-                  </div>
-                  <button type="submit" className="save-button">Change Password</button>
-                </form>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </main>
-
-      <style>{`
-        .account-container {
-          padding: 2rem;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .message {
-          padding: 1rem;
-          margin-bottom: 1rem;
-          border-radius: 8px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .message.success {
-          background-color: #d4edda;
-          color: #155724;
-          border: 1px solid #c3e6cb;
-        }
-
-        .message.error {
-          background-color: #f8d7da;
-          color: #721c24;
-          border: 1px solid #f5c6cb;
-        }
-
-        .close-message {
-          background: none;
-          border: none;
-          color: inherit;
-          font-size: 1.2rem;
-          cursor: pointer;
-        }
-
-        .account-content {
-          display: grid;
-          grid-template-columns: 250px 1fr;
-          gap: 2rem;
-          margin-top: 2rem;
-        }
-
-        .account-menu {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .account-menu-item {
-          display: flex;
-          align-items: center;
-          gap: 0.8rem;
-          padding: 1rem;
-          border: none;
-          background: none;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          color: #484848;
-          text-align: left;
-          font-size: 1rem;
-        }
-
-        .account-menu-item:hover {
-          background: #f7f7f7;
-        }
-
-        .account-menu-item.active {
-          background: #222;
-          color: white;
-        }
-
-        .profile-section, .security-section {
-          background: white;
-          padding: 2rem;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .profile-header {
-          display: flex;
-          gap: 2rem;
-          margin-bottom: 2rem;
-          align-items: flex-start;
-        }
-
-        .profile-picture-container {
-          position: relative;
-        }
-
-        .profile-picture {
-          width: 120px;
-          height: 120px;
-          border-radius: 50%;
-          overflow: hidden;
-          position: relative;
-          background: #f5f5f5;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .profile-picture img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        .default-avatar {
-          font-size: 3rem;
-          color: #ccc;
-        }
-
-        .photo-upload-label {
-          position: absolute;
-          bottom: 0;
-          right: 0;
-          background: #222;
-          color: white;
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .photo-upload-label:hover {
-          background: #000;
-          transform: scale(1.1);
-        }
-
-        .profile-info {
-          flex: 1;
-        }
-
-        .profile-info h2 {
-          margin: 0 0 0.5rem 0;
-          color: #222;
-        }
-
-        .profile-info p {
-          color: #666;
-          margin: 0;
-        }
-
-        .form-group {
-          margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-          display: block;
-          margin-bottom: 0.5rem;
-          color: #484848;
-          font-weight: 500;
-        }
-
-        .form-group input {
-          width: 100%;
-          padding: 0.8rem;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          font-size: 1rem;
-          transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus {
-          border-color: #222;
-          outline: none;
-        }
-
-        .form-group input:disabled {
-          background: #f5f5f5;
-          cursor: not-allowed;
-        }
-
-        .save-button {
-          background: #222;
-          color: white;
-          border: none;
-          padding: 1rem 2rem;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 1rem;
-          font-weight: 500;
-          transition: all 0.3s ease;
-        }
-
-        .save-button:hover {
-          background: #000;
-          transform: translateY(-2px);
-        }
-
-        @media (max-width: 768px) {
-          .account-content {
-            grid-template-columns: 1fr;
-          }
-
-          .account-menu {
-            margin-bottom: 1rem;
-          }
-
-          .profile-header {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-          }
-
-          .profile-picture {
-            margin-bottom: 1rem;
-          }
-        }
-      `}</style>
-    </>
+    </div>
   );
 };
 

@@ -1,22 +1,22 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGlobe, faBars, faUserCircle, faSearch, faHome, faSuitcase, faHeart, faUser, faSignInAlt, faUserPlus, faUsers, faHouseUser, faChartLine, faClipboardList } from "@fortawesome/free-solid-svg-icons";
+import { faGlobe, faBars, faUserCircle, faSearch, faHome, faSuitcase, faHeart, faUser, faSignInAlt, faUserPlus, faUsers, faHouseUser, faChartLine, faClipboardList, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import PropTypes from 'prop-types';
 import { useState, useRef, useEffect } from 'react';
-import s from  "../components/unnamed.png";
+import logoImg from "../components/unnamed.png";
 
 const Header = ({ onSearch }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Check login state
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const [searchTerm, setSearchTerm] = useState('');
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState('All');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const dropdownRef = useRef(null);
-  const role = localStorage.getItem('role') || 'user';
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const dropdownRef = useRef(null);
+  const role = localStorage.getItem('role') || 'user';
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -29,18 +29,7 @@ const Header = ({ onSearch }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const countries = [
-    'All',
-    'United States',
-    'Canada',
-    'United Kingdom',
-    'France',
-    'Germany',
-    'Spain',
-    'Italy',
-    'Japan',
-    // Add more countries as needed
-  ];
+  const countries = ['All', 'United States', 'Canada', 'United Kingdom', 'France', 'Germany', 'Spain', 'Italy', 'Japan'];
 
   const handleBecomeHostClick = () => {
     navigate(location.pathname === "/become-host" ? "/" : "/become-host");
@@ -49,7 +38,7 @@ const Header = ({ onSearch }) => {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Add 1 second delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('role');
       navigate('/login');
@@ -58,7 +47,8 @@ const Header = ({ onSearch }) => {
     }
   };
 
-  const handleSearch = () => {
+  const handleSearch = (e) => {
+    if (e) e.preventDefault();
     onSearch(searchTerm);
     setShowMobileSearch(false);
   };
@@ -66,135 +56,141 @@ const Header = ({ onSearch }) => {
   const handleCountrySelect = (country) => {
     setSelectedCountry(country);
     setShowCountryDropdown(false);
-    // You can add your filtering logic here
-  };
-
-  const toggleMobileSearch = () => {
-    setShowMobileSearch(!showMobileSearch);
   };
 
   const renderAdminLinks = () => {
     if (role === 'admin') {
       return (
-        <>
-          <Link to="/dashboard" className="dropdown-item admin-item">
-            <FontAwesomeIcon icon={faChartLine} /> Dashboard
+        <div className="py-2 bg-gray-50 border-b border-gray-100">
+          <Link to="/dashboard" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
+            <FontAwesomeIcon icon={faChartLine} className="w-4" /> Dashboard
           </Link>
-          <Link to="/pending-listings" className="dropdown-item admin-item">
-            <FontAwesomeIcon icon={faClipboardList} /> Pending Listings
+          <Link to="/pending-listings" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
+            <FontAwesomeIcon icon={faClipboardList} className="w-4" /> Pending Listings
           </Link>
-          <Link to="/manage-users" className="dropdown-item admin-item">
-            <FontAwesomeIcon icon={faUsers} /> Manage Users
+          <Link to="/manage-users" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
+            <FontAwesomeIcon icon={faUsers} className="w-4" /> Manage Users
           </Link>
-          <div className="dropdown-divider"></div>
-        </>
+        </div>
       );
     }
     return null;
   };
 
   return (
-    <header>
-      <nav>
-        <div className="logo-container">
-          <div className="logo" onClick={() => navigate("/")}>
-              <img src={s} alt="EasyTrip" className="lg" width={40}/>
-              <strong className="esy">EasyTrip</strong>
-          </div>
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm transition-all duration-300">
+      <nav className="max-w-[1440px] mx-auto px-4 md:px-10 lg:px-20 h-20 flex items-center justify-between gap-4">
+        {/* Logo */}
+        <div className="flex-shrink-0 cursor-pointer flex items-center gap-2" onClick={() => navigate("/")}>
+          <img src={logoImg} alt="EasyTrip" className="w-8 h-8 md:w-10 md:h-10 object-contain" />
+          <span className="hidden sm:inline text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent tracking-tight">EasyTrip</span>
         </div>
-        
-        <div style={{width: '60%',height: '40px'}} className="search-bar">
-          <input style={{borderRadius: '10px',padding: '10px',width: '100%',border: 'none',outline: 'none'}}
+
+        {/* Desktop Search Bar */}
+        <form onSubmit={handleSearch} className="hidden md:flex flex-grow max-w-xl items-center bg-white border border-gray-300 rounded-full py-1.5 px-2 shadow-sm hover:shadow-md transition-shadow duration-200 group">
+          <input
             type="text"
-            placeholder="Search by location"
+            placeholder="Where would you like to go?"
+            className="flex-grow bg-transparent border-none outline-none px-4 text-sm font-medium text-gray-700 placeholder-gray-500 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button onClick={handleSearch}>
-            <FontAwesomeIcon icon={faSearch} />
+          <button type="submit" className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors duration-200 shadow-sm">
+            <FontAwesomeIcon icon={faSearch} className="text-xs" />
           </button>
-        </div>
-        
-        {/* Mobile search button */}
-        <div className="mobile-search-btn">
-          <button onClick={toggleMobileSearch}>
-            <FontAwesomeIcon icon={faSearch} />
-          </button>
-        </div>
-        
-        <div className="nav-right">
-          <button className="become-host-button" onClick={handleBecomeHostClick}>
+        </form>
+
+        {/* Mobile Search Icon */}
+        <button onClick={() => setShowMobileSearch(true)} className="md:hidden flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 bg-white text-gray-700 shadow-sm">
+          <FontAwesomeIcon icon={faSearch} />
+        </button>
+
+        {/* Nav Right */}
+        <div className="flex items-center gap-2 md:gap-4 lg:gap-6">
+          <button
+            className="hidden lg:block text-sm font-semibold py-2.5 px-4 rounded-full text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+            onClick={handleBecomeHostClick}
+          >
             {location.pathname === "/become-host" ? "Switch to traveling" : "Become a host"}
           </button>
-          <div className="country-selector">
-            <button onClick={() => setShowCountryDropdown(!showCountryDropdown)}>
-              <FontAwesomeIcon icon={faGlobe} />
+
+          {/* Country Selector */}
+          <div className="hidden sm:block relative">
+            <button
+              onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+              className="w-10 h-10 flex items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+            >
+              <FontAwesomeIcon icon={faGlobe} className="text-lg" />
             </button>
             {showCountryDropdown && (
-              <div className="country-dropdown">
+              <div className="absolute top-12 right-0 w-56 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-[60] animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="px-4 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Select Country</div>
                 {countries.map((country) => (
-                  <div
+                  <button
                     key={country}
-                    className={`country-option ${selectedCountry === country ? 'selected' : ''}`}
+                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${selectedCountry === country ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-700 hover:bg-gray-50'}`}
                     onClick={() => handleCountrySelect(country)}
                   >
                     {country}
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
           </div>
-          <div className="profile-menu-container" ref={dropdownRef}>
-            <div className="profile-menu" onClick={() => setShowProfileMenu(!showProfileMenu)}>
-              <FontAwesomeIcon icon={faBars} />
-              <FontAwesomeIcon icon={faUserCircle} />
-              {role === 'admin' && <span className="admin-badge">Admin</span>}
-            </div>
+
+          {/* Profile Menu */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="flex items-center gap-3 px-2 py-1.5 md:px-3 md:py-2 bg-white border border-gray-300 rounded-full hover:shadow-md transition-all duration-200"
+            >
+              <FontAwesomeIcon icon={faBars} className="text-sm text-gray-600" />
+              <div className="relative">
+                <FontAwesomeIcon icon={faUserCircle} className="text-2xl md:text-3xl text-gray-500" />
+                {role === 'admin' && <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>}
+              </div>
+            </button>
+
             {showProfileMenu && (
-              <div className="profile-dropdown">
-                <Link to="/" className="dropdown-item">
-                  <FontAwesomeIcon icon={faHome} /> Home
+              <div className="absolute top-14 right-0 w-64 md:w-72 bg-white border border-gray-100 rounded-2xl shadow-2xl py-2 z-[60] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 origin-top-right">
+                <div className="block sm:hidden border-b border-gray-100">
+                  <button onClick={handleBecomeHostClick} className="w-full text-left px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50">
+                    {location.pathname === "/become-host" ? "Switch to traveling" : "Become a host"}
+                  </button>
+                </div>
+
+                <Link to="/" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
+                  <FontAwesomeIcon icon={faHome} className="w-4 text-gray-400" /> Home
                 </Link>
+
                 {isLoggedIn ? (
                   <>
                     {renderAdminLinks()}
-                    <Link to="/trips" className="dropdown-item">
-                      <FontAwesomeIcon icon={faSuitcase} /> Trips
+                    <Link to="/trips" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
+                      <FontAwesomeIcon icon={faSuitcase} className="w-4 text-gray-400" /> Trips
                     </Link>
-                    <Link to="/wishlist" className="dropdown-item">
-                      <FontAwesomeIcon icon={faHeart} /> Wishlists
+                    <Link to="/wishlist" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
+                      <FontAwesomeIcon icon={faHeart} className="w-4 text-gray-400" /> Wishlist
                     </Link>
-                    <div className="dropdown-divider"></div>
-                    <Link to="/become-host" className="dropdown-item">
-                      <FontAwesomeIcon icon={faHouseUser} /> Become a Host
+                    <Link to="/account-settings" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
+                      <FontAwesomeIcon icon={faUser} className="w-4 text-gray-400" /> Account
                     </Link>
-                    <Link to="/account-settings" className="dropdown-item">
-                      <FontAwesomeIcon icon={faUser} /> Account
-                    </Link>
-                    <button 
-                      onClick={handleLogout} 
-                      className="dropdown-item logout-item"
+                    <div className="h-px bg-gray-100 my-1"></div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
                       disabled={isLoggingOut}
                     >
-                      {isLoggingOut ? (
-                        "Loading..."
-                      ) : (
-                        <>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-box-arrow-in-left" viewBox="0 0 16 16">
-                            <path fillRule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0z"/>
-                            <path fillRule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
-                          </svg> Logout
-                        </>
-                      )}
+                      <FontAwesomeIcon icon={faSignInAlt} className="rotate-180" /> {isLoggingOut ? "Logging out..." : "Logout"}
                     </button>
                   </>
                 ) : (
                   <>
-                    <Link to="/login" className="dropdown-item">
-                      <FontAwesomeIcon icon={faSignInAlt} /> Login
+                    <Link to="/login" className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-gray-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
+                      <FontAwesomeIcon icon={faSignInAlt} className="w-4 text-blue-600" /> Login
                     </Link>
-                    <Link to="/register" className="dropdown-item">
-                      <FontAwesomeIcon icon={faUserPlus} /> Register
+                    <Link to="/register" className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-gray-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
+                      <FontAwesomeIcon icon={faUserPlus} className="w-4 text-blue-600" /> Register
                     </Link>
                   </>
                 )}
@@ -204,279 +200,56 @@ const Header = ({ onSearch }) => {
         </div>
       </nav>
 
-      {/* Mobile search overlay */}
+      {/* Mobile Search Overlay */}
       {showMobileSearch && (
-        <div className="mobile-search-overlay">
-          <div className="mobile-search-container">
-            <input
-              type="text"
-              placeholder="Search by location"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              autoFocus
-            />
-            <div className="mobile-search-buttons">
-              <button className="cancel-btn" onClick={toggleMobileSearch}>Cancel</button>
-              <button className="search-btn" onClick={handleSearch}>Search</button>
+        <div className="fixed inset-0 z-[100] bg-white flex flex-col pt-4 px-4 h-screen animate-in fade-in duration-300">
+          <div className="flex items-center gap-2 mb-6">
+            <button
+              onClick={() => setShowMobileSearch(false)}
+              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <FontAwesomeIcon icon={faBars} className="rotate-90" />
+            </button>
+            <div className="flex-grow relative">
+              <input
+                type="text"
+                placeholder="Where to?"
+                className="w-full pl-10 pr-4 py-3 bg-gray-100 border-none rounded-2xl outline-none text-gray-800 font-medium"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                autoFocus
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              />
+              <FontAwesomeIcon icon={faSearch} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             </div>
+          </div>
+
+          <div className="flex-grow overflow-y-auto px-2">
+            <h3 className="text-lg font-bold text-gray-800 mb-4 px-2">Popular destinations</h3>
+            <div className="grid grid-cols-2 gap-3 pb-8">
+              {['Paris', 'Bali', 'London', 'New York', 'Tokyo', 'Rome'].map(city => (
+                <button
+                  key={city}
+                  onClick={() => {
+                    setSearchTerm(city);
+                    onSearch(city);
+                    setShowMobileSearch(false);
+                  }}
+                  className="flex flex-col gap-2 p-3 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors text-left"
+                >
+                  <div className="w-full aspect-square bg-gray-200 rounded-xl"></div>
+                  <span className="text-sm font-semibold text-gray-700">{city}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-auto py-4 border-t border-gray-100 flex justify-between gap-4">
+            <button className="flex-grow py-3 text-gray-600 font-semibold" onClick={() => setShowMobileSearch(false)}>Cancel</button>
+            <button className="flex-grow py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200" onClick={handleSearch}>Search</button>
           </div>
         </div>
       )}
-
-      <style>{`
-        .mobile-search-btn {
-          display: none;
-        }
-        
-        .mobile-search-overlay {
-          display: none;
-        }
-        
-        .logo-container {
-          display: flex;
-          align-items: center;
-        }
-        
-        .country-selector {
-          position: relative;
-        }
-        
-        .country-dropdown {
-          position: absolute;
-          top: 100%;
-          right: 0;
-          background: white;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-          z-index: 1000;
-          min-width: 200px;
-        }
-
-        .country-option {
-          padding: 10px 15px;
-          cursor: pointer;
-          transition: background-color 0.2s;
-        }
-
-        .country-option:hover {
-          background-color: #f5f5f5;
-        }
-
-        .country-option.selected {
-          background-color: #e6e6e6;
-        }
-
-        .profile-menu-container {
-          position: relative;
-        }
-
-        .profile-dropdown {
-          position: absolute;
-          top: 100%;
-          right: 0;
-          background: white;
-          border-radius: 8px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-          min-width: 200px;
-          z-index: 1000;
-          padding: 8px 0;
-        }
-
-        .dropdown-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 12px 16px;
-          color: #333;
-          text-decoration: none;
-          transition: background-color 0.2s;
-          cursor: pointer;
-          border: none;
-          background: none;
-          width: 100%;
-          text-align: left;
-        }
-
-        .dropdown-item:hover {
-          background-color: #f5f5f5;
-        }
-
-        .dropdown-divider {
-          height: 1px;
-          background-color: #eee;
-          margin: 8px 0;
-        }
-
-        .logout-item {
-          color: #ff0000;
-        }
-
-        .logout-item:disabled {
-          opacity: 0.7;
-          cursor: wait;
-          background-color: #ffecec;
-        }
-
-        .admin-badge {
-          background: #dc3545;
-          color: white;
-          padding: 2px 6px;
-          border-radius: 12px;
-          font-size: 0.7rem;
-          margin-left: 5px;
-          font-weight: bold;
-        }
-
-        .admin-item {
-          background-color: #f8f9fa;
-          color: #dc3545;
-          font-weight: 500;
-        }
-
-        .admin-item:hover {
-          background-color: #dc3545;
-          color: white;
-        }
-
-        .profile-menu {
-          display: flex;
-          align-items: center;
-        }
-        
-        /* Tablet Styles */
-        @media screen and (max-width: 991px) {
-          nav {
-            padding: 1rem 2rem;
-          }
-          
-          .logo {
-            right: 0;
-            position: relative;
-          }
-        }
-        
-        /* Mobile Styles */
-        @media screen and (max-width: 768px) {
-          nav {
-            grid-template-columns: 1fr auto auto;
-            display: grid;
-            align-items: center;
-            padding: 1rem;
-          }
-          
-          .logo-container {
-            grid-column: 1;
-          }
-          
-          .mobile-search-btn {
-            display: block;
-            grid-column: 2;
-            margin-right: 15px;
-          }
-          
-          .mobile-search-btn button {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            color: #333;
-            cursor: pointer;
-          }
-          
-          .nav-right {
-            grid-column: 3;
-            justify-self: end;
-          }
-          
-          .search-bar {
-            display: none !important;
-          }
-          
-          .become-host-button {
-            display: none;
-          }
-          
-          .country-selector {
-            display: none;
-          }
-          
-          .mobile-search-overlay {
-            display: flex;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            z-index: 1000;
-            justify-content: center;
-            padding-top: 80px;
-          }
-          
-          .mobile-search-container {
-            width: 90%;
-            max-width: 500px;
-          }
-          
-          .mobile-search-container input {
-            width: 100%;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-            margin-bottom: 15px;
-            outline: none;
-          }
-          
-          .mobile-search-buttons {
-            display: flex;
-            justify-content: space-between;
-          }
-          
-          .mobile-search-buttons button {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 500;
-            cursor: pointer;
-          }
-          
-          .cancel-btn {
-            background-color: #f5f5f5;
-            color: #333;
-          }
-          
-          .search-btn {
-            background-color: var(--primary-color);
-            color: white;
-          }
-          
-          .logo .lg {
-            width: 35px;
-            height: 35px;
-          }
-          
-          .esy {
-            font-size: 1.2rem;
-            padding: 0.5rem;
-            right: 5px;
-          }
-        }
-        
-        /* Small mobile */
-        @media screen and (max-width: 480px) {
-          .logo .lg {
-            width: 30px;
-            height: 30px;
-          }
-          
-          .esy {
-            font-size: 1.1rem;
-            padding: 0.3rem;
-            right: 0;
-          }
-        }
-      `}</style>
     </header>
   );
 };

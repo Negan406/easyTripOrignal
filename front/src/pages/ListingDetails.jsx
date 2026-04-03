@@ -320,8 +320,41 @@ const ListingDetails = () => {
     };
   }, [id, listing]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white p-6 animate-in fade-in duration-700">
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <div className="relative w-24 h-24 mb-6">
+          <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
+          <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center text-blue-600">
+            <i className="fas fa-home text-2xl animate-bounce"></i>
+          </div>
+        </div>
+        <h3 className="text-xl font-bold text-gray-800 mb-2">Preparing your stay...</h3>
+        <p className="text-gray-500">Finding all the details for this property</p>
+      </div>
+    );
+  }
+
+  if (!listing) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6 text-center">
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4">
+          <i className="fas fa-exclamation-triangle text-2xl"></i>
+        </div>
+        <h3 className="text-xl font-bold text-gray-800 mb-2">Listing not found</h3>
+        <p className="text-gray-500 mb-6">The getaway you&apos;re looking for might have been moved or doesn&apos;t exist.</p>
+        <Link to="/" className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">
+          Return to homepage
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <div className="page-wrapper">
+    <div className="min-h-screen bg-white">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {notification && (
@@ -332,711 +365,198 @@ const ListingDetails = () => {
         />
       )}
 
-      <div className="content-area">
-        {loading ? (
-          <div className="loading-container">
-            <div className="spinner-wrapper">
-              <div className="custom-spinner">
-                <div className="spinner-ring"></div>
-                <div className="spinner-icon">
-                  <i className="fas fa-home"></i>
-                </div>
-              </div>
-              <h3 className="loading-title">Loading your perfect getaway...</h3>
-              <p className="loading-text">We&apos;re preparing all the details for this listing</p>
-              <div className="loading-progress">
-                <div className="progress-bar"></div>
-              </div>
-            </div>
+      <main className="max-w-[1280px] mx-auto px-4 md:px-10 lg:px-20 pt-8 pb-20">
+        {/* Gallery Section */}
+        <div className="mb-10">
+          <div className="relative aspect-[16/9] md:aspect-[21/9] w-full rounded-3xl overflow-hidden bg-gray-100 shadow-xl group mb-4">
+            <img
+              src={selectedPhoto || getImageUrl(listing.mainPhoto)}
+              alt={listing.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300"></div>
           </div>
-        ) : !listing ? (
-          <div className="not-found-container">
-            <div className="error-content">
-              <h2>Listing not found</h2>
-              <p>The listing you&apos;re looking for doesn&apos;t exist or has been removed.</p>
-              <Link to="/" className="back-link">Return to homepage</Link>
-            </div>
-          </div>
-        ) : (
-          <main className="listing-details-page">
-            <div className="listing-gallery">
-              <div className="main-image">
-                <img
-                  src={selectedPhoto || getImageUrl(listing.mainPhoto)}
-                  alt={listing.title}
-                  onError={(e) => {
-                    console.error('Image failed to load:', {
-                      original: listing.mainPhoto,
-                      attempted: e.target.src
-                    });
-                    e.target.onerror = null;
-                    e.target.src = 'https://via.placeholder.com/800x600?text=No+Image+Available';
-                  }}
-                />
-              </div>
-              {allPhotos.length > 1 && (
-                <div className="photo-grid">
-                  {allPhotos.map((photo, index) => (
-                    <div
-                      key={index}
-                      className={`photo-thumbnail ${selectedPhoto === photo ? 'selected' : ''}`}
-                      onClick={() => handlePhotoClick(photo)}
-                    >
-                      <img
-                        src={photo}
-                        alt={`${listing.title} - ${index + 1}`}
-                        onError={(e) => {
-                          console.error('Thumbnail failed to load:', {
-                            photo,
-                            index
-                          });
-                          e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/150x150?text=Image+Not+Found';
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            <div className="listing-content">
-              <div className="listing-info-container">
-                <div className="listing-header">
-                  <h1>{listing.title}</h1>
-                  <div className="listing-meta">
-                    <div className="location">
-                      <i className="fas fa-map-marker-alt"></i> {listing.location}
-                    </div>
-                    <div className="category">
-                      Category: {listing.category}
-                    </div>
-                    {listing.averageRating > 0 && (
-                      <div className="listing-rating">
-                        <i className="fas fa-star"></i> {listing.averageRating.toFixed(1)}
-                        <span className="review-count">
-                          ({listing.totalRatings} {listing.totalRatings === 1 ? 'review' : 'reviews'})
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+          {allPhotos.length > 1 && (
+            <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+              {allPhotos.map((photo, index) => (
+                <button
+                  key={index}
+                  className={`relative flex-shrink-0 w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden border-2 transition-all ${selectedPhoto === photo ? 'border-blue-600 scale-95' : 'border-transparent hover:border-gray-300'}`}
+                  onClick={() => handlePhotoClick(photo)}
+                >
+                  <img src={photo} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
-                {listing.host && (
-                  <div className="host-info">
-                    <div className="host-photo-container">
-                      <img
-                        src={getImageUrl(listing.host.profile_photo)}
-                        alt={listing.host.name}
-                        className="host-avatar"
-                        onError={(e) => {
-                          console.error('Host photo failed to load:', {
-                            original: listing.host.profile_photo,
-                            attempted: e.target.src
-                          });
-                          e.target.src = 'https://via.placeholder.com/150x150?text=Host';
-                        }}
-                      />
-                    </div>
-                    <div className="host-details">
-                      <h3>Hosted by {listing.host.name}</h3>
-                      {listing.host.bio && <p>{listing.host.bio}</p>}
-                      {listing.host.phone && (
-                        <p className="host-contact">
-                          <i className="fas fa-phone"></i> {listing.host.phone}
-                        </p>
-                      )}
-                    </div>
+        <div className="flex flex-col lg:flex-row gap-12 xl:gap-20">
+          {/* Left Column: Info */}
+          <div className="flex-grow space-y-12">
+            <div className="border-b border-gray-100 pb-10">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{listing.title}</h1>
+              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 font-semibold">
+                <div className="flex items-center gap-2 text-gray-900">
+                  <i className="fas fa-map-marker-alt text-blue-600"></i>
+                  <span>{listing.location}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <i className="fas fa-tag"></i>
+                  <span>{listing.category}</span>
+                </div>
+                {listing.averageRating > 0 && (
+                  <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full">
+                    <i className="fas fa-star text-[10px]"></i>
+                    <span>{listing.averageRating.toFixed(1)} ({listing.totalRatings} Reviews)</span>
                   </div>
                 )}
+              </div>
+            </div>
 
-                <div className="listing-description">
-                  <p>{listing.description}</p>
-                </div>
-
-                <div className="reviews-section" ref={reviewsRef}>
-                  <Comments
-                    listingId={id.toString()}
-                    userName={localStorage.getItem('userName')}
-                    isLoggedIn={localStorage.getItem('isLoggedIn') === 'true'}
-                    highlightReviewForm={highlightReviewForm}
-                    initialRating={listing?.averageRating || 0}
-                    initialReviewCount={listing?.totalRatings || 0}
-                    key={`reviews-${id}`}
+            {listing.host && (
+              <div className="flex items-start gap-6 bg-gray-50/50 p-8 rounded-3xl border border-gray-100">
+                <div className="relative flex-shrink-0">
+                  <img
+                    src={getImageUrl(listing.host.profile_photo)}
+                    alt={listing.host.name}
+                    className="w-20 h-20 rounded-2xl object-cover border-4 border-white shadow-lg"
                   />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-[10px] border-2 border-white">
+                    <i className="fas fa-check"></i>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Hosted by {listing.host.name}</h3>
+                  {listing.host.bio && <p className="text-gray-600 leading-relaxed max-w-2xl">{listing.host.bio}</p>}
+                  {listing.host.phone && (
+                    <div className="mt-4 flex items-center gap-2 text-sm text-blue-600 font-bold">
+                      <i className="fas fa-phone"></i>
+                      <span>{listing.host.phone}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">About this place</h3>
+              <p className="text-gray-600 leading-relaxed text-lg whitespace-pre-line">{listing.description}</p>
+            </div>
+
+            <div className="pt-8 border-t border-gray-100">
+              <Comments
+                listingId={id.toString()}
+                userName={localStorage.getItem('userName')}
+                isLoggedIn={localStorage.getItem('isLoggedIn') === 'true'}
+                highlightReviewForm={highlightReviewForm}
+                initialRating={listing?.averageRating || 0}
+                initialReviewCount={listing?.totalRatings || 0}
+                key={`reviews-${id}`}
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Sticky Booking Card */}
+          <div className="lg:w-[400px] flex-shrink-0">
+            <div className="sticky top-28 bg-white border border-gray-200 rounded-3xl p-8 shadow-2xl shadow-gray-100/50">
+              <div className="flex items-baseline justify-between mb-8">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-bold text-gray-900">${listing.price}</span>
+                  <span className="text-gray-500 font-semibold">/ night</span>
                 </div>
               </div>
 
-              <div className="booking-card">
-                <div className="booking-price">
-                  <h2>${listing.price} <span className="per-night">night</span></h2>
-                </div>
-                <form className="booking-form" onSubmit={handleBookNow}>
-                  <div className="date-inputs">
+              <form onSubmit={handleBookNow} className="space-y-6">
+                <div className="grid grid-cols-2 gap-px bg-gray-300 border border-gray-300 rounded-2xl overflow-hidden">
+                  <div className="bg-white p-4">
+                    <label className="block text-[10px] font-bold text-gray-900 uppercase mb-1">Check-in</label>
                     <input
                       type="date"
-                      placeholder="Check-in"
                       value={startDate}
                       onChange={handleStartDateChange}
                       required
                       min={new Date().toISOString().split('T')[0]}
+                      className="w-full text-sm font-semibold outline-none bg-transparent"
                     />
+                  </div>
+                  <div className="bg-white p-4 border-l border-gray-300">
+                    <label className="block text-[10px] font-bold text-gray-900 uppercase mb-1">Check-out</label>
                     <input
                       type="date"
-                      placeholder="Check-out"
                       value={endDate}
                       onChange={handleEndDateChange}
                       required
                       min={startDate || new Date().toISOString().split('T')[0]}
+                      className="w-full text-sm font-semibold outline-none bg-transparent"
                     />
                   </div>
-                  <input type="number" min="1" max="16" placeholder="Guests" required />
+                </div>
 
-                  {!areSelectedDatesAvailable && unavailableDateRanges.length > 0 && (
-                    <div className="date-error">
-                      <p>Selected dates are not available.</p>
-                      <p>Unavailable dates: {formatUnavailableDates()}</p>
-                    </div>
-                  )}
+                <div className="p-4 bg-white border border-gray-300 rounded-2xl">
+                  <label className="block text-[10px] font-bold text-gray-900 uppercase mb-1">Guests</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="16"
+                    defaultValue="1"
+                    placeholder="Number of guests"
+                    required
+                    className="w-full text-sm font-semibold outline-none bg-transparent"
+                  />
+                </div>
 
-                  <button
-                    type="submit"
-                    className="book-button"
-                    disabled={isAlreadyBooked || checkingAvailability || !areSelectedDatesAvailable}
-                  >
-                    {isAlreadyBooked
-                      ? 'Already Booked'
-                      : checkingAvailability
-                        ? 'Checking Availability...'
-                        : !areSelectedDatesAvailable
-                          ? 'Dates Not Available'
-                          : 'Book now'}
-                  </button>
-                </form>
+                {!areSelectedDatesAvailable && unavailableDateRanges.length > 0 && (
+                  <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-xs text-red-600 space-y-1">
+                    <p className="font-bold flex items-center gap-2">
+                      <i className="fas fa-calendar-times"></i>
+                      Dates Not Available
+                    </p>
+                    <p className="opacity-80">Unavailable: {formatUnavailableDates()}</p>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isAlreadyBooked || checkingAvailability || !areSelectedDatesAvailable}
+                  className={`w-full py-4 rounded-2xl text-lg font-bold shadow-xl transition-all active:scale-[0.98] ${isAlreadyBooked || !areSelectedDatesAvailable
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100'
+                    }`}
+                >
+                  {isAlreadyBooked
+                    ? 'Already Booked'
+                    : checkingAvailability
+                      ? 'Checking...'
+                      : !areSelectedDatesAvailable
+                        ? 'Dates Taken'
+                        : 'Book Your Stay'}
+                </button>
+              </form>
+
+              <div className="mt-6 flex items-center justify-center gap-4 text-xs text-gray-400 font-medium">
+                <div className="flex items-center gap-1">
+                  <i className="fas fa-shield-alt text-blue-500/50"></i>
+                  <span>Secure Payment</span>
+                </div>
+                <div className="w-1 h-1 bg-gray-200 rounded-full"></div>
+                <div className="flex items-center gap-1">
+                  <i className="fas fa-leaf text-green-500/50"></i>
+                  <span>Eco-Friendly</span>
+                </div>
               </div>
             </div>
-          </main>
-        )}
-      </div>
 
-      <footer className="footer">
-        <div className="footer-content">
-          <p>&copy; {new Date().getFullYear()} EasyTrip. All rights reserved.</p>
+            <div className="mt-8 p-6 bg-blue-50/50 border border-blue-100 rounded-3xl flex gap-4">
+              <i className="fas fa-info-circle text-blue-500 mt-1"></i>
+              <p className="text-xs text-blue-800 leading-relaxed font-medium">
+                To protect your payment, never transfer money or communicate outside of the EasyTrip website or app.
+              </p>
+            </div>
+          </div>
         </div>
-      </footer>
-
-      <style>{`
-        .page-wrapper {
-          display: flex;
-          flex-direction: column;
-          min-height: 100vh;
-          position: relative;
-        }
-
-        .content-area {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          width: 100%;
-        }
-
-        .loading-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 70vh;
-          flex: 1;
-          background-color: #f8f9fa;
-        }
-
-        .spinner-wrapper {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 3rem;
-          background-color: white;
-          border-radius: 1rem;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-          max-width: 500px;
-          width: 90%;
-          text-align: center;
-          animation: fadeIn 0.5s ease;
-        }
-
-        .custom-spinner {
-          position: relative;
-          width: 100px;
-          height: 100px;
-          margin-bottom: 1.5rem;
-        }
-
-        .spinner-ring {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          border: 4px solid transparent;
-          border-top-color: #007bff;
-          border-radius: 50%;
-          animation: spin 1.5s linear infinite;
-        }
-
-        .spinner-ring:before {
-          content: '';
-          position: absolute;
-          top: 5px;
-          left: 5px;
-          right: 5px;
-          bottom: 5px;
-          border: 4px solid transparent;
-          border-top-color: #28a745;
-          border-radius: 50%;
-          animation: spin 3s linear infinite;
-        }
-
-        .spinner-ring:after {
-          content: '';
-          position: absolute;
-          top: 15px;
-          left: 15px;
-          right: 15px;
-          bottom: 15px;
-          border: 4px solid transparent;
-          border-top-color: #dc3545;
-          border-radius: 50%;
-          animation: spin 1.5s linear infinite reverse;
-        }
-
-        .spinner-icon {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 2rem;
-          color: #007bff;
-          animation: pulse 2s ease infinite;
-        }
-
-        .loading-title {
-          font-size: 1.5rem;
-          font-weight: 600;
-          color: #343a40;
-          margin: 0 0 0.5rem;
-        }
-
-        .loading-text {
-          margin: 0 0 1.5rem;
-          color: #6c757d;
-          font-size: 1rem;
-        }
-
-        .loading-progress {
-          width: 80%;
-          height: 6px;
-          background-color: #e9ecef;
-          border-radius: 3px;
-          overflow: hidden;
-          margin-top: 1rem;
-        }
-
-        .progress-bar {
-          height: 100%;
-          width: 0;
-          background: linear-gradient(to right, #007bff, #28a745);
-          border-radius: 3px;
-          animation: progress 2s ease infinite;
-        }
-
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-
-        @keyframes pulse {
-          0% {
-            opacity: 0.6;
-            transform: translate(-50%, -50%) scale(0.9);
-          }
-          50% {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1.1);
-          }
-          100% {
-            opacity: 0.6;
-            transform: translate(-50%, -50%) scale(0.9);
-          }
-        }
-
-        @keyframes progress {
-          0% {
-            width: 0%;
-          }
-          50% {
-            width: 70%;
-          }
-          100% {
-            width: 95%;
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .error-content {
-          text-align: center;
-          padding: 2rem;
-          background-color: white;
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .error-content h2 {
-          margin-bottom: 1rem;
-          color: #dc3545;
-        }
-
-        .error-content p {
-          margin-bottom: 1.5rem;
-          color: #6c757d;
-        }
-
-        .back-link {
-          display: inline-block;
-          padding: 0.75rem 1.5rem;
-          background-color: #007bff;
-          color: white;
-          text-decoration: none;
-          border-radius: 4px;
-          transition: all 0.3s ease;
-          font-weight: 500;
-        }
-
-        .back-link:hover {
-          background-color: #0056b3;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .footer {
-          margin-top: auto;
-          background: #f8f9fa;
-          border-top: 1px solid #e9ecef;
-          padding: 20px 0;
-          width: 100%;
-          text-align: center;
-        }
-
-        .footer-content {
-          max-width: 1280px;
-          margin: 0 auto;
-          color: #6c757d;
-        }
-
-        .listing-details-page {
-          width: 100%;
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-          }
-
-          .listing-gallery {
-            margin-bottom: 2rem;
-          }
-
-          .main-image {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            border-radius: 12px;
-            overflow: hidden;
-          margin-bottom: 1rem;
-          background: #f8f9fa;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-          }
-
-          .main-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          transition: transform 0.3s ease;
-        }
-
-        .main-image:hover img {
-          transform: scale(1.02);
-          }
-
-        .photo-grid {
-            display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem;
-          margin-top: 1rem;
-          }
-
-        .photo-thumbnail {
-            position: relative;
-          height: 100px;
-          border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-          transition: all 0.3s ease;
-          background: #f8f9fa;
-        }
-
-        .photo-thumbnail:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .photo-thumbnail.selected {
-          border: 2px solid var(--primary-color, #007bff);
-        }
-
-        .photo-thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
-
-          .listing-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
-          }
-
-        .listing-header {
-          margin-bottom: 2rem;
-        }
-
-        .listing-header h1 {
-          font-size: 2rem;
-          margin-bottom: 1rem;
-        }
-
-        .listing-meta {
-          display: flex;
-          gap: 1rem;
-          color: #666;
-          margin-top: 0.5rem;
-          flex-wrap: wrap;
-          align-items: center;
-        }
-
-        .listing-rating {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          color: #222;
-          padding: 0.4rem 0.8rem;
-          background: rgba(255, 255, 255, 0.9);
-          border-radius: 20px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          transition: transform 0.3s ease;
-        }
-
-        .listing-rating:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        .listing-rating i {
-          color: #FFD700;
-          font-size: 1.1rem;
-        }
-
-        .review-count {
-          font-size: 0.9rem;
-          color: #555;
-          margin-left: 0.3rem;
-        }
-
-        .host-info {
-          display: flex;
-          align-items: flex-start;
-          gap: 1.5rem;
-          margin: 2rem 0;
-          padding: 1.5rem;
-          background: #f8f9fa;
-          border-radius: 12px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .host-photo-container {
-          flex-shrink: 0;
-        }
-
-        .host-avatar {
-          width: 100px;
-          height: 100px;
-          border-radius: 50%;
-          object-fit: cover;
-          border: 3px solid white;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-          transition: transform 0.3s ease;
-        }
-
-        .host-avatar:hover {
-          transform: scale(1.05);
-        }
-
-        .host-details {
-          flex: 1;
-        }
-
-        .host-details h3 {
-          margin: 0 0 0.5rem 0;
-          font-size: 1.3rem;
-          color: #333;
-        }
-
-        .host-details p {
-          margin: 0.5rem 0;
-          color: #666;
-          line-height: 1.5;
-        }
-
-        .host-contact {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          margin-top: 1rem;
-          color: #555;
-        }
-
-        .host-contact i {
-          color: #007bff;
-        }
-
-        .listing-description {
-          margin: 2rem 0;
-          line-height: 1.6;
-          }
-
-          .booking-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 2rem;
-            height: fit-content;
-          }
-
-        .booking-price {
-          margin-bottom: 1.5rem;
-        }
-
-        .booking-price h2 {
-          font-size: 1.5rem;
-          margin: 0;
-        }
-
-        .per-night {
-          font-size: 1rem;
-          color: #666;
-        }
-
-          .booking-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-          }
-
-          .date-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-          }
-
-        .date-inputs input,
-        .booking-form input[type="number"] {
-          padding: 0.75rem;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          font-size: 1rem;
-        }
-
-        .date-error {
-          padding: 0.75rem;
-          background-color: #fff3cd;
-          border: 1px solid #ffeeba;
-          border-radius: 8px;
-          color: #856404;
-          font-size: 0.9rem;
-        }
-
-        .date-error p {
-          margin: 0.25rem 0;
-        }
-
-          .book-button {
-          background: var(--primary-color, #007bff);
-            color: white;
-            padding: 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-          transition: background-color 0.3s ease;
-        }
-
-        .book-button:not(:disabled):hover {
-          background: var(--primary-color-dark, #0056b3);
-          }
-
-          .book-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-          }
-
-          @media (max-width: 768px) {
-            .listing-content {
-              grid-template-columns: 1fr;
-            }
-
-            .main-image {
-              height: 300px;
-            }
-
-          .photo-grid {
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-          }
-
-          .booking-card {
-            position: static;
-            margin-top: 2rem;
-          }
-
-          .host-info {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 1rem;
-          }
-
-          .host-avatar {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 1rem;
-          }
-
-          .host-contact {
-            justify-content: center;
-          }
-        }
-      `}</style>
+      </main>
     </div>
   );
 };

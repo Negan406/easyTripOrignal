@@ -53,9 +53,9 @@ const BecomeHost = () => {
     if (isLoggedIn) {
       navigate('/add-listing');
     } else {
-      setNotification({ 
-        message: 'Please login first to become a host', 
-        type: 'info' 
+      setNotification({
+        message: 'Please login first to become a host',
+        type: 'info'
       });
       setTimeout(() => {
         navigate('/login');
@@ -82,232 +82,217 @@ const BecomeHost = () => {
   };
 
   return (
-    <div className="become-host-page">
+    <div className="flex min-h-screen bg-white">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
+
+      <main className="flex-1 w-full transition-all duration-300">
+        {notification && (
+          <div className="fixed top-24 right-6 z-[100] animate-in slide-in-from-right-8 duration-300">
+            <Notification
+              message={notification.message}
+              type={notification.type}
+              onClose={() => setNotification(null)}
+            />
+          </div>
+        )}
+
+        {/* Hero Section */}
+        <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-[#f8fafc]">
+          {/* Subtle decorative elements */}
+          <div className="absolute inset-0 z-0 opacity-40">
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100 rounded-full blur-[100px] -mr-64 -mt-64"></div>
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-50 rounded-full blur-[100px] -ml-64 -mb-64"></div>
+          </div>
+
+          <div className="relative z-20 max-w-5xl mx-auto px-6 text-center">
+            <div className="inline-block px-4 py-2 bg-blue-600/5 border border-blue-600/10 rounded-2xl text-blue-600 text-[10px] font-black uppercase tracking-[0.2em] mb-8 animate-in fade-in slide-in-from-top-4 duration-1000">
+              Join our global community
+            </div>
+
+            <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter leading-tight text-gray-900">
+              Become a <span className="text-blue-600">Host</span>
+            </h1>
+
+            <p className="text-xl md:text-2xl font-medium mb-12 text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Publier votre logement sur <span className="text-blue-600 font-bold">EasyTrip</span>, c'est facile. Rejoignez notre communauté d'hôtes passionnés dès aujourd'hui.
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-6">
+              <button
+                onClick={handleGetStarted}
+                className="px-10 py-5 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all hover:shadow-[0_20px_50px_rgba(37,99,235,0.2)] active:scale-95"
+              >
+                Get Started
+              </button>
+
+              {isLoggedIn && (
+                <button
+                  onClick={handleManageListings}
+                  className="px-10 py-5 bg-white text-gray-900 border-2 border-gray-100 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-gray-50 transition-all active:scale-95 shadow-sm"
+                >
+                  Manage Listings
+                </button>
+              )}
+
+              {role === 'admin' && (
+                <button
+                  onClick={() => navigate('/pending-listings')}
+                  className="px-10 py-5 bg-white text-amber-600 border-2 border-amber-50/50 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-amber-50 transition-all active:scale-95"
+                >
+                  Review Pending
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Feature Grid Section */}
+        <section className="max-w-7xl mx-auto px-6 py-24">
+          <div className="text-center mb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight mb-6">
+              Tous les outils qu'il vous faut en une même application
+            </h2>
+            <p className="text-lg text-gray-500 font-medium max-w-3xl mx-auto">
+              Nous protégeons votre logement, quel que soit votre style d'accueil, avec des outils conçus pour votre réussite.
+            </p>
+          </div>
+
+          <div className="space-y-32">
+            {[
+              { img: im1, title: "Configuration de votre annonce", desc: "Photographies de votre logement, configuration des tarifs et création d'un guide d'arrivée", side: 'right' },
+              { img: im2, title: "Préparation de votre logement", desc: "Préparation, ménage et service de maintenance pour votre logement", side: 'left' },
+              { img: im3, title: "Gestion de vos réservations", desc: "Gestion de vos réservations et communication avec les voyageurs", side: 'right' },
+              { img: im4, title: "Accompagnement des voyageurs", desc: "Gestion des arrivées, des départs et des demandes sur place", side: 'left' }
+            ].map((feature, i) => (
+              <div
+                key={i}
+                className={`flex flex-col ${feature.side === 'left' ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-12 lg:gap-24 animate-in fade-in slide-in-from-bottom-12 duration-1000`}
+                style={{ animationDelay: `${i * 200}ms` }}
+              >
+                <div className="w-full lg:w-1/2 group">
+                  <div className="relative overflow-hidden rounded-[40px] shadow-2xl shadow-gray-200 group-hover:shadow-blue-200/50 transition-all duration-700">
+                    <img
+                      src={feature.img}
+                      alt={feature.title}
+                      className="w-full h-[400px] object-cover transition-transform duration-1000 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                  </div>
+                </div>
+
+                <div className="w-full lg:w-1/2">
+                  <div className="max-w-md">
+                    <span className="inline-block px-4 py-2 bg-blue-50 text-blue-600 rounded-2xl text-[10px] font-black uppercase tracking-widest mb-6">
+                      Feature 0{i + 1}
+                    </span>
+                    <h3 className="text-3xl md:text-4xl font-black text-gray-900 mb-6 tracking-tight">
+                      {feature.title}
+                    </h3>
+                    <p className="text-lg text-gray-500 font-medium leading-relaxed mb-8">
+                      {feature.desc}
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-1 bg-blue-600 rounded-full"></div>
+                      <span className="text-sm font-black text-gray-900 uppercase tracking-widest">Learn More</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Closing CTA */}
+        <section className="bg-gray-900 py-24 px-6 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-8 tracking-tight">
+              Prêt à accueillir des voyageurs ?
+            </h2>
+            <button
+              onClick={handleGetStarted}
+              className="px-12 py-6 bg-blue-600 text-white rounded-[24px] font-black text-lg uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95 shadow-2xl shadow-blue-600/40"
+            >
+              Start Your Hosting Journey
+            </button>
+          </div>
+        </section>
+
+        <HostRegistrationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
         />
-      )}
 
-      {/* Original Host Header with Buttons */}
-      <section className="host-header">
-        <h1>Become a Host</h1>
-        <p>Publier votre logement sur EasyTrip, c'est facile</p>
-        <div className="header-buttons" data-aos="fade-up">
-          <button 
-            className="cta-button" 
-            onClick={handleGetStarted}
-            style={{backgroundColor: 'black', color: 'white', position: 'relative', right: '10px'}}
-          >
-            Get Started 
-          </button>
-          
-          {isLoggedIn && (
-            <button 
-              className="cta-button"
-              onClick={handleManageListings}
-              style={{backgroundColor: 'rgb(11, 226, 11)', color: 'white'}}
-            >
-              Manage Listings
-            </button>
-          )}
-          
-          {isLoggedIn && (
-            <button 
-              className="cta-button"
-              onClick={handleManageBookings}
-              style={{backgroundColor: 'rgb(11, 226, 11)', color: 'white', position: 'relative', left: '10px'}}
-            >
-              Manage Bookings
-            </button>
-          )}
-          
-          {role === 'admin' && (
-            <button 
-              className="cta-button"
-              onClick={() => navigate('/pending-listings')}
-              style={{marginLeft: '20px'}}
-            >
-              Review Pending Listings
-            </button>
-          )}
-        </div>
-      </section>
-
-      {/* New Feature Sections */}
-      <section className="hero-section">
-        <div className="hero-content" data-aos="fade-up">
-          <h1>Tous les outils qu'il vous faut en une même application</h1>
-          <p>Nous protégeons votre logement, quel que soit votre style d'accueil</p>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="features-section">
-        <div className="feature-card" data-aos="fade-right">
-          <img src={im1} alt="Configuration" />
-          <div className="feature-content">
-            <h2>Configuration de votre annonce</h2>
-            <p>Photographies de votre logement, configuration des tarifs et création d'un guide d'arrivée</p>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-white rounded-[32px] w-full max-w-xl p-10 shadow-2xl animate-in zoom-in-95 duration-300">
+              <h2 className="text-2xl font-black text-gray-900 mb-8 tracking-tight text-center">Add Your Listing</h2>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Property Title"
+                  className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                  value={newListing.title}
+                  onChange={handleInputChange}
+                  required
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="location"
+                    placeholder="Location"
+                    className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                    value={newListing.location}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <input
+                    type="number"
+                    name="price"
+                    placeholder="Price per night"
+                    className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                    value={newListing.price}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <input
+                  type="text"
+                  name="photo"
+                  placeholder="Main Photo URL"
+                  className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                  value={newListing.photo}
+                  onChange={handleInputChange}
+                  required
+                />
+                <textarea
+                  name="description"
+                  placeholder="Property Description"
+                  className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-medium h-32 resize-none"
+                  value={newListing.description}
+                  onChange={handleInputChange}
+                  required
+                />
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="flex-1 py-4 bg-gray-100 text-gray-600 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-gray-200 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20"
+                  >
+                    Confirm Listing
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-
-        <div className="feature-card" data-aos="fade-left">
-          <img src={im2} alt="Préparation" />
-          <div className="feature-content">
-            <h2>Préparation de votre logement</h2>
-            <p>Préparation, ménage et service de maintenance pour votre logement</p>
-          </div>
-        </div>
-
-        <div className="feature-card" data-aos="fade-right">
-          <img src={im3} alt="Réservations" />
-          <div className="feature-content">
-            <h2>Gestion de vos réservations</h2>
-            <p>Gestion de vos réservations et communication avec les voyageurs</p>
-          </div>
-        </div>
-
-        <div className="feature-card" data-aos="fade-left">
-          <img src={im4} alt="Accompagnement" />
-          <div className="feature-content">
-            <h2>Accompagnement des voyageurs</h2>
-            <p>Gestion des arrivées, des départs et des demandes sur place</p>
-          </div>
-        </div>
-      </section>
-
-      <HostRegistrationModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-      />
-      {isModalOpen && (
-        <form onSubmit={handleSubmit} className="listing-form">
-          <input type="text" name="title" placeholder="Title" value={newListing.title} onChange={handleInputChange} required />
-          <input type="text" name="location" placeholder="Location" value={newListing.location} onChange={handleInputChange} required />
-          <input type="number" name="price" placeholder="Price" value={newListing.price} onChange={handleInputChange} required />
-          <input type="text" name="photo" placeholder="Photo URL" value={newListing.photo} onChange={handleInputChange} required />
-          <textarea name="description" placeholder="Description" value={newListing.description} onChange={handleInputChange} required />
-          <button type="submit" className="cta-button">Add Listing</button>
-        </form>
-      )}
-
-      <style jsx>{`
-        .header-buttons {
-          display: flex;
-          justify-content: center;
-          gap: 1rem;
-          margin-top: 2rem;
-        }
-
-        .host-header {
-          margin-bottom: 0;
-          padding-bottom: 4rem;
-        }
-
-        .hero-section {
-          margin-top: 0;
-        }
-
-        .become-host-page {
-          overflow-x: hidden;
-        }
-
-        .hero-section {
-          background: linear-gradient(rgba(0,0,0,0.5),black), 
-                      url('/images/hero-bg.jpg');
-          background-size: cover;
-          background-position: center;
-          height: 80vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          color: white;
-          padding: 2rem;
-        }
-
-        .hero-content {
-          max-width: 800px;
-        }
-
-        .hero-content h1 {
-          font-size: 3rem;
-          margin-bottom: 1.5rem;
-          font-weight: bold;
-        }
-
-        .hero-content p {
-          font-size: 1.5rem;
-          margin-bottom: 2rem;
-        }
-
-        .features-section {
-          padding: 4rem 2rem;
-          max-width: 1200px;
-          margin: 0 auto;
-          
-        }
-
-        .feature-card {
-          display: flex;
-          align-items: center;
-          gap: 2rem;
-          margin-bottom: 4rem;
-          padding: 2rem;
-          border-radius: 12px;
-          background: linear-gradient(rgba(0,0,0,0.1),white );
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-          
-        }
-
-        .feature-card:nth-child(even) {
-          flex-direction: row-reverse;
-        }
-
-        .feature-card img {
-          width: 400px;
-          height: 300px;
-          object-fit: cover;
-          border-radius: 8px;
-        }
-
-        .feature-content {
-          flex: 1;
-        }
-
-        .feature-content h2 {
-          font-size: 2rem;
-          margin-bottom: 1rem;
-          color: black;
-        }
-
-        .feature-content p {
-          font-size: 1.1rem;
-          color: black;
-          line-height: 1.6;
-        }
-       
-
-        @media (max-width: 768px) {
-          .feature-card {
-            flex-direction: column !important;
-          }
-
-          .feature-card img {
-            width: 100%;
-            height: 200px;
-          }
-
-          .hero-content h1 {
-            font-size: 2rem;
-          }
-         
-        }
-      `}</style>
+        )}
+      </main>
     </div>
   );
 };

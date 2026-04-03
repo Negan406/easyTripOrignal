@@ -1,35 +1,38 @@
 import PropTypes from 'prop-types';
-import './LoadingSpinner.css';
 
-const LoadingSpinner = ({ size = 'medium', color = '#ff385c', fullScreen = true }) => {
-  const spinnerSize = {
-    small: '20px',
-    medium: '40px',
-    large: '60px'
+const LoadingSpinner = ({ size = 'medium', color = 'text-blue-600', fullScreen = true }) => {
+  const sizeClasses = {
+    small: 'w-5 h-5 border-2',
+    medium: 'w-12 h-12 border-4',
+    large: 'w-20 h-20 border-8'
   }[size];
 
+  const spinner = (
+    <div className="flex flex-col items-center justify-center gap-6 animate-in fade-in duration-700">
+      <div className={`relative ${sizeClasses} border-gray-100 rounded-full`}>
+        <div className={`absolute inset-0 ${sizeClasses} border-t-current rounded-full animate-spin ${color}`}></div>
+        <div className={`absolute inset-0 ${sizeClasses} border-r-current rounded-full animate-spin-slow opacity-20 ${color}`}></div>
+      </div>
+      {fullScreen && (
+        <div className="text-center space-y-1">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] ml-1">Loading</p>
+          <p className="text-xs font-bold text-gray-300 uppercase tracking-widest">EasyTrip Experience</p>
+        </div>
+      )}
+    </div>
+  );
+
+  if (fullScreen) {
+    return (
+      <div className="fixed inset-0 z-[3000] flex items-center justify-center bg-white/90 backdrop-blur-md">
+        {spinner}
+      </div>
+    );
+  }
+
   return (
-    <div className={`loading-spinner ${!fullScreen ? 'inline-spinner' : ''}`}>
-      <div className="spinner" style={{ width: spinnerSize, height: spinnerSize, borderTopColor: color }}></div>
-      <style jsx>{`
-        .inline-spinner {
-          position: relative;
-          height: auto;
-          width: auto;
-          background-color: transparent;
-        }
-        
-        .spinner {
-          border: 3px solid #f3f3f3;
-          animation: spin 1s linear infinite;
-        }
-        
-        @media (max-width: 768px) {
-          .loading-spinner {
-            padding: 1rem;
-          }
-        }
-      `}</style>
+    <div className="flex items-center justify-center p-4">
+      {spinner}
     </div>
   );
 };

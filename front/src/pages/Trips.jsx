@@ -116,450 +116,143 @@ const Trips = () => {
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'completed':
-        return '#27ae60';
-      case 'cancelled':
-        return '#e74c3c';
-      case 'pending':
-        return '#f39c12';
-      default:
-        return '#95a5a6';
-    }
-  };
-
   return (
-    <div className="page-wrapper">
+    <div className="flex min-h-screen bg-gray-50/50">
       <Sidebar />
-      <div className="content-area">
-        {notification && (
-          <Notification
-            message={notification.message}
-            type={notification.type}
-            onClose={closeNotification}
-          />
-        )}
-
-        {showModal && (
-          <ConfirmationModal
-            message="Are you sure you want to cancel this trip?"
-            onConfirm={confirmDelete}
-            onCancel={() => setShowModal(false)}
-          />
-        )}
-
-        <h1 className="page-title">Your Trips</h1>
-
-        {loading ? (
-          <div className="loading-container">
-            <LoadingSpinner />
+      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 max-w-7xl mx-auto w-full transition-all duration-300">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="mb-10">
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Your Trips</h1>
+            <p className="text-gray-500 font-medium mt-1">Manage your upcoming and past travel adventures</p>
           </div>
-        ) : (
-          <div className="trips-list">
-            {!trips || trips.length === 0 ? (
-              <div className="no-trips-message">
-                <FontAwesomeIcon icon={faCalendarAlt} />
-                <h2>No trips yet</h2>
-                <p>Time to dust off your bags and start planning your next adventure</p>
-                <a href="/" className="cta-button">Start searching</a>
-              </div>
-            ) : (
-              trips.map((trip) => {
-                const paymentStatus = trip.payment_status || 'pending';
 
-                return (
-                  <div key={trip.id} className="trip-item">
-                    <div className="trip-status" style={{ backgroundColor: getStatusColor(paymentStatus) }}>
-                      {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
-                    </div>
-                    {paymentStatus === 'pending' ? (
-                      // Pending booking layout
-                      <div className="pending-trip-content">
-                        <h3>{trip.listing?.title || "Unknown Location"}</h3>
-                        <div className="pending-trip-info">
-                          <div className="pending-dates">
-                            <div className="date-item">
-                              <FontAwesomeIcon icon={faCalendarAlt} className="date-icon" />
-                              <div className="date-details">
-                                <span className="date-label">Check-in:</span>
-                                <span className="date-value">{formatDate(trip.start_date)}</span>
+          {notification && (
+            <div className="fixed top-24 right-6 z-[100] animate-in slide-in-from-right-8 duration-300">
+              <Notification
+                message={notification.message}
+                type={notification.type}
+                onClose={closeNotification}
+              />
+            </div>
+          )}
+
+          {showModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-0">
+              <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setShowModal(false)}></div>
+              <div className="relative z-10 w-full max-w-sm">
+                <ConfirmationModal
+                  message="Are you sure you want to cancel this trip?"
+                  onConfirm={confirmDelete}
+                  onCancel={() => setShowModal(false)}
+                />
+              </div>
+            </div>
+          )}
+
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <LoadingSpinner size="large" color="#2563eb" />
+            </div>
+          ) : (
+            <div className="trips-list">
+              {!trips || trips.length === 0 ? (
+                <div className="bg-white rounded-[32px] p-16 text-center border border-gray-100 shadow-sm border-dashed border-2 max-w-2xl mx-auto">
+                  <div className="w-24 h-24 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner">
+                    <FontAwesomeIcon icon={faCalendarAlt} />
+                  </div>
+                  <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">No trips yet</h3>
+                  <p className="text-gray-500 font-medium mb-10">Time to dust off your bags and start planning your next adventure.</p>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-gray-800 transition-all active:scale-95 shadow-xl shadow-gray-200"
+                  >
+                    Start Searching
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {trips.map((trip) => {
+                    const paymentStatus = trip.payment_status || 'pending';
+                    const isCompleted = paymentStatus === 'completed';
+
+                    return (
+                      <div key={trip.id} className="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-gray-200/40 transition-all group flex flex-col relative">
+                        <div className="absolute top-4 right-4 z-10">
+                          <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-md ${isCompleted ? 'bg-emerald-500/90 text-white' :
+                            paymentStatus === 'cancelled' ? 'bg-rose-500/90 text-white' :
+                              'bg-amber-500/90 text-white'
+                            }`}>
+                            {paymentStatus}
+                          </span>
+                        </div>
+
+                        {isCompleted ? (
+                          <div className="relative h-52 overflow-hidden shrink-0">
+                            <img
+                              src={getImageUrl(trip.listing?.main_photo)}
+                              alt={trip.listing?.title || "Trip Image"}
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                          </div>
+                        ) : (
+                          <div className="h-4 p-4 shrink-0"></div>
+                        )}
+
+                        <div className="p-6 pt-2 flex-1 flex flex-col">
+                          <h3 className="text-xl font-black text-gray-900 mb-6 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                            {trip.listing?.title || "Unknown Location"}
+                          </h3>
+
+                          <div className="space-y-4 mb-8">
+                            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl border border-transparent group-hover:border-gray-100 transition-colors">
+                              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-blue-500 border border-gray-100 shadow-sm">
+                                <FontAwesomeIcon icon={faMapMarkerAlt} className="text-sm" />
+                              </div>
+                              <p className="text-sm font-bold text-gray-600 truncate">{trip.listing?.location || "Location unavailable"}</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-3">
+                              <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100/50 flex items-center gap-4">
+                                <FontAwesomeIcon icon={faCalendarAlt} className="text-blue-400 text-lg" />
+                                <div className="flex flex-col">
+                                  <span className="text-[10px] font-black text-blue-300 uppercase tracking-widest">Duration</span>
+                                  <span className="text-xs font-black text-blue-900">
+                                    {formatDate(trip.start_date)} - {formatDate(trip.end_date)}
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                            <div className="date-item">
-                              <FontAwesomeIcon icon={faCalendarAlt} className="date-icon" />
-                              <div className="date-details">
-                                <span className="date-label">Check-out:</span>
-                                <span className="date-value">{formatDate(trip.end_date)}</span>
-                              </div>
+
+                            <div className="flex items-center justify-between px-2 pt-2">
+                              <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total Price</span>
+                              <span className="text-xl font-black text-gray-900">${parseFloat(trip.total_price || 0).toFixed(2)}</span>
                             </div>
                           </div>
-                          <button
-                            onClick={() => handleDeleteTrip(trip.id)}
-                            className="cancel-trip-button"
-                          >
-                            Cancel Booking
-                          </button>
+
+                          {!isCompleted && paymentStatus !== 'cancelled' && (
+                            <button
+                              onClick={() => handleDeleteTrip(trip.id)}
+                              className="w-full py-4 bg-rose-50 text-rose-600 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-rose-100 transition-all active:scale-95 border border-rose-100 mt-auto flex items-center justify-center gap-2 group/cancel"
+                            >
+                              <FontAwesomeIcon icon={faTimes} className="text-[10px] group-hover/cancel:rotate-90 transition-transform" />
+                              Cancel Booking
+                            </button>
+                          )}
                         </div>
                       </div>
-                    ) : (
-                      // Accepted/Complete booking layout with full details
-                      <>
-                        <img
-                          src={getImageUrl(trip.listing?.main_photo)}
-                          alt={trip.listing?.title || "Trip Image"}
-                          className="trip-image"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
-                          }}
-                        />
-                        <div className="trip-details">
-                          <h3>{trip.listing?.title || "Unknown Location"}</h3>
-                          <div className="trip-info">
-                            <p>
-                              <FontAwesomeIcon icon={faMapMarkerAlt} />
-                              {trip.listing?.location || "Location not available"}
-                            </p>
-                            <p>
-                              <FontAwesomeIcon icon={faCalendarAlt} />
-                              {formatDate(trip.start_date)} - {formatDate(trip.end_date)}
-                            </p>
-                            <p>
-                              <FontAwesomeIcon icon={faClock} />
-                              Total Price: ${parseFloat(trip.total_price || 0).toFixed(2)}
-                            </p>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        )}
-      </div>
-
-      <footer className="footer">
-        <div className="footer-content">
-          <p>&copy; {new Date().getFullYear()} EasyTrip. All rights reserved.</p>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      </footer>
-
-      <style>{`
-        .page-wrapper {
-          display: flex;
-          flex-direction: column;
-          min-height: 100vh;
-        }
-        
-        .content-area {
-          flex: 1;
-          padding: 2rem;
-          max-width: 1200px;
-          margin: 0 auto;
-          width: 100%;
-        }
-        
-        .loading-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 300px;
-        }
-        
-        .footer {
-          margin-top: auto;
-          background: #f8f9fa;
-          border-top: 1px solid #e9ecef;
-          padding: 20px 0;
-          width: 100%;
-          text-align: center;
-        }
-        
-        .footer-content {
-          max-width: 1280px;
-          margin: 0 auto;
-          color: #6c757d;
-        }
-        
-        .page-title {
-          text-align: center;
-          margin-bottom: 2rem;
-          color: #333;
-          font-size: 2.5em;
-        }
-        
-        .trips-list {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 2rem;
-          padding: 1rem 0;
-        }
-        
-        .trip-item {
-          background: white;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-          transition: transform 0.3s ease;
-          position: relative;
-        }
-        
-        .trip-item:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .trip-status {
-          position: absolute;
-          top: 15px;
-          right: 15px;
-          padding: 8px 15px;
-          color: white;
-          border-radius: 25px;
-          font-size: 0.9em;
-          font-weight: 600;
-          z-index: 1;
-          box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        
-        .trip-image {
-          width: 100%;
-          height: 220px;
-          object-fit: cover;
-          transition: transform 0.3s ease;
-        }
-
-        .trip-item:hover .trip-image {
-          transform: scale(1.05);
-        }
-        
-        .trip-details {
-          padding: 1.5rem;
-        }
-        
-        .trip-details h3 {
-          margin: 0 0 1rem 0;
-          color: #2c3e50;
-          font-size: 1.4em;
-          font-weight: 600;
-        }
-        
-        .trip-info {
-          margin-bottom: 1.5rem;
-        }
-        
-        .trip-info p {
-          margin: 0.8rem 0;
-          color: #666;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          font-size: 0.95em;
-        }
-        
-        .trip-info svg {
-          color: #007bff;
-          width: 16px;
-          min-width: 16px;
-        }
-        
-        .cancel-trip-button {
-          background: #dc3545;
-          color: white;
-          border: none;
-          padding: 12px 20px;
-          border-radius: 8px;
-          cursor: pointer;
-          width: 100%;
-          font-weight: 600;
-          transition: all 0.3s ease;
-          font-size: 1em;
-        }
-        
-        .cancel-trip-button:hover {
-          background: #c82333;
-          transform: translateY(-2px);
-          box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
-        }
-        
-        .no-trips-message {
-          text-align: center;
-          padding: 4rem 2rem;
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-          grid-column: 1 / -1;
-        }
-        
-        .no-trips-message svg {
-          font-size: 3rem;
-          color: #007bff;
-          margin-bottom: 1.5rem;
-        }
-        
-        .no-trips-message h2 {
-          color: #333;
-          margin-bottom: 1rem;
-          font-size: 1.8em;
-        }
-        
-        .no-trips-message p {
-          color: #666;
-          margin-bottom: 2rem;
-          font-size: 1.1em;
-        }
-        
-        .cta-button {
-          display: inline-block;
-          background: #007bff;
-          color: white;
-          text-decoration: none;
-          padding: 12px 25px;
-          border-radius: 8px;
-          font-weight: 600;
-          transition: all 0.3s ease;
-        }
-        
-        .cta-button:hover {
-          background: #0056b3;
-          transform: translateY(-2px);
-          box-shadow: 0 2px 8px rgba(0, 123, 255, 0.4);
-        }
-
-        @media (max-width: 768px) {
-          .content-area {
-            padding: 1rem;
-          }
-          
-          .trips-list {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-          }
-          
-          .page-title {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-          }
-
-          .trip-image {
-            height: 200px;
-          }
-
-          .trip-details {
-            padding: 1.2rem;
-          }
-
-          .trip-details h3 {
-            font-size: 1.3em;
-          }
-        }
-
-        .pending-trip-content {
-          padding: 1.5rem;
-          background: #f8f9fa;
-        }
-
-        .pending-trip-content h3 {
-          color: #2c3e50;
-          font-size: 1.4em;
-          font-weight: 600;
-          margin-bottom: 1.5rem;
-          border-bottom: 2px solid #e9ecef;
-          padding-bottom: 1rem;
-        }
-
-        .pending-trip-info {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-
-        .pending-dates {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-          background: white;
-          padding: 1.2rem;
-          border-radius: 8px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .date-item {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-        }
-
-        .date-icon {
-          color: #007bff;
-          font-size: 1.2em;
-          width: 20px;
-        }
-
-        .date-details {
-          display: flex;
-          flex-direction: column;
-          gap: 0.2rem;
-        }
-
-        .date-label {
-          font-size: 0.9em;
-          color: #666;
-          font-weight: 500;
-        }
-
-        .date-value {
-          font-size: 1.1em;
-          color: #2c3e50;
-          font-weight: 600;
-        }
-
-        .cancel-trip-button {
-          background: #dc3545;
-          color: white;
-          border: none;
-          padding: 1rem;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: 600;
-          transition: all 0.3s ease;
-          text-align: center;
-          width: 100%;
-          font-size: 1em;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-
-        .cancel-trip-button:hover {
-          background: #c82333;
-          transform: translateY(-2px);
-          box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
-        }
-
-        @media (max-width: 768px) {
-          .pending-trip-content {
-            padding: 1.2rem;
-          }
-
-          .pending-trip-content h3 {
-            font-size: 1.2em;
-            margin-bottom: 1rem;
-          }
-
-          .pending-dates {
-            padding: 1rem;
-          }
-
-          .date-value {
-            font-size: 1em;
-          }
-        }
-      `}</style>
+      </main>
     </div>
   );
 };

@@ -59,412 +59,152 @@ const ManageListings = () => {
     navigate(`/edit-listing/${id}`);
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-gray-50/50">
+        <Sidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <LoadingSpinner size="large" color="#2563eb" />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="app-container">
+    <div className="flex min-h-screen bg-gray-50/50">
       <Sidebar />
-      <div className="page-container">
-        <div className="content-wrap">
-          <div className="container-center">
-            <h1 className="page-title">Manage Your Listings</h1>
 
-            {notification && (
-              <div className={`notification ${notification.type}`}>
-                {notification.message}
-                <button
-                  className="close-btn"
-                  onClick={() => setNotification(null)}
-                >
-                  ×
-                </button>
-              </div>
-            )}
-
-            {listings.length === 0 ? (
-              <div className="no-results-message">
-                You haven&apos;t created any listings yet
-              </div>
-            ) : (
-              <div className="listings-grid">
-                {listings.map((listing) => (
-                  <div key={listing.id} className="listing-card">
-                    <div className="listing-image">
-                      <img
-                        src={`${API_BASE_URL}/storage/${listing.main_photo}`}
-                        alt={listing.title}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
-                        }}
-                      />
-                    </div>
-                    <div className="listing-content">
-                      <h3>{listing.title}</h3>
-                      <p className="listing-location">{listing.location}</p>
-                      <p className="listing-price">${listing.price} / night</p>
-                      <div className="listing-status">
-                        Status: <span className={`status-badge ${listing.status}`}>
-                          {listing.status}
-                        </span>
-                      </div>
-                      <div className="listing-actions">
-                        <button
-                          className="edit-button"
-                          onClick={() => handleModify(listing.id)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="delete-button"
-                          onClick={() => setDeleteConfirmation(listing.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 max-w-7xl mx-auto w-full transition-all duration-300">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+            <div>
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Manage Your Listings</h1>
+              <p className="text-gray-500 font-medium mt-1">Edit, update or remove your property listings</p>
+            </div>
+            <button
+              onClick={() => navigate('/add-listing')}
+              className="px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 active:scale-95 group"
+            >
+              <i className="fas fa-plus text-xs group-hover:rotate-90 transition-transform"></i>
+              Add New Listing
+            </button>
           </div>
 
-          {deleteConfirmation && (
-            <div className="modal-overlay">
-              <div className="modal-content">
-                <h3>Confirm Delete</h3>
-                <p>Are you sure you want to delete this listing? This action cannot be undone.</p>
-                <div className="modal-buttons">
-                  <button
-                    className="cancel-button"
-                    onClick={() => setDeleteConfirmation(null)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="confirm-button"
-                    onClick={() => handleDelete(deleteConfirmation)}
-                  >
-                    Delete
-                  </button>
-                </div>
+          {notification && (
+            <div className={`mb-8 p-4 rounded-2xl text-sm flex items-center justify-between gap-3 animate-in slide-in-from-top-2 shadow-sm border ${notification.type === 'success'
+                ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                : 'bg-rose-50 text-rose-600 border-rose-100'
+              }`}>
+              <div className="flex items-center gap-3 font-semibold">
+                <i className={`fas ${notification.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
+                {notification.message}
               </div>
+              <button onClick={() => setNotification(null)} className="text-current opacity-60 hover:opacity-100 transition-opacity">
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+          )}
+
+          {listings.length === 0 ? (
+            <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm border-dashed border-2">
+              <div className="w-20 h-20 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                <i className="fas fa-house-user"></i>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">No listings found</h3>
+              <p className="text-gray-500 mt-2 mb-8">You haven&apos;t created any property listings yet.</p>
+              <button
+                onClick={() => navigate('/add-listing')}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-2xl font-bold hover:bg-gray-800 transition-all active:scale-95"
+              >
+                Create Your First Listing
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {listings.map((listing) => (
+                <div key={listing.id} className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 transition-all group flex flex-col">
+                  <div className="relative h-56 overflow-hidden">
+                    <img
+                      src={`${API_BASE_URL}/storage/${listing.main_photo}`}
+                      alt={listing.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                      }}
+                    />
+                    <div className="absolute top-4 right-4">
+                      <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-md ${listing.status === 'approved' ? 'bg-emerald-500/90 text-white' :
+                          listing.status === 'pending' ? 'bg-amber-500/90 text-white' :
+                            'bg-rose-500/90 text-white'
+                        }`}>
+                        {listing.status}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <div className="mb-4">
+                      <h3 className="text-lg font-bold text-gray-900 line-clamp-1 group-hover:text-blue-600 transition-colors">{listing.title}</h3>
+                      <p className="text-gray-500 text-sm font-medium flex items-center gap-1.5 mt-1">
+                        <i className="fas fa-map-marker-alt text-blue-500 text-xs text-opacity-70"></i>
+                        {listing.location}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between mb-6 pt-4 border-t border-gray-50">
+                      <div>
+                        <span className="text-base font-black text-gray-900">${listing.price}</span>
+                        <span className="text-xs font-bold text-gray-400 ml-1">/ night</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 mt-auto">
+                      <button
+                        onClick={() => handleModify(listing.id)}
+                        className="flex-1 py-3 bg-gray-50 text-gray-700 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-blue-50 hover:text-blue-600 transition-all active:scale-95 border border-transparent hover:border-blue-100"
+                      >
+                        <i className="fas fa-edit mr-2"></i> Edit
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirmation(listing.id)}
+                        className="flex-1 py-3 bg-rose-50 text-rose-600 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-rose-100 transition-all active:scale-95 border border-rose-100"
+                      >
+                        <i className="fas fa-trash-alt mr-2"></i> Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
-      </div>
 
-      <style>{`
-        .app-container {
-          display: flex;
-          min-height: 100vh;
-          position: relative;
-          left: -100px;
-        }
-
-        .page-container {
-          flex: 1;
-          padding: 2rem;
-          margin-left: 250px;
-          background: #f8f9fa;
-        }
-
-        .content-wrap {
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .page-title {
-          text-align: center;
-          color: #2c3e50;
-          margin-bottom: 2rem;
-          font-size: 2rem;
-          position: relative;
-          
-        }
-
-        .notification {
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          padding: 1rem 2rem;
-          border-radius: 8px;
-          color: white;
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          z-index: 1000;
-          animation: slideIn 0.3s ease;
-        }
-
-        .notification.success {
-          background: #28a745;
-        }
-
-        .notification.error {
-          background: #dc3545;
-        }
-
-        .close-btn {
-          background: none;
-          border: none;
-          color: white;
-          font-size: 1.2rem;
-          cursor: pointer;
-          padding: 0;
-          margin-left: 1rem;
-        }
-
-        .listings-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          gap: 2rem;
-          padding: 1rem;
-        }
-
-        .listing-card {
-          background: white;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-          transition: all 0.3s ease;
-          border: 1px solid rgba(0,0,0,0.1);
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-        }
-
-        .listing-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-
-        .listing-content {
-          padding: 1.5rem;
-          flex-grow: 1;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .listing-actions {
-          display: flex;
-          gap: 0.75rem;
-          margin-top: auto;
-          padding: 0.5rem 1rem 1rem;
-        }
-
-        .edit-button,
-        .delete-button {
-          flex: 1;
-          padding: 0.75rem 1rem;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 0.85rem;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          transition: all 0.2s ease;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .edit-button {
-          background: linear-gradient(135deg, #007bff, #0056b3);
-          color: white;
-          border: none;
-        }
-
-        .edit-button:hover {
-          background: linear-gradient(135deg, #0056b3, #004085);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-        }
-
-        .edit-button:active {
-          transform: translateY(0);
-        }
-
-        .delete-button {
-          background: white;
-          color: #dc3545;
-          border: 2px solid #dc3545;
-        }
-
-        .delete-button:hover {
-          background: linear-gradient(135deg, #dc3545, #bd2130);
-          color: white;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-          border-color: transparent;
-        }
-
-        .delete-button:active {
-          transform: translateY(0);
-        }
-
-        .edit-button::before,
-        .delete-button::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            120deg,
-            transparent,
-            rgba(255, 255, 255, 0.2),
-            transparent
-          );
-          transition: 0.5s;
-        }
-
-        .edit-button:hover::before,
-        .delete-button:hover::before {
-          left: 100%;
-        }
-
-        .listings-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          gap: 2rem;
-          padding: 1rem;
-        }
-
-        .listing-image {
-          position: relative;
-          height: 220px;
-          overflow: hidden;
-        }
-
-        .listing-image::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 40%;
-          background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
-          pointer-events: none;
-        }
-
-        .listing-image img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.5s ease;
-        }
-
-        .listing-card:hover .listing-image img {
-          transform: scale(1.1);
-        }
-
-        .listing-content h3 {
-          margin: 0 0 0.75rem 0;
-          color: #2c3e50;
-          font-size: 1.25rem;
-          font-weight: 600;
-          line-height: 1.4;
-        }
-
-        .listing-location {
-          color: #666;
-          margin: 0.5rem 0;
-          font-size: 0.95rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .listing-price {
-          font-weight: 600;
-          color: #2c3e50;
-          margin: 0.75rem 0;
-          font-size: 1.2rem;
-        }
-
-        .listing-status {
-          margin: 1rem 0;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .status-badge {
-          padding: 0.35rem 1rem;
-          border-radius: 20px;
-          font-size: 0.85rem;
-          font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .status-badge.approved {
-          background: #28a745;
-          color: white;
-          box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
-        }
-
-        .status-badge.pending {
-          background: #ffc107;
-          color: #000;
-          box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
-        }
-
-        .status-badge.rejected {
-          background: #dc3545;
-          color: white;
-          box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
-        }
-
-        .no-results-message {
-          text-align: center;
-          margin-top: 3rem;
-          color: #666;
-          font-size: 1.2rem;
-        }
-
-        @keyframes slideIn {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .page-container {
-            margin-left: 0;
-            padding: 1rem;
-          }
-
-          .listings-grid {
-            grid-template-columns: 1fr;
-            padding: 0.5rem;
-          }
-
-          .listing-card {
-            max-width: 100%;
-          }
-
-          .listing-actions {
-            padding: 0.5rem 1rem 1rem;
-          }
-
-          .edit-button,
-          .delete-button {
-            padding: 0.65rem 0.75rem;
-            font-size: 0.8rem;
-          }
-        }
-      `}</style>
+        {/* Delete Confirmation Modal */}
+        {deleteConfirmation && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-0">
+            <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setDeleteConfirmation(null)}></div>
+            <div className="relative z-10 w-full max-w-sm bg-white rounded-3xl shadow-2xl p-8 animate-in zoom-in-95 fade-in duration-300">
+              <div className="w-16 h-16 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6">
+                <i className="fas fa-exclamation-triangle"></i>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">Confirm Delete</h3>
+              <p className="text-gray-500 text-center font-medium mb-8">Are you sure you want to delete this listing? This action cannot be undone.</p>
+              <div className="flex gap-3">
+                <button
+                  className="flex-1 py-3.5 bg-gray-50 text-gray-600 rounded-2xl font-bold hover:bg-gray-100 transition-all active:scale-95"
+                  onClick={() => setDeleteConfirmation(null)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="flex-1 py-3.5 bg-rose-600 text-white rounded-2xl font-bold shadow-lg shadow-rose-100 hover:bg-rose-700 transition-all active:scale-95"
+                  onClick={() => handleDelete(deleteConfirmation)}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 };

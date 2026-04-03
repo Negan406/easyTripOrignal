@@ -183,385 +183,118 @@ const Wishlist = () => {
   };
 
   return (
-    <div className="page-wrapper">
+    <div className="flex min-h-screen bg-gray-50/50">
       <Sidebar />
-      <div className="content-area">
-        {loading ? (
-          <div className="loading-container">
-            <div className="loading-content">
-              <LoadingSpinner size="large" />
-              <h3 className="loading-title">{loadingMessage}</h3>
-              <div className="loading-progress">
-                <div className="progress-bar"></div>
+      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 max-w-7xl mx-auto w-full transition-all duration-300">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 relative overflow-hidden">
+              {/* Animated Background Hearts */}
+              <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
+                {[...Array(12)].map((_, i) => (
+                  <FontAwesomeIcon
+                    key={i}
+                    icon={faHeart}
+                    className="absolute animate-pulse text-6xl"
+                    style={{
+                      top: `${Math.random() * 80 + 10}%`,
+                      left: `${Math.random() * 80 + 10}%`,
+                      animationDelay: `${i * 0.5}s`,
+                      animationDuration: '3s'
+                    }}
+                  />
+                ))}
               </div>
-              <div className="loading-destinations">
-                <span className="destination"><FontAwesomeIcon icon={faHeart} /> Paris</span>
-                <span className="destination"><FontAwesomeIcon icon={faHeart} /> Bali</span>
-                <span className="destination"><FontAwesomeIcon icon={faHeart} /> Tokyo</span>
-                <span className="destination"><FontAwesomeIcon icon={faHeart} /> Rome</span>
-              </div>
-            </div>
-            <div className="floating-hearts">
-              {[...Array(8)].map((_, i) => (
-                <FontAwesomeIcon
-                  key={i}
-                  icon={faHeart}
-                  className={`floating-heart heart-${i + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-        ) : (
-          <main className="wishlist-container">
-            <div className="wishlist-header">
-              <Link to="/" className="back-button">
-                <FontAwesomeIcon icon={faArrowLeft} /> Back to listings
-              </Link>
-              <h1><FontAwesomeIcon icon={faHeart} /> My Wishlist</h1>
-            </div>
 
-            {error && (
-              <div className="error-message">
-                {error}
-              </div>
-            )}
-
-            <div className="wishlist-grid">
-              {wishlistItems.length > 0 ? (
-                wishlistItems.map((listing) => (
-                  <div
-                    key={listing.id}
-                    className="wishlist-item"
-                    data-aos="fade-up"
-                  >
-                    <ListingCard
-                      listing={listing}
-                      onRemoveFromWishlist={() => handleRemoveFromWishlist(listing.id)}
-                      isInWishlist={true}
-                    />
+              <div className="relative z-10 w-full max-w-lg bg-white rounded-[32px] shadow-2xl shadow-gray-200/50 p-12 text-center animate-in fade-in zoom-in-95 duration-700">
+                <div className="relative inline-flex mb-8">
+                  <LoadingSpinner size="large" color="#f43f5e" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <FontAwesomeIcon icon={faHeart} className="text-rose-600/20 text-xl" />
                   </div>
-                ))
-              ) : (
-                <div className="empty-wishlist" data-aos="fade-up">
-                  <FontAwesomeIcon icon={faHeart} className="empty-icon" />
-                  <h2>Your wishlist is empty</h2>
-                  <p>Save your favorite places by clicking the heart icon on any listing</p>
-                  <Link to="/" className="browse-button">
-                    Browse Listings
+                </div>
+
+                <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">{loadingMessage}</h3>
+                <p className="text-gray-500 font-medium mb-8">Gathering your dreams...</p>
+
+                <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden mb-10">
+                  <div className="h-full bg-rose-500 rounded-full animate-[progress_2s_ease_infinite] w-1/2"></div>
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-3">
+                  {["Paris", "Bali", "Tokyo", "Rome"].map((city, i) => (
+                    <span key={i} className="flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 rounded-2xl text-xs font-bold uppercase tracking-wider animate-in fade-in slide-in-from-bottom-2" style={{ animationDelay: `${i * 150}s` }}>
+                      <FontAwesomeIcon icon={faHeart} className="text-[10px]" />
+                      {city}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="wishlist-content">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                <div>
+                  <Link to="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-blue-600 font-bold transition-colors mb-2 text-xs uppercase tracking-widest group">
+                    <FontAwesomeIcon icon={faArrowLeft} className="group-hover:-translate-x-1 transition-transform" />
+                    Back to listings
                   </Link>
+                  <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                    <FontAwesomeIcon icon={faHeart} className="text-rose-500" />
+                    My Wishlist
+                  </h1>
+                </div>
+                {wishlistItems.length > 0 && (
+                  <div className="bg-white px-6 py-3 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div className="text-right">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Saved Items</p>
+                      <p className="text-xl font-black text-rose-500 leading-tight">{wishlistItems.length}</p>
+                    </div>
+                    <div className="w-10 h-10 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center">
+                      <FontAwesomeIcon icon={faHeart} />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {error && (
+                <div className="mb-8 p-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl text-sm font-semibold flex items-center gap-3 animate-in shake-1">
+                  <FontAwesomeIcon icon={faHeart} className="opacity-50" />
+                  {error}
+                </div>
+              )}
+
+              {wishlistItems.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {wishlistItems.map((listing) => (
+                    <div key={listing.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      <ListingCard
+                        listing={listing}
+                        onRemoveFromWishlist={() => handleRemoveFromWishlist(listing.id)}
+                        isInWishlist={true}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white rounded-[32px] p-16 text-center border border-gray-100 shadow-sm border-dashed border-2 max-w-2xl mx-auto animate-in zoom-in-95 duration-700">
+                  <div className="w-24 h-24 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner">
+                    <FontAwesomeIcon icon={faHeart} />
+                  </div>
+                  <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">Your wishlist is empty</h3>
+                  <p className="text-gray-500 font-medium mb-10">Save your favorite places by clicking the heart icon on any listing.</p>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-gray-800 transition-all active:scale-95 shadow-xl shadow-gray-200"
+                  >
+                    Browse Listings
+                  </button>
                 </div>
               )}
             </div>
-          </main>
-        )}
-      </div>
-
-      <footer className="footer">
-        <div className="footer-content">
-          <p>&copy; {new Date().getFullYear()} EasyTrip. All rights reserved.</p>
+          )}
         </div>
-      </footer>
-
-      <style>{`
-        .page-wrapper {
-          display: flex;
-          flex-direction: column;
-          min-height: 100vh;
-        }
-
-        .content-area {
-          flex: 1;
-          padding: 2rem;
-          max-width: 1200px;
-          margin: 0 auto;
-          width: 100%;
-        }
-
-        .loading-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 400px;
-          width: 100%;
-        }
-
-        .loading-content {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 3rem;
-          background-color: white;
-          border-radius: 1rem;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-          max-width: 500px;
-          width: 90%;
-          text-align: center;
-          animation: fadeIn 0.5s ease;
-        }
-
-        .loading-title {
-          margin-top: 1.5rem;
-          margin-bottom: 0.5rem;
-          font-size: 1.5rem;
-          font-weight: 600;
-          color: #343a40;
-        }
-
-        .loading-message {
-          margin: 0 0 1.5rem;
-          color: #6c757d;
-        }
-
-        .loading-progress {
-          width: 80%;
-          height: 6px;
-          background-color: #e9ecef;
-          border-radius: 3px;
-          overflow: hidden;
-          margin-top: 1rem;
-        }
-
-        .progress-bar {
-          height: 100%;
-          width: 0;
-          background: linear-gradient(to right, #ff385c, #ff8a65);
-          border-radius: 3px;
-          animation: progress 2s ease infinite;
-        }
-
-        @keyframes progress {
-          0% {
-            width: 0%;
-          }
-          50% {
-            width: 70%;
-          }
-          100% {
-            width: 95%;
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .footer {
-          margin-top: auto;
-          background: #f8f9fa;
-          border-top: 1px solid #e9ecef;
-          padding: 20px 0;
-          width: 100%;
-          text-align: center;
-        }
-
-        .footer-content {
-          max-width: 1280px;
-          margin: 0 auto;
-          color: #6c757d;
-        }
-
-        .wishlist-page {
-          padding: 2rem;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .wishlist-header {
-          display: flex;
-          align-items: center;
-          gap: 2rem;
-          margin-bottom: 2rem;
-        }
-
-        .back-button {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          color: #666;
-          text-decoration: none;
-          transition: color 0.3s ease;
-        }
-
-        .back-button:hover {
-          color: #333;
-        }
-
-        .wishlist-header h1 {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          margin: 0;
-          color: #333;
-        }
-
-        .wishlist-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 2rem;
-          padding: 1rem 0;
-        }
-
-        .wishlist-item {
-          transition: transform 0.3s ease;
-        }
-
-        .wishlist-item:hover {
-          transform: translateY(-5px);
-        }
-
-        .empty-wishlist {
-          grid-column: 1 / -1;
-          text-align: center;
-          padding: 4rem 2rem;
-          background: #f8f9fa;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .empty-icon {
-          font-size: 3rem;
-          color: #dc3545;
-          margin-bottom: 1rem;
-        }
-
-        .empty-wishlist h2 {
-          margin: 1rem 0;
-          color: #333;
-        }
-
-        .empty-wishlist p {
-          color: #666;
-          margin-bottom: 2rem;
-        }
-
-        .browse-button {
-          display: inline-block;
-          padding: 0.8rem 1.5rem;
-          background: #007bff;
-          color: white;
-          text-decoration: none;
-          border-radius: 8px;
-          transition: all 0.3s ease;
-        }
-
-        .browse-button:hover {
-          background: #0056b3;
-          transform: translateY(-2px);
-        }
-
-        .error-message {
-          padding: 1rem;
-          margin-bottom: 2rem;
-          background: #f8d7da;
-          color: #721c24;
-          border-radius: 8px;
-          text-align: center;
-        }
-
-        .loading-destinations {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-          justify-content: center;
-          margin-top: 1rem;
-        }
-        
-        .destination {
-          background: rgba(255, 56, 92, 0.1);
-          color: #ff385c;
-          padding: 5px 12px;
-          border-radius: 15px;
-          font-size: 0.9rem;
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          animation: breathe 3s infinite ease-in-out;
-        }
-        
-        .destination:nth-child(1) { animation-delay: 0s; }
-        .destination:nth-child(2) { animation-delay: 0.5s; }
-        .destination:nth-child(3) { animation-delay: 1s; }
-        .destination:nth-child(4) { animation-delay: 1.5s; }
-        
-        @keyframes breathe {
-          0%, 100% { transform: scale(1); opacity: 0.8; }
-          50% { transform: scale(1.05); opacity: 1; }
-        }
-        
-        .floating-hearts {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-          z-index: -1;
-        }
-        
-        .floating-heart {
-          position: absolute;
-          color: rgba(255, 56, 92, 0.1);
-          font-size: 20px;
-          animation-name: float;
-          animation-duration: 10s;
-          animation-timing-function: ease-in-out;
-          animation-iteration-count: infinite;
-        }
-        
-        .heart-1 { left: 10%; top: 20%; animation-delay: 0s; font-size: 18px; }
-        .heart-2 { left: 20%; top: 60%; animation-delay: 1s; font-size: 24px; }
-        .heart-3 { left: 30%; top: 30%; animation-delay: 2s; font-size: 16px; }
-        .heart-4 { left: 50%; top: 70%; animation-delay: 3s; font-size: 22px; }
-        .heart-5 { left: 65%; top: 40%; animation-delay: 4s; font-size: 19px; }
-        .heart-6 { left: 75%; top: 20%; animation-delay: 5s; font-size: 25px; }
-        .heart-7 { left: 85%; top: 50%; animation-delay: 6s; font-size: 17px; }
-        .heart-8 { left: 90%; top: 80%; animation-delay: 7s; font-size: 21px; }
-        
-        @keyframes float {
-          0% { transform: translateY(0) rotate(0deg); opacity: 0.1; }
-          25% { transform: translateY(-20px) rotate(5deg); opacity: 0.3; }
-          50% { transform: translateY(-35px) rotate(0deg); opacity: 0.1; }
-          75% { transform: translateY(-20px) rotate(-5deg); opacity: 0.3; }
-          100% { transform: translateY(0) rotate(0deg); opacity: 0.1; }
-        }
-
-        @media (max-width: 768px) {
-          .wishlist-page {
-            padding: 1rem;
-          }
-
-          .wishlist-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .wishlist-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-          }
-
-          .loading-content {
-            padding: 2rem;
-          }
-          
-          .loading-title {
-            font-size: 1.2rem;
-          }
-          
-          .loading-destinations {
-            flex-direction: column;
-            align-items: center;
-          }
-        }
-      `}</style>
+      </main>
     </div>
   );
 };

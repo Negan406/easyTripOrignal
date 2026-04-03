@@ -6,6 +6,7 @@ import ListingCard from '../components/ListingCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import axios from '../utils/axios';
+import Sidebar from '../components/Sidebar';
 
 const PendingListings = () => {
   const [pendingListings, setPendingListings] = useState([]);
@@ -118,257 +119,81 @@ const PendingListings = () => {
   };
 
   return (
-    <div className="page-wrapper">
-      <div className="content-area">
-        {loading ? (
-          <div className="loading-container">
-            <LoadingSpinner />
+    <div className="flex min-h-screen bg-gray-50/50">
+      <Sidebar />
+      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 max-w-7xl mx-auto w-full transition-all duration-300">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="mb-10">
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Pending Listings</h1>
+            <p className="text-gray-500 font-medium mt-1">Review and approve new property submissions</p>
           </div>
-        ) : (
-          <main className="pending-container">
-            <h1 className="page-title">Pending Listings</h1>
 
-            {notification && (
+          {notification && (
+            <div className="fixed top-24 right-6 z-[100] animate-in slide-in-from-right-8 duration-300">
               <Notification
                 type={notification.type}
                 message={notification.message}
                 onClose={() => setNotification(null)}
               />
-            )}
+            </div>
+          )}
 
-            {pendingListings.length === 0 ? (
-              <div className="no-results-message">
-                <FontAwesomeIcon icon={faCheck} className="check-icon" />
-                <p>No pending listings to review</p>
-              </div>
-            ) : (
-              <div className="pending-grid">
-                {pendingListings.map(listing => (
-                  <div key={listing.id} className="pending-item" data-aos="fade-up">
-                    <ListingCard listing={listing} />
-                    <div className="action-container">
-                      <button
-                        className={`action-button approve ${processing === listing.id ? 'processing' : ''}`}
-                        onClick={() => handleApprove(listing)}
-                        disabled={processing !== null}
-                      >
-                        <FontAwesomeIcon icon={faCheck} />
-                        <span>Accept</span>
-                      </button>
-                      <button
-                        className={`action-button reject ${processing === listing.id ? 'processing' : ''}`}
-                        onClick={() => handleReject(listing)}
-                        disabled={processing !== null}
-                      >
-                        <FontAwesomeIcon icon={faTimes} />
-                        <span>Reject</span>
-                      </button>
-                    </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <LoadingSpinner size="large" color="#2563eb" />
+            </div>
+          ) : (
+            <div className="pending-content">
+              {pendingListings.length === 0 ? (
+                <div className="bg-white rounded-[32px] p-16 text-center border border-gray-100 shadow-sm border-dashed border-2">
+                  <div className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner">
+                    <FontAwesomeIcon icon={faCheck} />
                   </div>
-                ))}
-              </div>
-            )}
-          </main>
-        )}
-      </div>
+                  <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">All Caught Up!</h3>
+                  <p className="text-gray-500 font-medium">There are no pending listings to review at this time.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {pendingListings.map(listing => (
+                    <div key={listing.id} className="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-gray-200/40 transition-all group flex flex-col">
+                      <div className="relative shrink-0">
+                        <ListingCard listing={listing} />
+                      </div>
 
-      <footer className="footer">
-        <div className="footer-content">
-          <p>&copy; {new Date().getFullYear()} EasyTrip. All rights reserved.</p>
+                      <div className="p-6 pt-0 mt-auto bg-white">
+                        <div className="flex gap-3 pt-4 border-t border-gray-50">
+                          <button
+                            className={`flex-[2] py-3.5 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2 group/btn ${processing === listing.id ? 'opacity-70 cursor-wait' : ''
+                              }`}
+                            onClick={() => handleApprove(listing)}
+                            disabled={processing !== null}
+                          >
+                            {processing === listing.id ? (
+                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            ) : (
+                              <FontAwesomeIcon icon={faCheck} className="text-[10px]" />
+                            )}
+                            Approve
+                          </button>
+                          <button
+                            className={`flex-1 py-3.5 bg-rose-50 text-rose-600 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-100 transition-all active:scale-95 border border-rose-100 flex items-center justify-center gap-2 group/btn ${processing === listing.id ? 'opacity-70 cursor-wait' : ''
+                              }`}
+                            onClick={() => handleReject(listing)}
+                            disabled={processing !== null}
+                          >
+                            <FontAwesomeIcon icon={faTimes} className="text-[10px]" />
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      </footer>
-
-      <style>{`
-        .page-wrapper {
-          display: flex;
-          flex-direction: column;
-          min-height: 100vh;
-        }
-
-        .content-area {
-          flex: 1;
-          padding: 2rem;
-          max-width: 1200px;
-          margin: 0 auto;
-          width: 100%;
-        }
-
-        .loading-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 400px;
-        }
-
-        .footer {
-          margin-top: auto;
-          background: #f8f9fa;
-          border-top: 1px solid #e9ecef;
-          padding: 20px 0;
-          width: 100%;
-          text-align: center;
-        }
-
-        .footer-content {
-          max-width: 1280px;
-          margin: 0 auto;
-          color: #6c757d;
-        }
-
-        .pending-page {
-          padding: 2rem;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .page-title {
-          text-align: center;
-          margin-bottom: 2rem;
-          color: #222;
-          font-size: 2.5rem;
-          font-weight: 600;
-        }
-
-        .pending-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 2rem;
-          padding: 1rem 0;
-        }
-
-        .pending-item {
-          display: flex;
-          flex-direction: column;
-          transition: transform 0.3s ease;
-          background: white;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .pending-item:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 16px rgba(0,0,0,0.12);
-        }
-
-        .action-container {
-          display: flex;
-          gap: 1rem;
-          padding: 1.25rem;
-          background: white;
-          border-top: 1px solid #eee;
-        }
-
-        .action-button {
-          flex: 1;
-          padding: 0.875rem;
-          border: none;
-          border-radius: 8px;
-          font-size: 1rem;
-          font-weight: 500;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.75rem;
-          transition: all 0.2s ease;
-          color: white;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .action-button.approve {
-          background: #28a745;
-        }
-
-        .action-button.reject {
-          background: #dc3545;
-        }
-
-        .action-button.approve:hover:not(:disabled) {
-          background: #218838;
-          transform: translateY(-2px);
-        }
-
-        .action-button.reject:hover:not(:disabled) {
-          background: #c82333;
-          transform: translateY(-2px);
-        }
-
-        .action-button:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-          transform: none !important;
-        }
-
-        .action-button.processing {
-          position: relative;
-          padding-right: 2.5rem;
-        }
-
-        .action-button.processing::after {
-          content: '';
-          position: absolute;
-          right: 1rem;
-          width: 1.25rem;
-          height: 1.25rem;
-          border: 2px solid rgba(255,255,255,0.5);
-          border-right-color: transparent;
-          border-radius: 50%;
-          animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-
-        .no-results-message {
-          text-align: center;
-          padding: 4rem 2rem;
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-          margin: 2rem auto;
-          max-width: 500px;
-        }
-
-        .check-icon {
-          font-size: 3rem;
-          color: #28a745;
-          margin-bottom: 1.5rem;
-        }
-
-        .no-results-message p {
-          font-size: 1.25rem;
-          color: #666;
-          margin: 0;
-        }
-
-        @media (max-width: 768px) {
-          .content-area {
-            padding: 1rem;
-          }
-
-          .page-title {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-          }
-
-          .pending-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-          }
-
-          .action-container {
-            padding: 1rem;
-          }
-
-          .action-button {
-            padding: 0.75rem;
-            font-size: 0.9rem;
-          }
-        }
-      `}</style>
+      </main>
     </div>
   );
 };

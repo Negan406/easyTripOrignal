@@ -87,251 +87,172 @@ const Register = () => {
   };
 
   return (
-    <div className="register-container">
-      <h1>Register</h1>
-      {error && <div className="error-message">{error}</div>}
-      <form className="register-form" onSubmit={handleRegister}>
-        <div className="form-group">
-          <label htmlFor="name">Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            required
-          />
+    <div className="min-h-screen py-12 px-6 bg-gray-50/50 flex items-center justify-center">
+      <div className="w-full max-w-xl bg-white rounded-3xl shadow-xl shadow-gray-200/50 p-8 md:p-12 border border-gray-100 animate-in fade-in zoom-in-95 duration-500">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+          <p className="text-gray-500 font-medium">Join EasyTrip and start your journey today</p>
         </div>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="phone">Phone Number</label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-            minLength="8"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password_confirmation">Confirm Password</label>
-          <input
-            type="password"
-            id="password_confirmation"
-            name="password_confirmation"
-            value={formData.password_confirmation}
-            onChange={handleInputChange}
-            required
-            minLength="8"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="role">Register as</label>
-          <select
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleInputChange}
-            required
-          >
-            <option value="user">Regular User</option>
-            <option value="host">Host</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="profile_photo">Profile Photo</label>
-          <div className="photo-upload">
-            <input
-              type="file"
-              id="profile_photo"
-              name="profile_photo"
-              accept="image/*"
-              onChange={handlePhotoChange}
-              className="photo-input"
-            />
-            <div className="photo-preview-container">
-              {photoPreview ? (
-                <img src={photoPreview} alt="Profile preview" className="photo-preview" />
-              ) : (
-                <div className="photo-placeholder">
-                  <i className="fas fa-user"></i>
-                  <span>Upload Photo</span>
-                </div>
-              )}
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-sm text-red-600 flex items-center gap-3 animate-in slide-in-from-top-2">
+            <i className="fas fa-exclamation-circle"></i>
+            <span className="font-semibold">{error}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleRegister} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-900 uppercase ml-1" htmlFor="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 font-medium placeholder:text-gray-400 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all"
+                placeholder="John Doe"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-900 uppercase ml-1" htmlFor="email">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 font-medium placeholder:text-gray-400 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all"
+                placeholder="name@example.com"
+              />
             </div>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-900 uppercase ml-1" htmlFor="phone">Phone Number</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 font-medium placeholder:text-gray-400 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all"
+                placeholder="+1 (555) 000-0000"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-900 uppercase ml-1" htmlFor="role">Register as</label>
+              <select
+                id="role"
+                name="role"
+                value={formData.role}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 font-semibold outline-none focus:bg-white focus:border-blue-600 transition-all appearance-none cursor-pointer"
+              >
+                <option value="user">Regular Traveler</option>
+                <option value="host">Property Host</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-900 uppercase ml-1" htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                minLength="8"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 font-medium placeholder:text-gray-400 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all"
+                placeholder="••••••••"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-900 uppercase ml-1" htmlFor="password_confirmation">Confirm Password</label>
+              <input
+                type="password"
+                id="password_confirmation"
+                name="password_confirmation"
+                value={formData.password_confirmation}
+                onChange={handleInputChange}
+                required
+                minLength="8"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 font-medium placeholder:text-gray-400 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <label className="text-xs font-bold text-gray-900 uppercase ml-1 mb-3 block">Profile Photo</label>
+            <div className="flex items-center gap-6 p-4 bg-gray-50 rounded-3xl border border-gray-200 group hover:border-blue-200 transition-colors">
+              <div className="relative flex-shrink-0">
+                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white border-2 border-white shadow-md">
+                  {photoPreview ? (
+                    <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                      <i className="fas fa-user-circle text-4xl"></i>
+                    </div>
+                  )}
+                </div>
+                <label htmlFor="profile_photo" className="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-blue-700 transition-colors border-2 border-white">
+                  <i className="fas fa-camera text-xs"></i>
+                </label>
+              </div>
+              <div className="flex-grow">
+                <p className="text-sm font-bold text-gray-900 mb-1">Upload a photo</p>
+                <p className="text-xs text-gray-500">PNG, JPG or GIF (max. 2MB)</p>
+                <input
+                  type="file"
+                  id="profile_photo"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="hidden"
+                />
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 group mt-4"
+          >
+            {isLoading ? (
+              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            ) : (
+              <>
+                <span>Create Account</span>
+                <i className="fas fa-user-plus text-sm transition-transform group-hover:scale-110"></i>
+              </>
+            )}
+          </button>
+        </form>
+
+        <div className="mt-10 pt-8 border-t border-gray-100 text-center">
+          <p className="text-gray-500 font-medium">
+            Already have an account?{' '}
+            <Link to="/login" className="text-blue-600 font-bold hover:text-blue-700 underline underline-offset-4 ml-1">
+              Log in instead
+            </Link>
+          </p>
         </div>
-        <button type="submit" className="cta-button" disabled={isLoading}>
-          {isLoading ? <LoadingSpinner size="small" /> : 'Register'}
-        </button>
-      </form>
-      <div className="login-link">
-        Already have an account? <Link to="/login">Login here</Link>
       </div>
-
-      <style>
-        {`
-          .register-container {
-            max-width: 400px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-          }
-
-          .error-message {
-            color: #dc3545;
-            padding: 0.5rem;
-            margin-bottom: 1rem;
-            border-radius: 4px;
-            background-color: #ffd2d2;
-          }
-
-          .register-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-          }
-
-          .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-          }
-
-          .form-group label {
-            font-weight: 500;
-          }
-
-          .form-group input,
-          .form-group select {
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-          }
-
-          .photo-upload {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-          }
-
-          .photo-input {
-            width: 100%;
-          }
-
-          .photo-preview-container {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 2px dashed #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f8f9fa;
-            cursor: pointer;
-            transition: all 0.3s ease;
-          }
-
-          .photo-preview-container:hover {
-            border-color: #007bff;
-          }
-
-          .photo-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            color: #666;
-          }
-
-          .photo-placeholder i {
-            font-size: 2rem;
-          }
-
-          .photo-placeholder span {
-            font-size: 0.9rem;
-          }
-
-          .photo-preview {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
-
-          .photo-preview:hover {
-            opacity: 0.9;
-          }
-
-          .cta-button {
-            position: relative;
-            min-height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.3s ease;
-          }
-          
-          .cta-button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-          }
-
-          .cta-button:not(:disabled):hover {
-            background: #0056b3;
-          }
-
-          .login-link {
-            margin-top: 1rem;
-            text-align: center;
-          }
-
-          .login-link a {
-            color: #007bff;
-            text-decoration: none;
-          }
-
-          .login-link a:hover {
-            text-decoration: underline;
-          }
-        `}
-      </style>
     </div>
   );
 };
 
-export default Register; 
+export default Register;

@@ -47,129 +47,86 @@ const Login = () => {
   };
 
   return (
-    <>
-      <br /><br />
-      <div className="login-container">
-        <h1>Login</h1>
-        {error && <div className="error-message">{error}</div>}
-        <form className="login-form" onSubmit={handleLogin}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+    <div className="min-h-[80vh] flex items-center justify-center p-6 bg-gray-50/50">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-gray-200/50 p-8 md:p-10 border border-gray-100 animate-in fade-in zoom-in-95 duration-500">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+          <p className="text-gray-500 font-medium">Log in to manage your trips and bookings</p>
+        </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-sm text-red-600 flex items-center gap-3 animate-in slide-in-from-top-2">
+            <i className="fas fa-exclamation-circle"></i>
+            <span className="font-semibold">{error}</span>
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+        )}
+
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-gray-900 uppercase ml-1" htmlFor="email">Email Address</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                <i className="fas fa-envelope text-sm"></i>
+              </div>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 font-medium placeholder:text-gray-400 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all"
+                placeholder="name@example.com"
+              />
+            </div>
           </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <label className="text-xs font-bold text-gray-900 uppercase" htmlFor="password">Password</label>
+              <Link to="/forgot-password" size="sm" className="text-xs font-bold text-blue-600 hover:text-blue-700 underline underline-offset-4">Forgot?</Link>
+            </div>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                <i className="fas fa-lock text-sm"></i>
+              </div>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 font-medium placeholder:text-gray-400 outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-50 transition-all"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
           <button
             type="submit"
-            className="cta-button"
             disabled={isLoading}
+            className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-blue-100 hover:bg-blue-700 hover:shadow-blue-200 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 group"
           >
-            {isLoading ? <LoadingSpinner size="small" /> : 'Login'}
+            {isLoading ? (
+              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            ) : (
+              <>
+                <span>Sign In</span>
+                <i className="fas fa-arrow-right text-sm transition-transform group-hover:translate-x-1"></i>
+              </>
+            )}
           </button>
         </form>
-        <div style={{ display: 'flex', gap: '20px' }} className="login-links">
-          <Link to="/register">Create an Account</Link>
-          <Link to="/forgot-password">Forgot Password?</Link>
+
+        <div className="mt-10 pt-8 border-t border-gray-100 text-center">
+          <p className="text-gray-500 font-medium">
+            Don&apos;t have an account?{' '}
+            <Link to="/register" className="text-blue-600 font-bold hover:text-blue-700 underline underline-offset-4 ml-1">
+              Create one now
+            </Link>
+          </p>
         </div>
-      </div><br /><br /><br />
-
-      <style jsx>{`
-        .login-container {
-          max-width: 400px;
-          margin: 0 auto;
-          padding: 2rem;
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .error-message {
-          color: #dc3545;
-          padding: 0.5rem;
-          margin-bottom: 1rem;
-          border-radius: 4px;
-          background-color: #ffd2d2;
-        }
-
-        .login-form {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .form-group label {
-          font-weight: 500;
-        }
-
-        .form-group input {
-          padding: 0.75rem;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          font-size: 1rem;
-        }
-
-        .cta-button {
-          position: relative;
-          min-height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0.75rem;
-          background: #007bff;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 1rem;
-          cursor: pointer;
-          transition: background 0.3s ease;
-        }
-        
-        .cta-button:disabled {
-          background-color: #cccccc;
-          cursor: not-allowed;
-        }
-
-        .cta-button:not(:disabled):hover {
-          background: #0056b3;
-        }
-
-        .login-links {
-          margin-top: 1rem;
-          justify-content: center;
-        }
-
-        .login-links a {
-          color: #007bff;
-          text-decoration: none;
-        }
-
-        .login-links a:hover {
-          text-decoration: underline;
-        }
-      `}</style>
-    </>
+      </div>
+    </div>
   );
 };
 

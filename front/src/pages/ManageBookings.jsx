@@ -133,346 +133,121 @@ const ManageBookings = () => {
   };
 
   return (
-    <div className="page-wrapper">
-      <div className="content-area">
-        {notification && (
-          <Notification
-            message={notification.message}
-            type={notification.type}
-            onClose={closeNotification}
-          />
-        )}
+    <div className="flex min-h-screen bg-gray-50/50">
+      <Sidebar />
+      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 max-w-7xl mx-auto w-full transition-all duration-300">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          {notification && (
+            <div className="fixed top-24 right-6 z-[100] animate-in slide-in-from-right-8 duration-300">
+              <Notification
+                message={notification.message}
+                type={notification.type}
+                onClose={closeNotification}
+              />
+            </div>
+          )}
 
-        <h1 className="page-title">Manage Listing Bookings</h1>
-
-        {loading ? (
-          <div className="loading-container">
-            <LoadingSpinner />
+          <div className="mb-10">
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Manage Listing Bookings</h1>
+            <p className="text-gray-500 font-medium mt-1">Review and manage check-in requests for your properties</p>
           </div>
-        ) : (
-          <div className="bookings-content">
-            {!bookings || bookings.length === 0 ? (
-              <div className="no-results-message">No bookings found for your listings</div>
-            ) : (
-              <div className="bookings-list">
-                {bookings.map((booking) => (
-                  <div key={booking.id} className="booking-item" data-aos="fade-up">
-                    <div className="booking-image-container">
-                      <img
-                        src={getImageUrl(booking.listing?.main_photo)}
-                        alt={booking.listing?.title || 'Listing'}
-                        className="booking-image"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
-                        }}
-                      />
-                      <div className="booking-status-badge">
-                        <span className={`status-${booking.payment_status || 'pending'}`}>
-                          {(booking.payment_status || 'pending').charAt(0).toUpperCase() +
-                            (booking.payment_status || 'pending').slice(1)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="booking-details">
-                      <h3>{booking.listing?.title || 'Listing not available'}</h3>
-                      <div className="guest-info">
-                        <FontAwesomeIcon icon={faUser} className="guest-icon" />
-                        <span>{booking.user?.name || 'Anonymous'}</span>
-                      </div>
-                      <div className="booking-dates">
-                        <div className="date-item">
-                          <span className="date-label">Check-in:</span>
-                          <span className="date-value">{formatDate(booking.start_date)}</span>
-                        </div>
-                        <div className="date-item">
-                          <span className="date-label">Check-out:</span>
-                          <span className="date-value">{formatDate(booking.end_date)}</span>
-                        </div>
-                      </div>
-                      <div className="booking-price">
-                        <span className="price-label">Total Price:</span>
-                        <span className="price-value">${parseFloat(booking.total_price || 0).toFixed(2)}</span>
-                      </div>
-                      {booking.payment_status === 'pending' && (
-                        <div className="booking-actions">
-                          <button
-                            onClick={() => handleAcceptBooking(booking.id)}
-                            className="accept-button"
-                          >
-                            Accept Payment
-                          </button>
-                          <button
-                            onClick={() => handleRefuseBooking(booking.id)}
-                            className="refuse-button"
-                          >
-                            Refuse Payment
-                          </button>
-                        </div>
-                      )}
-                    </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <LoadingSpinner size="large" color="#2563eb" />
+            </div>
+          ) : (
+            <div className="bookings-content">
+              {!bookings || bookings.length === 0 ? (
+                <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm border-dashed border-2">
+                  <div className="w-20 h-20 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                    <i className="fas fa-calendar-check"></i>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+                  <h3 className="text-xl font-bold text-gray-900">No bookings yet</h3>
+                  <p className="text-gray-500 mt-2 font-medium">When guests book your listings, they will appear here.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {bookings.map((booking) => (
+                    <div key={booking.id} className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 transition-all group flex flex-col">
+                      <div className="relative h-52 overflow-hidden">
+                        <img
+                          src={getImageUrl(booking.listing?.main_photo)}
+                          alt={booking.listing?.title || 'Listing'}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                          }}
+                        />
+                        <div className="absolute top-4 right-4">
+                          <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-md ${booking.payment_status === 'completed' ? 'bg-emerald-500/90 text-white' :
+                              booking.payment_status === 'refused' ? 'bg-rose-500/90 text-white' :
+                                'bg-amber-500/90 text-white'
+                            }`}>
+                            {booking.payment_status || 'pending'}
+                          </span>
+                        </div>
+                      </div>
 
-      <footer className="footer">
-        <div className="footer-content">
-          <p>&copy; {new Date().getFullYear()} EasyTrip. All rights reserved.</p>
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-lg font-bold text-gray-900 mb-4 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                          {booking.listing?.title || 'Listing not available'}
+                        </h3>
+
+                        <div className="space-y-4 mb-6">
+                          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl">
+                            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-blue-600 border border-gray-100 shadow-sm">
+                              <FontAwesomeIcon icon={faUser} />
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Guest</p>
+                              <p className="text-sm font-bold text-gray-900">{booking.user?.name || 'Anonymous'}</p>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="p-3 bg-blue-50/50 rounded-2xl border border-blue-50">
+                              <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Check-in</p>
+                              <p className="text-xs font-black text-blue-900">{formatDate(booking.start_date)}</p>
+                            </div>
+                            <div className="p-3 bg-indigo-50/50 rounded-2xl border border-indigo-50">
+                              <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">Check-out</p>
+                              <p className="text-xs font-black text-indigo-900">{formatDate(booking.end_date)}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between mb-6 px-1">
+                          <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Total Price</span>
+                          <span className="text-2xl font-black text-gray-900">${parseFloat(booking.total_price || 0).toFixed(2)}</span>
+                        </div>
+
+                        {booking.payment_status === 'pending' && (
+                          <div className="flex gap-3 mt-auto">
+                            <button
+                              onClick={() => handleAcceptBooking(booking.id)}
+                              className="flex-1 py-3 bg-blue-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-100"
+                            >
+                              Accept
+                            </button>
+                            <button
+                              onClick={() => handleRefuseBooking(booking.id)}
+                              className="flex-1 py-3 bg-rose-50 text-rose-600 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-rose-100 transition-all active:scale-95 border border-rose-100"
+                            >
+                              Refuse
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      </footer>
-
-      <style>{`
-        .page-wrapper {
-          display: flex;
-          flex-direction: column;
-          min-height: 100vh;
-          background-color: #f8f9fa;
-        }
-        
-        .content-area {
-          flex: 1;
-          padding: 2rem;
-          max-width: 1200px;
-          margin: 0 auto;
-          width: 100%;
-        }
-        
-        .page-title {
-          text-align: center;
-          color: #2c3e50;
-          margin-bottom: 2rem;
-          font-size: 2.5rem;
-          font-weight: 700;
-        }
-        
-        .bookings-list {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-          gap: 2rem;
-          padding: 1rem;
-        }
-        
-        .booking-item {
-          background: white;
-          border-radius: 15px;
-          overflow: hidden;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .booking-item:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-        
-        .booking-image-container {
-          position: relative;
-          width: 100%;
-          height: 200px;
-          overflow: hidden;
-        }
-        
-        .booking-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.3s ease;
-        }
-        
-        .booking-item:hover .booking-image {
-          transform: scale(1.05);
-        }
-        
-        .booking-status-badge {
-          position: absolute;
-          top: 1rem;
-          right: 1rem;
-          padding: 0.5rem 1rem;
-          border-radius: 20px;
-          background: rgba(255, 255, 255, 0.9);
-          backdrop-filter: blur(4px);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .booking-details {
-          padding: 1.5rem;
-        }
-        
-        .booking-details h3 {
-          margin: 0 0 1rem 0;
-          color: #2c3e50;
-          font-size: 1.4rem;
-          font-weight: 600;
-          line-height: 1.3;
-        }
-        
-        .guest-info {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          margin-bottom: 1rem;
-          color: #2c3e50;
-          font-size: 1.1rem;
-        }
-        
-        .guest-icon {
-          color: #666;
-        }
-        
-        .booking-dates {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-          margin-bottom: 1rem;
-          padding: 1rem;
-          background: #f8f9fa;
-          border-radius: 10px;
-        }
-        
-        .date-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        
-        .date-label {
-          color: #666;
-          font-weight: 500;
-        }
-        
-        .date-value {
-          color: #2c3e50;
-          font-weight: 600;
-        }
-        
-        .booking-price {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1rem;
-          padding: 1rem;
-          background: #f8f9fa;
-          border-radius: 10px;
-          font-size: 1.1rem;
-        }
-        
-        .price-label {
-          color: #666;
-          font-weight: 500;
-        }
-        
-        .price-value {
-          color: #2c3e50;
-          font-weight: 600;
-        }
-        
-        .status-pending {
-          color: #f39c12;
-          font-weight: 600;
-        }
-        
-        .status-completed {
-          color: #27ae60;
-          font-weight: 600;
-        }
-        
-        .status-cancelled {
-          color: #e74c3c;
-          font-weight: 600;
-        }
-        
-        .booking-actions {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1rem;
-          margin-top: 1rem;
-        }
-        
-        .accept-button,
-        .refuse-button {
-          padding: 0.8rem;
-          border: none;
-          border-radius: 8px;
-          font-weight: 600;
-          font-size: 1rem;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        
-        .accept-button {
-          background-color: #27ae60;
-          color: white;
-        }
-        
-        .accept-button:hover {
-          background-color: #219a52;
-          transform: translateY(-2px);
-        }
-        
-        .refuse-button {
-          background-color: #e74c3c;
-          color: white;
-        }
-        
-        .refuse-button:hover {
-          background-color: #c0392b;
-          transform: translateY(-2px);
-        }
-        
-        .no-results-message {
-          text-align: center;
-          margin: 3rem auto;
-          padding: 2rem;
-          background: white;
-          border-radius: 15px;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-          max-width: 500px;
-          font-size: 1.2rem;
-          color: #666;
-        }
-        
-        .loading-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 400px;
-        }
-        
-        @media (max-width: 768px) {
-          .content-area {
-            padding: 1rem;
-          }
-          
-          .bookings-list {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            padding: 0.5rem;
-          }
-          
-          .page-title {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-          }
-          
-          .booking-details {
-            padding: 1rem;
-          }
-          
-          .booking-actions {
-            grid-template-columns: 1fr;
-          }
-          
-          .accept-button,
-          .refuse-button {
-            padding: 0.7rem;
-            font-size: 0.95rem;
-          }
-        }
-      `}</style>
+      </main>
     </div>
   );
 };

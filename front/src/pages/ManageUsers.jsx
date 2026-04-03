@@ -173,585 +173,202 @@ const ManageUsers = () => {
 
   if (loading) {
     return (
-      <div className="users-loading-container">
-        <div className="users-loading-content">
-          <LoadingSpinner size="large" color="#ff385c" />
-          <h3 className="loading-title">{loadingMessage}</h3>
-          <div className="loading-progress">
-            <div className="progress-bar"></div>
+      <div className="flex min-h-screen bg-gray-50/50">
+        <Sidebar />
+        <div className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+          {/* Animated Background Icons */}
+          <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
+            {[faUserGear, faShield, faEnvelope, faPhone, faUserPlus, faKey, faCrown, faTrash].map((icon, i) => (
+              <FontAwesomeIcon
+                key={i}
+                icon={icon}
+                className="absolute animate-pulse text-6xl"
+                style={{
+                  top: `${Math.random() * 80 + 10}%`,
+                  left: `${Math.random() * 80 + 10}%`,
+                  animationDelay: `${i * 0.5}s`,
+                  animationDuration: '3s'
+                }}
+              />
+            ))}
           </div>
-          <div className="loading-users">
-            <span className="user-type"><FontAwesomeIcon icon={faUserGear} /> Administrators</span>
-            <span className="user-type"><FontAwesomeIcon icon={faKey} /> Account Managers</span>
-            <span className="user-type"><FontAwesomeIcon icon={faEnvelope} /> Email Subscribers</span>
-            <span className="user-type"><FontAwesomeIcon icon={faUserPlus} /> New Users</span>
+
+          <div className="relative z-10 w-full max-w-lg bg-white rounded-[32px] shadow-2xl shadow-gray-200/50 p-12 text-center animate-in fade-in zoom-in-95 duration-700">
+            <div className="relative inline-flex mb-8">
+              <LoadingSpinner size="large" color="#2563eb" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <FontAwesomeIcon icon={faUserGear} className="text-blue-600/20 text-xl" />
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">{loadingMessage}</h3>
+            <p className="text-gray-500 font-medium mb-8">This may take a few moments...</p>
+
+            <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden mb-10">
+              <div className="h-full bg-blue-600 rounded-full animate-[progress_2s_ease_infinite] w-1/2"></div>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                { icon: faUserGear, label: 'Admins' },
+                { icon: faKey, label: 'Accounts' },
+                { icon: faEnvelope, label: 'Emails' },
+                { icon: faUserPlus, label: 'New Users' }
+              ].map((item, i) => (
+                <span key={i} className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-2xl text-xs font-bold uppercase tracking-wider animate-in fade-in slide-in-from-bottom-2" style={{ animationDelay: `${i * 150}s` }}>
+                  <FontAwesomeIcon icon={item.icon} className="text-[10px]" />
+                  {item.label}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="floating-icons">
-          {[
-            faUserGear, faShield, faEnvelope, faPhone,
-            faUserPlus, faKey, faCrown, faTrash
-          ].map((icon, i) => (
-            <FontAwesomeIcon
-              key={i}
-              icon={icon}
-              className={`floating-icon icon-${i + 1}`}
-            />
-          ))}
-        </div>
-        <style jsx>{`
-          .users-loading-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            width: 100%;
-            position: relative;
-            background-color: #f8f9fa;
-          }
-          
-          .users-loading-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem;
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            animation: fadeIn 0.5s ease;
-            z-index: 1;
-          }
-          
-          .loading-title {
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #343a40;
-          }
-          
-          .loading-progress {
-            width: 80%;
-            height: 6px;
-            background-color: #e9ecef;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 1rem;
-          }
-          
-          .progress-bar {
-            height: 100%;
-            width: 0;
-            background: linear-gradient(to right, #ff385c, #ff8a65);
-            border-radius: 3px;
-            animation: progress 2s ease infinite;
-          }
-          
-          .loading-users {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 1.5rem;
-          }
-          
-          .user-type {
-            background: rgba(255, 56, 92, 0.1);
-            color: #ff385c;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            animation: breathe 3s infinite ease-in-out;
-          }
-          
-          .user-type:nth-child(1) { animation-delay: 0s; }
-          .user-type:nth-child(2) { animation-delay: 0.5s; }
-          .user-type:nth-child(3) { animation-delay: 1s; }
-          .user-type:nth-child(4) { animation-delay: 1.5s; }
-          
-          @keyframes breathe {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-          }
-          
-          .floating-icons {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-          }
-          
-          .floating-icon {
-            position: absolute;
-            color: rgba(255, 56, 92, 0.1);
-            font-size: 20px;
-            animation-name: float;
-            animation-duration: 10s;
-            animation-timing-function: ease-in-out;
-            animation-iteration-count: infinite;
-          }
-          
-          .icon-1 { left: 10%; top: 20%; animation-delay: 0s; font-size: 18px; }
-          .icon-2 { left: 20%; top: 60%; animation-delay: 1s; font-size: 24px; }
-          .icon-3 { left: 30%; top: 30%; animation-delay: 2s; font-size: 16px; }
-          .icon-4 { left: 50%; top: 70%; animation-delay: 3s; font-size: 22px; }
-          .icon-5 { left: 65%; top: 40%; animation-delay: 4s; font-size: 19px; }
-          .icon-6 { left: 75%; top: 20%; animation-delay: 5s; font-size: 25px; }
-          .icon-7 { left: 85%; top: 50%; animation-delay: 6s; font-size: 17px; }
-          .icon-8 { left: 90%; top: 80%; animation-delay: 7s; font-size: 21px; }
-          
-          @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0.1; }
-            25% { transform: translateY(-20px) rotate(5deg); opacity: 0.3; }
-            50% { transform: translateY(-35px) rotate(0deg); opacity: 0.1; }
-            75% { transform: translateY(-20px) rotate(-5deg); opacity: 0.3; }
-            100% { transform: translateY(0) rotate(0deg); opacity: 0.1; }
-          }
-          
-          @keyframes progress {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 95%; }
-          }
-          
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          
-          @media (max-width: 768px) {
-            .users-loading-content {
-              padding: 2rem;
-            }
-            
-            .loading-title {
-              font-size: 1.2rem;
-            }
-            
-            .loading-users {
-              flex-direction: column;
-              align-items: center;
-            }
-          }
-        `}</style>
       </div>
     );
   }
 
   return (
-    <div className="app-container">
+    <div className="flex min-h-screen bg-gray-50/50">
       <Sidebar />
-      <div className="manage-users-container">
-        <div className="content-wrapper">
-          <h1>Manage Users</h1>
+      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 max-w-7xl mx-auto w-full transition-all duration-300">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+            <div>
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Manage Users</h1>
+              <p className="text-gray-500 font-medium mt-1">Monitor activity and manage platform accounts</p>
+            </div>
+            <div className="bg-white px-6 py-3 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Total Users</p>
+                <p className="text-xl font-black text-blue-600 leading-tight">{users.length}</p>
+              </div>
+              <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                <FontAwesomeIcon icon={faUser} />
+              </div>
+            </div>
+          </div>
 
           {error && (
-            <div className="error-message">
+            <div className="mb-8 p-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl text-sm font-semibold flex items-center gap-3 animate-in shake-1">
+              <FontAwesomeIcon icon={faShield} />
               {error}
             </div>
           )}
 
           {notification && (
-            <div className={`notification ${notification.type}`}>
-              {notification.message}
-              <button
-                className="close-btn"
-                onClick={() => setNotification(null)}
-              >
-                ×
+            <div className={`mb-8 p-4 rounded-2xl text-sm flex items-center justify-between gap-3 animate-in slide-in-from-top-2 shadow-sm border ${notification.type === 'success'
+              ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+              : 'bg-rose-50 text-rose-600 border-rose-100'
+              }`}>
+              <div className="flex items-center gap-3 font-semibold">
+                <FontAwesomeIcon icon={notification.type === 'success' ? faShield : faShield} className="opacity-50" />
+                {notification.message}
+              </div>
+              <button onClick={() => setNotification(null)} className="text-current opacity-60 hover:opacity-100 transition-opacity">
+                <i className="fas fa-times"></i>
               </button>
             </div>
           )}
 
-          <div className="users-grid">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {users.map(user => (
-              <div key={user.id} className="user-card" data-aos="fade-up">
-                <div className="user-info">
-                  <div className="user-photo-container">
-                    {user.profile_photo ? (
-                      <img
-                        src={getImageUrl(user.profile_photo)}
-                        alt={user.name}
-                        className="user-avatar"
-                        onError={(e) => {
-                          console.error('Image failed to load:', {
-                            userId: user.id,
-                            userName: user.name,
-                            original: user.profile_photo,
-                            attempted: e.target.src
-                          });
-                          e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/150x150?text=User';
-                        }}
-                      />
-                    ) : (
-                      <div className="default-avatar">
-                        <FontAwesomeIcon icon={faUser} />
-                      </div>
-                    )}
+              <div key={user.id} className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 transition-all group relative overflow-hidden">
+                {user.role === 'admin' && (
+                  <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none">
+                    <div className="absolute transform rotate-45 bg-amber-400 text-amber-900 text-[8px] font-black py-1 px-10 right-[-32px] top-[14px] text-center shadow-sm tracking-widest">
+                      ADMIN
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-start gap-5 mb-8">
+                  <div className="relative shrink-0">
+                    <div className="w-20 h-20 rounded-[24px] overflow-hidden border-2 border-gray-50 shadow-inner bg-gray-50 group-hover:scale-105 transition-transform duration-500">
+                      {user.profile_photo ? (
+                        <img
+                          src={getImageUrl(user.profile_photo)}
+                          alt={user.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/150x150?text=User';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">
+                          <FontAwesomeIcon icon={faUser} />
+                        </div>
+                      )}
+                    </div>
                     {user.role === 'admin' && (
-                      <div className="admin-badge">
+                      <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-amber-400 text-amber-900 rounded-xl flex items-center justify-center text-xs shadow-lg border-2 border-white">
                         <FontAwesomeIcon icon={faCrown} />
                       </div>
                     )}
                   </div>
-                  <div className="user-details">
-                    <h3>{user.name}</h3>
-                    <p className="user-email">{user.email}</p>
-                    {user.phone && (
-                      <p className="user-phone">
-                        <FontAwesomeIcon icon={faPhone} /> {user.phone}
-                      </p>
-                    )}
-                    <span className={`role-badge ${user.role}`}>
+
+                  <div className="min-w-0 pt-1">
+                    <h3 className="text-lg font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors">{user.name}</h3>
+                    <p className="text-gray-500 text-xs font-medium truncate mb-3">{user.email}</p>
+                    <span className={`inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${user.role === 'admin' ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-500'
+                      }`}>
                       {user.role}
                     </span>
                   </div>
                 </div>
+
+                <div className="grid grid-cols-1 gap-3 mb-6">
+                  {user.phone && (
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl text-gray-600 border border-transparent group-hover:border-gray-100 transition-colors">
+                      <FontAwesomeIcon icon={faPhone} className="text-xs opacity-40 shrink-0" />
+                      <span className="text-xs font-bold">{user.phone}</span>
+                    </div>
+                  )}
+                </div>
+
                 <button
-                  className="delete-button"
+                  className={`w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group/btn ${user.role === 'admin'
+                    ? 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                    : 'bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-95 border border-rose-100'
+                    }`}
                   onClick={() => handleDeleteClick(user.id)}
                   disabled={user.role === 'admin'}
                 >
-                  <FontAwesomeIcon icon={faTrash} />
-                  <span>Delete</span>
+                  <FontAwesomeIcon icon={faTrash} className="text-[10px] group-hover/btn:rotate-12 transition-transform" />
+                  Delete Account
                 </button>
               </div>
             ))}
           </div>
 
           {deleteConfirmation && (
-            <>
-              <div className="modal-overlay" onClick={() => setDeleteConfirmation(null)} />
-              <div className="confirmation-modal">
-                <h3>Confirm Delete</h3>
-                <p>Are you sure you want to delete this user? This action cannot be undone.</p>
-                <div className="modal-buttons">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-0">
+              <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setDeleteConfirmation(null)}></div>
+              <div className="relative z-10 w-full max-w-sm bg-white rounded-[40px] shadow-2xl p-10 animate-in zoom-in-95 fade-in duration-300 text-center">
+                <div className="w-20 h-20 bg-rose-50 text-rose-600 rounded-[24px] flex items-center justify-center text-3xl mx-auto mb-8 shadow-inner">
+                  <FontAwesomeIcon icon={faTrash} />
+                </div>
+                <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">Confirm Delete</h3>
+                <p className="text-gray-500 font-medium mb-10 leading-relaxed px-2">Are you sure you want to delete this user? This action cannot be undone.</p>
+                <div className="flex gap-4">
                   <button
-                    className="cancel-button"
+                    className="flex-1 py-4 bg-gray-50 text-gray-600 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95"
                     onClick={() => setDeleteConfirmation(null)}
                   >
                     Cancel
                   </button>
                   <button
-                    className="confirm-button"
+                    className="flex-1 py-4 bg-rose-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-rose-100 hover:bg-rose-700 transition-all active:scale-95"
                     onClick={() => handleConfirmDelete(deleteConfirmation)}
                   >
                     Delete
                   </button>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
-
-        <style>{`
-          .manage-users-container {
-            margin-left: 20px;
-            padding: 2rem;
-            position: relative;
-            left: 280px;
-          }
-
-          .content-wrapper {
-            max-width: 1200px;
-            margin: 0 auto;
-          }
-
-          h1 {
-            margin-bottom: 2rem;
-            color: #333;
-          }
-
-          .users-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-          }
-
-          .user-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
-          }
-
-          .user-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-          }
-
-          .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-          }
-
-          .user-photo-container {
-            position: relative;
-            flex-shrink: 0;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            overflow: hidden;
-            background-color: #f5f5f5;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-right: 1rem;
-            border: 3px solid white;
-          }
-
-          .user-avatar {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-          }
-
-          .user-photo-container:hover .user-avatar {
-            transform: scale(1.05);
-          }
-
-          .admin-badge {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background: #ffd700;
-            color: #000;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid white;
-            font-size: 0.8rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            z-index: 2;
-          }
-
-          .user-details {
-            flex: 1;
-          }
-
-          .user-details h3 {
-            margin: 0;
-            color: #333;
-            font-size: 1.1rem;
-          }
-
-          .user-details p {
-            margin: 0.25rem 0;
-            color: #666;
-            font-size: 0.9rem;
-          }
-
-          .role-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-transform: uppercase;
-          }
-
-          .role-badge.admin {
-            background: #ffd700;
-            color: #000;
-          }
-
-          .role-badge.user {
-            background: #e9ecef;
-            color: #495057;
-          }
-
-          .delete-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 6px;
-            background: #dc3545;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-          }
-
-          .delete-button:hover:not(:disabled) {
-            background: #c82333;
-          }
-
-          .delete-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-          }
-
-          .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-          }
-
-          .confirmation-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            z-index: 1001;
-            max-width: 400px;
-            width: 90%;
-          }
-
-          .modal-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-          }
-
-          .cancel-button,
-          .confirm-button {
-            flex: 1;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-          }
-
-          .cancel-button {
-            background: #e9ecef;
-            color: #495057;
-          }
-
-          .confirm-button {
-            background: #dc3545;
-            color: white;
-          }
-
-          .cancel-button:hover {
-            background: #dee2e6;
-          }
-
-          .confirm-button:hover {
-            background: #c82333;
-          }
-
-          .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            animation: slideIn 0.3s ease;
-            z-index: 1000;
-          }
-
-          .notification.success {
-            background: #28a745;
-          }
-
-          .notification.error {
-            background: #dc3545;
-          }
-
-          .close-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-          }
-
-          .close-btn:hover {
-            opacity: 1;
-          }
-
-          .error-message {
-            background: #ffe6e6;
-            color: #dc3545;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            text-align: center;
-          }
-
-          .default-avatar {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ccc;
-            font-size: 2rem;
-          }
-
-          @keyframes slideIn {
-            from {
-              transform: translateX(100%);
-              opacity: 0;
-            }
-            to {
-              transform: translateX(0);
-              opacity: 1;
-            }
-          }
-
-          @media (max-width: 768px) {
-            .manage-users-container {
-              padding: 1rem;
-              left: 0;
-              margin-left: 0;
-              margin-top: 70px; /* Add space for the mobile menu */
-            }
-
-            .users-grid {
-              grid-template-columns: 1fr;
-            }
-
-            .confirmation-modal {
-              width: 95%;
-              padding: 1.5rem;
-            }
-          }
-        `}</style>
-      </div>
+      </main>
     </div>
   );
 };

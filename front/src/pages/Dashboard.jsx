@@ -159,369 +159,160 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-loading-container">
-        <div className="dashboard-loading-content">
-          <LoadingSpinner size="large" color="#007bff" />
-          <h3 className="loading-title">{loadingMessage}</h3>
-          <div className="loading-progress">
-            <div className="progress-bar"></div>
-          </div>
-          <div className="loading-metrics">
-            <span className="metric"><FontAwesomeIcon icon={faUsers} /> Users</span>
-            <span className="metric"><FontAwesomeIcon icon={faHouseUser} /> Listings</span>
-            <span className="metric"><FontAwesomeIcon icon={faChartPie} /> Analytics</span>
-            <span className="metric"><FontAwesomeIcon icon={faUserShield} /> Admin</span>
-          </div>
-        </div>
-        <div className="floating-icons">
-          {[
-            faUsers, faHouseUser, faClipboardList, faChartLine,
-            faDatabase, faServer, faExclamationTriangle, faDollarSign
-          ].map((icon, i) => (
-            <FontAwesomeIcon
+      <div className="min-h-screen w-full flex items-center justify-center bg-gray-50/50 p-6 relative overflow-hidden">
+        {/* Floating Background Icons */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
+          {[faUsers, faHouseUser, faClipboardList, faChartLine, faDatabase, faServer, faExclamationTriangle, faDollarSign].map((icon, i) => (
+            <div
               key={i}
-              icon={icon}
-              className={`floating-icon icon-${i + 1}`}
-            />
+              className="absolute animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                fontSize: `${20 + Math.random() * 40}px`,
+                animationDelay: `${i * 0.5}s`,
+                animationDuration: `${3 + Math.random() * 4}s`
+              }}
+            >
+              <FontAwesomeIcon icon={icon} />
+            </div>
           ))}
         </div>
-        <style>{`
-          .dashboard-loading-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            width: 100%;
-            position: relative;
-            background-color: #f8f9fa;
-          }
-          
-          .dashboard-loading-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem;
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            animation: fadeIn 0.5s ease;
-            z-index: 1;
-          }
-          
-          .loading-title {
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #343a40;
-          }
-          
-          .loading-progress {
-            width: 80%;
-            height: 6px;
-            background-color: #e9ecef;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 1rem;
-          }
-          
-          .progress-bar {
-            height: 100%;
-            width: 0;
-            background: linear-gradient(to right, #007bff, #6610f2);
-            border-radius: 3px;
-            animation: progress 2s ease infinite;
-          }
-          
-          .loading-metrics {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 1.5rem;
-          }
-          
-          .metric {
-            background: rgba(0, 123, 255, 0.1);
-            color: #007bff;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            animation: breathe 3s infinite ease-in-out;
-          }
-          
-          .metric:nth-child(1) { animation-delay: 0s; }
-          .metric:nth-child(2) { animation-delay: 0.5s; }
-          .metric:nth-child(3) { animation-delay: 1s; }
-          .metric:nth-child(4) { animation-delay: 1.5s; }
-          
-          @keyframes breathe {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-          }
-          
-          .floating-icons {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-          }
-          
-          .floating-icon {
-            position: absolute;
-            color: rgba(0, 123, 255, 0.1);
-            font-size: 20px;
-            animation-name: float;
-            animation-duration: 10s;
-            animation-timing-function: ease-in-out;
-            animation-iteration-count: infinite;
-          }
-          
-          .icon-1 { left: 10%; top: 20%; animation-delay: 0s; font-size: 18px; }
-          .icon-2 { left: 20%; top: 60%; animation-delay: 1s; font-size: 24px; }
-          .icon-3 { left: 30%; top: 30%; animation-delay: 2s; font-size: 16px; }
-          .icon-4 { left: 50%; top: 70%; animation-delay: 3s; font-size: 22px; }
-          .icon-5 { left: 65%; top: 40%; animation-delay: 4s; font-size: 19px; }
-          .icon-6 { left: 75%; top: 20%; animation-delay: 5s; font-size: 25px; }
-          .icon-7 { left: 85%; top: 50%; animation-delay: 6s; font-size: 17px; }
-          .icon-8 { left: 90%; top: 80%; animation-delay: 7s; font-size: 21px; }
-          
-          @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0.1; }
-            25% { transform: translateY(-20px) rotate(5deg); opacity: 0.3; }
-            50% { transform: translateY(-35px) rotate(0deg); opacity: 0.1; }
-            75% { transform: translateY(-20px) rotate(-5deg); opacity: 0.3; }
-            100% { transform: translateY(0) rotate(0deg); opacity: 0.1; }
-          }
-          
-          @keyframes progress {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 95%; }
-          }
-          
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          
-          @media (max-width: 768px) {
-            .dashboard-loading-content {
-              padding: 2rem;
-            }
-            
-            .loading-title {
-              font-size: 1.2rem;
-            }
-            
-            .loading-metrics {
-              flex-direction: column;
-              align-items: center;
-            }
-          }
-        `}</style>
+
+        <div className="relative z-10 w-full max-w-lg bg-white rounded-3xl shadow-2xl shadow-gray-200/50 p-8 md:p-12 text-center border border-gray-100 animate-in fade-in zoom-in-95 duration-700">
+          <div className="mb-8 relative inline-block">
+            <div className="absolute inset-0 bg-blue-100 rounded-full blur-2xl opacity-50 animate-pulse"></div>
+            <LoadingSpinner size="large" color="#2563eb" />
+          </div>
+
+          <h3 className="text-2xl font-bold text-gray-900 mb-2 transition-all duration-500">{loadingMessage}</h3>
+
+          <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden mb-8 max-w-[280px] mx-auto">
+            <div className="h-full bg-blue-600 rounded-full animate-[progress_2s_ease-in-out_infinite]" style={{ width: '60%' }}></div>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              { icon: faUsers, label: 'Users' },
+              { icon: faHouseUser, label: 'Listings' },
+              { icon: faChartPie, label: 'Analytics' },
+              { icon: faUserShield, label: 'Admin' }
+            ].map((metric, i) => (
+              <span key={i} className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-2xl text-xs font-bold uppercase tracking-wider animate-in fade-in slide-in-from-bottom-2 duration-500" style={{ animationDelay: `${i * 150}ms` }}>
+                <FontAwesomeIcon icon={metric.icon} className="text-sm" />
+                {metric.label}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <>
+    <div className="flex min-h-screen bg-gray-50/30">
       <Sidebar />
-      <div className="dashboard-container">
-        <div className="admin-dashboard" data-aos="fade-up">
-          <h1>Admin Dashboard</h1>
+      <main className="flex-1 p-4 md:p-6 pt-20 md:pt-6 transition-all duration-300">
+        <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-black text-gray-900 tracking-tight">Admin Console</h1>
+              <p className="text-sm text-gray-500 font-medium">System performance and user metrics</p>
+            </div>
+            <button
+              onClick={fetchStats}
+              className="px-5 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold text-xs shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center justify-center gap-2 active:scale-95"
+            >
+              <FontAwesomeIcon icon={faServer} className="text-[10px]" />
+              Refresh Data
+            </button>
+          </div>
 
           {error && (
-            <div className="error-message">
-              {error}
+            <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 flex items-center gap-2 animate-in slide-in-from-top-2">
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+              <span className="font-bold">{error}</span>
             </div>
           )}
 
-          <div className="stats-grid">
-            <div className="stat-card">
-              <FontAwesomeIcon icon={faUsers} className="stat-icon primary" />
-              <div className="stat-content">
-                <h3>Total Users</h3>
-                <p>{stats.registeredUsers}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            {[
+              { label: 'Users', value: stats.registeredUsers, icon: faUsers, color: 'blue' },
+              { label: 'Listings', value: stats.totalListings, icon: faHouseUser, color: 'indigo' },
+              { label: 'Approved', value: stats.approvedListings, icon: faClipboardList, color: 'emerald' },
+              { label: 'Pending', value: stats.pendingListings, icon: faClipboardList, color: 'amber' },
+              { label: 'Rejected', value: stats.rejectedListings, icon: faExclamationTriangle, color: 'rose' }
+            ].map((stat, i) => (
+              <div key={i} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-${stat.color}-50 text-${stat.color}-600 group-hover:scale-105 transition-transform`}>
+                    <FontAwesomeIcon icon={stat.icon} />
+                  </div>
+                  <div>
+                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</h3>
+                    <p className="text-xl font-black text-gray-900 leading-none mt-1">{stat.value}</p>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div className="stat-card">
-              <FontAwesomeIcon icon={faHouseUser} className="stat-icon" />
-              <div className="stat-content">
-                <h3>Total Listings</h3>
-                <p>{stats.totalListings}</p>
-              </div>
-            </div>
-
-            <div className="stat-card">
-              <FontAwesomeIcon icon={faClipboardList} className="stat-icon success" />
-              <div className="stat-content">
-                <h3>Approved Listings</h3>
-                <p>{stats.approvedListings}</p>
-              </div>
-            </div>
-
-            <div className="stat-card">
-              <FontAwesomeIcon icon={faClipboardList} className="stat-icon warning" />
-              <div className="stat-content">
-                <h3>Pending Listings</h3>
-                <p>{stats.pendingListings}</p>
-              </div>
-            </div>
-
-            <div className="stat-card">
-              <FontAwesomeIcon icon={faExclamationTriangle} className="stat-icon error" />
-              <div className="stat-content">
-                <h3>Rejected Listings</h3>
-                <p>{stats.rejectedListings}</p>
-              </div>
-            </div>
+            ))}
           </div>
 
-          <div className="charts-grid">
-            <div className="chart-card">
-              <h3>Listing Status Distribution</h3>
-              <div className="doughnut-container">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-lg font-black text-gray-900">Property Insights</h3>
+                  <p className="text-xs text-gray-500 font-medium">Status distribution overview</p>
+                </div>
+                <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400">
+                  <FontAwesomeIcon icon={faChartPie} />
+                </div>
+              </div>
+              <div className="h-[240px] flex items-center justify-center relative">
                 <Doughnut
                   data={listingStatusData}
                   options={{
                     ...chartOptions,
-                    cutout: '70%',
+                    cutout: '80%',
+                    plugins: {
+                      ...chartOptions.plugins,
+                      title: { display: false },
+                      legend: {
+                        position: 'right',
+                        labels: {
+                          usePointStyle: true,
+                          padding: 15,
+                          font: { weight: 'bold', size: 11 }
+                        }
+                      }
+                    }
                   }}
                 />
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pr-[100px]">
+                  <span className="text-2xl font-black text-gray-900">{stats.totalListings}</span>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center justify-center space-y-4">
+              <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner shadow-indigo-100/50">
+                <FontAwesomeIcon icon={faUserShield} />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-gray-900">Admin Control</h3>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed">System logs and security audits are available for review.</p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-2 pt-2">
+                <span className="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-[10px] font-bold border border-gray-100">Audit</span>
+                <span className="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-[10px] font-bold border border-gray-100">Logs</span>
+                <span className="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-[10px] font-bold border border-gray-100">Auth</span>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <style>{`
-        .dashboard-container {
-          margin-left: 20px;
-          padding: 2rem;
-        }
-
-        .admin-dashboard {
-          background: #ffffff;
-          border-radius: 20px;
-          padding: 2rem;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .error-message {
-          background-color: #ffe6e6;
-          color: #dc3545;
-          padding: 1rem;
-          border-radius: 8px;
-          margin-bottom: 1rem;
-          text-align: center;
-        }
-
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 1.5rem;
-          margin: 2rem 0;
-        }
-
-        .stat-card {
-          background: linear-gradient(145deg, #ffffff, #f5f5f5);
-          padding: 1.5rem;
-          border-radius: 15px;
-          box-shadow: 5px 5px 15px rgba(0,0,0,0.05);
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .stat-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 5px 8px 20px rgba(0,0,0,0.08);
-        }
-
-        .stat-icon {
-          font-size: 2rem;
-          color: #007bff;
-          padding: 1rem;
-          background: rgba(0,123,255,0.1);
-          border-radius: 12px;
-        }
-
-        .stat-icon.warning {
-          color: #ffc107;
-          background: rgba(255,193,7,0.1);
-        }
-
-        .stat-icon.success {
-          color: #28a745;
-          background: rgba(40,167,69,0.1);
-        }
-
-        .stat-icon.error {
-          color: #dc3545;
-          background: rgba(220,53,69,0.1);
-        }
-
-        .stat-icon.primary {
-          color: #007bff;
-          background: rgba(0,123,255,0.1);
-        }
-
-        .charts-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-          gap: 1.5rem;
-          margin: 2rem 0;
-        }
-
-        .chart-card {
-          background: #ffffff;
-          padding: 1.5rem;
-          border-radius: 15px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-          transition: transform 0.3s ease;
-        }
-
-        .chart-card:hover {
-          transform: translateY(-5px);
-        }
-
-        .doughnut-container {
-          position: relative;
-          height: 300px;
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        @media (max-width: 768px) {
-          .dashboard-container {
-            padding: 1rem;
-          }
-
-          .charts-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .chart-card {
-            padding: 1rem;
-          }
-        }
-      `}</style>
-    </>
+      </main>
+    </div>
   );
 };
 

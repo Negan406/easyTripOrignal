@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from 'react-router-dom';
-import LoadingSpinner from "../components/LoadingSpinner";
-import axios, { API_BASE_URL } from '../utils/axios';
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "../utils/axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faCamera, faMapMarkerAlt, faTag, faAlignLeft, faCheckCircle, faArrowLeft, faSave, faBell } from "@fortawesome/free-solid-svg-icons";
 import Sidebar from "../components/Sidebar";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const EditListing = () => {
   const { id } = useParams();
@@ -30,7 +32,8 @@ const EditListing = () => {
     { value: 'city-apartments', label: 'City Apartments' },
     { value: 'mountain-cabins', label: 'Mountain Cabins' },
     { value: 'luxury-villas', label: 'Luxury Villas' },
-    { value: 'pools', label: 'Pools' }
+    { value: 'pools', label: 'Pools' },
+    { value: "desert", label: "Desert" }
   ];
 
   useEffect(() => {
@@ -184,341 +187,221 @@ const EditListing = () => {
   };
 
   if (loading) return <LoadingSpinner />;
-  if (!listing) return <div>Listing not found</div>;
+  if (!listing) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50/50">
+      <div className="text-center space-y-4">
+        <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-3xl mx-auto">
+          <FontAwesomeIcon icon={faBell} />
+        </div>
+        <h3 className="text-xl font-black text-gray-900">Listing not found</h3>
+        <button onClick={() => navigate('/manage-listings')} className="text-blue-600 font-bold hover:underline">Back to listings</button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="app-container">
+    <div className="flex min-h-screen bg-gray-50/50">
       <Sidebar />
-      <div className="edit-listing-container">
-        <h1>Edit Listing</h1>
-
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="listing-form">
-          <div className="form-grid">
-            <div className="form-left">
-              <input
-                type="text"
-                name="title"
-                placeholder="Title"
-                value={formData.title}
-                onChange={handleInputChange}
-                required
-              />
-              <input
-                type="text"
-                name="location"
-                placeholder="Location"
-                value={formData.location}
-                onChange={handleInputChange}
-                required
-              />
-              <input
-                type="number"
-                name="price"
-                placeholder="Price per night"
-                value={formData.price}
-                onChange={handleInputChange}
-                required
-                min="0"
-                step="0.01"
-              />
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleInputChange}
-                required
+      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 max-w-7xl mx-auto w-full transition-all duration-300">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+            <div>
+              <button
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-2 text-gray-400 hover:text-blue-600 font-bold transition-colors mb-2 text-xs uppercase tracking-widest group"
               >
-                {categories.map(category => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
-                  </option>
-                ))}
-              </select>
-              <textarea
-                name="description"
-                placeholder="Description"
-                value={formData.description}
-                onChange={handleInputChange}
-                required
-                rows="6"
-              />
+                <FontAwesomeIcon icon={faArrowLeft} className="group-hover:-translate-x-1 transition-transform" />
+                Back
+              </button>
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Edit Listing</h1>
+              <p className="text-gray-500 font-medium mt-1">Update your property details and availability.</p>
             </div>
+          </div>
 
-            <div className="form-right">
-              <div className="photo-upload-section">
-                <div className="main-photo-upload">
-                  <h3>Main Photo</h3>
-                  <p className="photo-hint">Max size: 5MB</p>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/jpg"
-                    onChange={handleMainPhotoChange}
-                    className="file-input"
-                  />
-                  {mainPhotoPreview && (
-                    <img
-                      src={mainPhotoPreview}
-                      alt="Main preview"
-                      className="main-preview"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
-                      }}
-                    />
-                  )}
-                </div>
+          {error && (
+            <div className="mb-8 p-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl text-sm font-semibold flex items-center gap-3 animate-in shake-1">
+              <FontAwesomeIcon icon={faBell} className="opacity-50" />
+              {error}
+            </div>
+          )}
 
-                <div className="additional-photos-upload">
-                  <h3>Additional Photos (Optional)</h3>
-                  <p className="photo-hint">Max 3 photos, 5MB each</p>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/jpg"
-                    multiple
-                    onChange={handleAdditionalPhotosChange}
-                    className="file-input"
-                  />
-                  <div className="additional-previews">
-                    {previews.additional.map((preview, index) => (
-                      <div key={index} className="photo-preview-container">
-                        <img
-                          src={preview}
-                          alt={`Additional ${index + 1}`}
-                          className="additional-preview"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = 'https://via.placeholder.com/150x150?text=No+Image';
-                          }}
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-20">
+            {/* Form Left Side */}
+            <div className="lg:col-span-7 space-y-8">
+              <div className="bg-white rounded-[40px] p-8 md:p-10 border border-gray-100 shadow-sm space-y-8">
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Property Title</label>
+                    <div className="relative">
+                      <FontAwesomeIcon icon={faPlus} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300" />
+                      <input
+                        type="text"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full pl-14 pr-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-900 placeholder:text-gray-300"
+                        placeholder="e.g. Modern Beachfront Villa"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Location</label>
+                      <div className="relative">
+                        <FontAwesomeIcon icon={faMapMarkerAlt} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300" />
+                        <input
+                          type="text"
+                          name="location"
+                          value={formData.location}
+                          onChange={handleInputChange}
+                          required
+                          className="w-full pl-14 pr-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-900 placeholder:text-gray-300"
+                          placeholder="City, Country"
                         />
                       </div>
-                    ))}
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Price per night</label>
+                      <div className="relative">
+                        <span className="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-gray-300">$</span>
+                        <input
+                          type="number"
+                          name="price"
+                          value={formData.price}
+                          onChange={handleInputChange}
+                          required
+                          min="0"
+                          step="0.01"
+                          className="w-full pl-12 pr-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-900 placeholder:text-gray-300"
+                          placeholder="0.00"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Category</label>
+                    <div className="relative">
+                      <FontAwesomeIcon icon={faTag} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300" />
+                      <select
+                        name="category"
+                        value={formData.category}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full pl-14 pr-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-900 appearance-none"
+                      >
+                        {categories.map(category => (
+                          <option key={category.value} value={category.value}>
+                            {category.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Description</label>
+                    <div className="relative">
+                      <FontAwesomeIcon icon={faAlignLeft} className="absolute left-6 top-6 text-gray-300" />
+                      <textarea
+                        name="description"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                        required
+                        rows="6"
+                        className="w-full pl-14 pr-6 py-4 bg-gray-50 border border-gray-100 rounded-[32px] focus:ring-2 focus:ring-blue-500 transition-all font-bold text-gray-900 placeholder:text-gray-300 resize-none"
+                        placeholder="Tell travelers what makes your place special..."
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <button type="submit" className="cta-button" disabled={loading}>
-            {loading ? <LoadingSpinner size="small" /> : 'Save Changes'}
-          </button>
-        </form>
-      </div>
+            {/* Form Right Side - Photos */}
+            <div className="lg:col-span-5 space-y-8">
+              <div className="bg-white rounded-[40px] p-8 md:p-10 border border-gray-100 shadow-sm space-y-8">
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-black text-gray-900 tracking-tight">Photos</h3>
+                      <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full">Update Images</span>
+                    </div>
 
-      <style>{`
-        .app-container {
-          display: flex;
-          min-height: 100vh;
-          background: #f8f9fa;
-          position: relative;
-          left: -250px;
-        }
+                    {/* Main Photo */}
+                    <div className="relative group">
+                      <div className={`aspect-video rounded-[32px] overflow-hidden border-2 border-dashed transition-all duration-500 flex flex-col items-center justify-center p-4 ${mainPhotoPreview ? 'border-blue-500 bg-blue-50/10' : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
+                        }`}>
+                        {mainPhotoPreview ? (
+                          <img src={mainPhotoPreview} alt="Main Preview" className="w-full h-full object-cover rounded-2xl animate-in fade-in zoom-in-95" />
+                        ) : (
+                          <div className="text-center space-y-3">
+                            <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-gray-400 mx-auto group-hover:scale-110 transition-transform">
+                              <FontAwesomeIcon icon={faCamera} />
+                            </div>
+                            <div>
+                              <p className="text-sm font-black text-gray-900">Change Main Photo</p>
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">JPEG, PNG Max 5MB</p>
+                            </div>
+                          </div>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/jpg"
+                          onChange={handleMainPhotoChange}
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                        />
+                      </div>
+                    </div>
 
-        .edit-listing-container {
-          flex: 1;
-          max-width: 1200px;
-          margin: 2rem auto 2rem 250px;
-          padding: 2rem;
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+                    {/* Additional Photos */}
+                    <div className="space-y-4">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Additional Photos (Max 3)</p>
+                      <div className="grid grid-cols-3 gap-4">
+                        {[0, 1, 2].map((i) => (
+                          <div key={i} className="aspect-square rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center relative overflow-hidden group">
+                            {previews.additional[i] ? (
+                              <img src={previews.additional[i]} alt={`Preview ${i}`} className="w-full h-full object-cover" />
+                            ) : (
+                              <FontAwesomeIcon icon={faPlus} className="text-gray-300 group-hover:scale-125 transition-transform" />
+                            )}
+                            {i === 0 && (
+                              <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/jpg"
+                                multiple
+                                onChange={handleAdditionalPhotosChange}
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
 
-        h1 {
-          text-align: center;
-          color: #2c3e50;
-          margin-bottom: 2rem;
-          font-size: 2rem;
-        }
-
-        .error-message {
-          background-color: #f8d7da;
-          color: #721c24;
-          padding: 1rem;
-          margin-bottom: 1rem;
-          border-radius: 8px;
-          text-align: center;
-        }
-
-        .form-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 2rem;
-          margin-bottom: 2rem;
-        }
-
-        .listing-form input,
-        .listing-form textarea,
-        .listing-form select {
-          width: 100%;
-          padding: 12px;
-          margin-bottom: 1rem;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          font-size: 16px;
-          transition: border-color 0.3s ease;
-        }
-
-        .listing-form input:focus,
-        .listing-form textarea:focus,
-        .listing-form select:focus {
-          outline: none;
-          border-color: #007bff;
-          box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
-        }
-
-        .listing-form textarea {
-          height: 150px;
-          resize: vertical;
-        }
-
-        .photo-upload-section {
-          background: white;
-          padding: 1.5rem;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .main-photo-upload,
-        .additional-photos-upload {
-          margin-bottom: 2rem;
-        }
-
-        .main-photo-upload h3,
-        .additional-photos-upload h3 {
-          margin-bottom: 1rem;
-          color: #2c3e50;
-          font-size: 1.2rem;
-          font-weight: 600;
-        }
-
-        .photo-hint {
-          font-size: 0.9rem;
-          color: #666;
-          margin-bottom: 1rem;
-        }
-
-        .file-input {
-          width: 100%;
-          padding: 0.75rem;
-          margin-bottom: 1rem;
-          border: 2px dashed #ddd;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .file-input:hover {
-          border-color: #007bff;
-          background: rgba(0,123,255,0.05);
-        }
-
-        .main-preview {
-          width: 100%;
-          height: 300px;
-          object-fit: cover;
-          border-radius: 8px;
-          margin-top: 1rem;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-          transition: transform 0.3s ease;
-        }
-
-        .main-preview:hover {
-          transform: scale(1.02);
-        }
-
-        .additional-previews {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1rem;
-          margin-top: 1rem;
-        }
-
-        .photo-preview-container {
-          position: relative;
-          aspect-ratio: 1;
-          border-radius: 8px;
-          overflow: hidden;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-          transition: transform 0.3s ease;
-        }
-
-        .photo-preview-container:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .additional-preview {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 8px;
-        }
-
-        .cta-button {
-          width: 100%;
-          padding: 1rem;
-          background: linear-gradient(135deg, #007bff, #0056b3);
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 1.1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-
-        .cta-button:hover:not(:disabled) {
-          background: linear-gradient(135deg, #0056b3, #004085);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0,123,255,0.2);
-        }
-
-        .cta-button:active:not(:disabled) {
-          transform: translateY(0);
-        }
-
-        .cta-button:disabled {
-          background: #ccc;
-          cursor: not-allowed;
-          transform: none;
-        }
-
-        @media (max-width: 768px) {
-          .edit-listing-container {
-            margin: 1rem;
-            padding: 1rem;
-          }
-
-          .form-grid {
-            grid-template-columns: 1fr;
-          }
-
-          h1 {
-            font-size: 1.75rem;
-          }
-
-          .additional-previews {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-          .main-preview {
-            height: 200px;
-          }
-
-          .photo-preview-container {
-            aspect-ratio: 3/2;
-          }
-        }
-      `}</style>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95 shadow-2xl shadow-blue-600/20 disabled:bg-gray-200 disabled:shadow-none flex items-center justify-center gap-3"
+                  >
+                    {loading ? (
+                      <LoadingSpinner size="small" color="white" />
+                    ) : (
+                      <>
+                        <FontAwesomeIcon icon={faSave} />
+                        Save Changes
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
   );
 };
