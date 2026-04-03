@@ -166,7 +166,7 @@ const EditListing = () => {
   };
 
   const getImageUrl = (imageUrl) => {
-    if (!imageUrl) return 'https://via.placeholder.com/300x200?text=No+Image';
+    if (!imageUrl) return 'https://placehold.co/300x200?text=No+Image';
 
     // If it's already a full URL
     if (imageUrl.startsWith('http')) {

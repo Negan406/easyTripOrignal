@@ -4,6 +4,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import axios, { API_BASE_URL } from "../utils/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import Sidebar from "../components/Sidebar";
 
 const ManageBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -11,7 +12,7 @@ const ManageBookings = () => {
   const [loading, setLoading] = useState(true);
 
   const getImageUrl = (imageUrl) => {
-    if (!imageUrl) return 'https://via.placeholder.com/800x600?text=No+Image+Available';
+    if (!imageUrl) return 'https://placehold.co/800x600?text=No+Image+Available';
 
     // If it's already a full URL
     if (imageUrl.startsWith('http')) {
@@ -159,7 +160,7 @@ const ManageBookings = () => {
           ) : (
             <div className="bookings-content">
               {!bookings || bookings.length === 0 ? (
-                <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm border-dashed border-2">
+                <div className="bg-white rounded-3xl p-12 text-center border-gray-100 shadow-sm border-dashed border-2">
                   <div className="w-20 h-20 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
                     <i className="fas fa-calendar-check"></i>
                   </div>
@@ -177,13 +178,13 @@ const ManageBookings = () => {
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                            e.target.src = 'https://placehold.co/300x200?text=No+Image';
                           }}
                         />
                         <div className="absolute top-4 right-4">
                           <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-md ${booking.payment_status === 'completed' ? 'bg-emerald-500/90 text-white' :
-                              booking.payment_status === 'refused' ? 'bg-rose-500/90 text-white' :
-                                'bg-amber-500/90 text-white'
+                            booking.payment_status === 'refused' ? 'bg-rose-500/90 text-white' :
+                              'bg-amber-500/90 text-white'
                             }`}>
                             {booking.payment_status || 'pending'}
                           </span>

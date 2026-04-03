@@ -166,6 +166,16 @@ const Header = ({ onSearch }) => {
                 {isLoggedIn ? (
                   <>
                     {renderAdminLinks()}
+                    {(role === 'host' || role === 'admin' || role === 'user') && (
+                      <div className="py-1 border-b border-gray-100">
+                        <Link to="/manage-bookings" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
+                          <FontAwesomeIcon icon={faHouseUser} className="w-4 text-gray-400" /> Manage Bookings
+                        </Link>
+                        <Link to="/manage-listings" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
+                          <FontAwesomeIcon icon={faClipboardList} className="w-4 text-gray-400" /> Manage Listings
+                        </Link>
+                      </div>
+                    )}
                     <Link to="/trips" className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setShowProfileMenu(false)}>
                       <FontAwesomeIcon icon={faSuitcase} className="w-4 text-gray-400" /> Trips
                     </Link>

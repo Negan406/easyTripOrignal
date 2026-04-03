@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarAlt, faMapMarkerAlt, faClock } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarAlt, faMapMarkerAlt, faClock, faTimes } from "@fortawesome/free-solid-svg-icons";
 import Sidebar from "../components/Sidebar";
 import Notification from "../components/Notification";
 import ConfirmationModal from "../components/ConfirmationModal";
@@ -15,7 +15,7 @@ const Trips = () => {
   const [loading, setLoading] = useState(true);
 
   const getImageUrl = (imageUrl) => {
-    if (!imageUrl) return 'https://via.placeholder.com/800x600?text=No+Image+Available';
+    if (!imageUrl) return 'https://placehold.co/800x600?text=No+Image+Available';
 
     // If it's already a full URL
     if (imageUrl.startsWith('http')) {
@@ -156,7 +156,7 @@ const Trips = () => {
           ) : (
             <div className="trips-list">
               {!trips || trips.length === 0 ? (
-                <div className="bg-white rounded-[32px] p-16 text-center border border-gray-100 shadow-sm border-dashed border-2 max-w-2xl mx-auto">
+                <div className="bg-white rounded-[32px] p-16 text-center border-gray-100 shadow-sm border-dashed border-2 max-w-2xl mx-auto">
                   <div className="w-24 h-24 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner">
                     <FontAwesomeIcon icon={faCalendarAlt} />
                   </div>
@@ -194,7 +194,7 @@ const Trips = () => {
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                               onError={(e) => {
                                 e.target.onerror = null;
-                                e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                                e.target.src = 'https://placehold.co/300x200?text=No+Image';
                               }}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>

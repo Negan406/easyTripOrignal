@@ -83,7 +83,7 @@ const ManageUsers = () => {
   }, []);
 
   const getImageUrl = (imageUrl) => {
-    if (!imageUrl) return 'https://via.placeholder.com/150x150?text=User';
+    if (!imageUrl) return 'https://placehold.co/150x150?text=User';
 
     // If it's already a full URL, return it as is
     if (imageUrl.startsWith('http')) {
@@ -291,7 +291,7 @@ const ManageUsers = () => {
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = 'https://via.placeholder.com/150x150?text=User';
+                            e.target.src = 'https://placehold.co/150x150?text=User';
                           }}
                         />
                       ) : (

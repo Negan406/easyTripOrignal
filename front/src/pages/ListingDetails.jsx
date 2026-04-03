@@ -24,7 +24,7 @@ const ListingDetails = () => {
   const [highlightReviewForm, setHighlightReviewForm] = useState(false);
 
   const getImageUrl = (imageUrl) => {
-    if (!imageUrl) return 'https://via.placeholder.com/800x600?text=No+Image+Available';
+    if (!imageUrl) return 'https://placehold.co/800x600?text=No+Image+Available';
 
     // If it's already a full URL
     if (imageUrl.startsWith('http')) {

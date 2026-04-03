@@ -152,7 +152,7 @@ const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWi
   };
 
   const getImageUrl = (imageUrl) => {
-    if (!imageUrl) return 'https://via.placeholder.com/400x300?text=No+Image+Available';
+    if (!imageUrl) return 'https://placehold.co/400x300?text=No+Image+Available';
 
     // If it's already a full URL
     if (imageUrl.startsWith('http')) {
@@ -198,7 +198,7 @@ const ListingCard = ({ listing, onRemoveFromWishlist, isInWishlist = false, onWi
                 attempted: e.target.src
               });
               e.target.onerror = null;
-              e.target.src = 'https://via.placeholder.com/400x300?text=No+Image+Available';
+              e.target.src = 'https://placehold.co/400x300?text=No+Image+Available';
             }}
             loading="lazy"
           />

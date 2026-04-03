@@ -96,6 +96,31 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </Link>
               )}
 
+              {isLoggedIn && (
+                <>
+                  <Link
+                    to="/manage-bookings"
+                    className="flex items-center gap-4 px-4 py-3.5 text-gray-700 font-semibold rounded-xl hover:bg-blue-50 hover:text-blue-600 transition-all group"
+                    onClick={onClose}
+                  >
+                    <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 group-hover:bg-blue-100 transition-colors">
+                      <FontAwesomeIcon icon={faHouseUser} className="text-lg" />
+                    </div>
+                    <span>Manage Bookings</span>
+                  </Link>
+                  <Link
+                    to="/manage-listings"
+                    className="flex items-center gap-4 px-4 py-3.5 text-gray-700 font-semibold rounded-xl hover:bg-blue-50 hover:text-blue-600 transition-all group"
+                    onClick={onClose}
+                  >
+                    <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 group-hover:bg-blue-100 transition-colors">
+                      <FontAwesomeIcon icon={faSuitcase} className="text-lg" />
+                    </div>
+                    <span>Manage Listings</span>
+                  </Link>
+                </>
+              )}
+
               {isLoggedIn && role === 'admin' && (
                 <Link
                   to="/manage-users"

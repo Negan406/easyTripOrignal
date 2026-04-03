@@ -11,6 +11,17 @@ const ManageListings = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const getImageUrl = (imageUrl) => {
+    if (!imageUrl) return 'https://placehold.co/300x200?text=No+Image';
+    if (imageUrl.startsWith('http')) return imageUrl;
+    if (imageUrl.includes('storage/') || imageUrl.startsWith('listings/')) {
+      const cleanPath = imageUrl.replace('storage/', '').replace(/^\/+/, '');
+      return `${API_BASE_URL}/storage/${cleanPath}`;
+    }
+    const cleanPath = imageUrl.replace(/^\/+/, '');
+    return `${API_BASE_URL}/storage/${cleanPath}`;
+  };
+
   useEffect(() => {
     fetchUserListings();
   }, []);
@@ -92,8 +103,8 @@ const ManageListings = () => {
 
           {notification && (
             <div className={`mb-8 p-4 rounded-2xl text-sm flex items-center justify-between gap-3 animate-in slide-in-from-top-2 shadow-sm border ${notification.type === 'success'
-                ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
-                : 'bg-rose-50 text-rose-600 border-rose-100'
+              ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+              : 'bg-rose-50 text-rose-600 border-rose-100'
               }`}>
               <div className="flex items-center gap-3 font-semibold">
                 <i className={`fas ${notification.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
@@ -106,7 +117,7 @@ const ManageListings = () => {
           )}
 
           {listings.length === 0 ? (
-            <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm border-dashed border-2">
+            <div className="bg-white rounded-3xl p-12 text-center border-gray-100 shadow-sm border-dashed border-2">
               <div className="w-20 h-20 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
                 <i className="fas fa-house-user"></i>
               </div>
@@ -125,18 +136,18 @@ const ManageListings = () => {
                 <div key={listing.id} className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 transition-all group flex flex-col">
                   <div className="relative h-56 overflow-hidden">
                     <img
-                      src={`${API_BASE_URL}/storage/${listing.main_photo}`}
+                      src={getImageUrl(listing.main_photo)}
                       alt={listing.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                        e.target.src = 'https://placehold.co/300x200?text=No+Image';
                       }}
                     />
                     <div className="absolute top-4 right-4">
                       <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-md ${listing.status === 'approved' ? 'bg-emerald-500/90 text-white' :
-                          listing.status === 'pending' ? 'bg-amber-500/90 text-white' :
-                            'bg-rose-500/90 text-white'
+                        listing.status === 'pending' ? 'bg-amber-500/90 text-white' :
+                          'bg-rose-500/90 text-white'
                         }`}>
                         {listing.status}
                       </span>

@@ -1,6 +1,9 @@
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard, faUser, faUsers, faCalendarAlt, faMapMarkerAlt, faLock, faShieldAlt, faArrowLeft, faCheckCircle, faBell } from "@fortawesome/free-solid-svg-icons";
 import Sidebar from "../components/Sidebar";
+import axios from '../utils/axios';
 
 const Payment = () => {
   const [paymentDetails, setPaymentDetails] = useState({
@@ -414,7 +417,7 @@ const Payment = () => {
                 <div className="bg-white rounded-[40px] p-8 border border-gray-100 shadow-sm overflow-hidden">
                   <div className="flex gap-6 mb-8 pb-8 border-b border-gray-100">
                     <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-md">
-                      <img src={listing.main_photo ? (listing.main_photo.startsWith('http') ? listing.main_photo : `${axios.defaults.baseURL}/storage/${listing.main_photo}`) : 'https://via.placeholder.com/150'} alt={listing.title} className="w-full h-full object-cover" />
+                      <img src={listing.main_photo ? (listing.main_photo.startsWith('http') ? listing.main_photo : `${axios.defaults.baseURL}/storage/${listing.main_photo.replace('storage/', '').replace(/^\/+/, '')}`) : 'https://placehold.co/150'} alt={listing.title} className="w-full h-full object-cover" />
                     </div>
                     <div>
                       <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">{listing.category?.replace('-', ' ')}</p>

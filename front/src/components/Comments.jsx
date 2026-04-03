@@ -336,7 +336,7 @@ const Comments = forwardRef(({ listingId, highlightReviewForm = false, initialRa
                       className="user-avatar"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/40x40?text=User';
+                        e.target.src = 'https://placehold.co/40x40?text=User';
                       }}
                     />
                   ) : (
