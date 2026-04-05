@@ -26,6 +26,7 @@ body {
   color: var(--text-dark);
   background-color: var(--white);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* Custom Scrollbar */
@@ -49,6 +50,7 @@ body {
 /* Smooth scrolling behavior */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 /* Font Awesome transitions */

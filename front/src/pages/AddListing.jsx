@@ -56,7 +56,7 @@ const AddListing = () => {
   };
 
   const handleAdditionalPhotosChange = (e) => {
-    const files = Array.from(e.target.files).slice(0, 3); // Limit to 3 additional photos
+    const files = Array.from(e.target.files).slice(0, 4); // Limit to 4 additional photos
     const oversizedFiles = files.filter(file => file.size > 5 * 1024 * 1024);
 
     if (oversizedFiles.length > 0) {
@@ -288,14 +288,14 @@ const AddListing = () => {
 
                     {/* Additional Photos */}
                     <div className="space-y-4">
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Additional Photos (Max 3)</p>
-                      <div className="grid grid-cols-3 gap-4">
-                        {[0, 1, 2].map((i) => (
-                          <div key={i} className="aspect-square rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center relative overflow-hidden group">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Additional Photos (Max 4)</p>
+                      <div className="grid grid-cols-4 gap-3">
+                        {[0, 1, 2, 3].map((i) => (
+                          <div key={i} className="aspect-square rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center relative overflow-hidden group">
                             {previews.additional[i] ? (
                               <img src={previews.additional[i]} alt={`Preview ${i}`} className="w-full h-full object-cover" />
                             ) : (
-                              <FontAwesomeIcon icon={faPlus} className="text-gray-300 group-hover:scale-125 transition-transform" />
+                              <FontAwesomeIcon icon={faPlus} className="text-gray-300 group-hover:scale-125 transition-transform text-xs" />
                             )}
                             {i === 0 && (
                               <input

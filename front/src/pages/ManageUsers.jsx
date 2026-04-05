@@ -83,16 +83,34 @@ const ManageUsers = () => {
   }, []);
 
   const getImageUrl = (imageUrl) => {
-    if (!imageUrl) return 'https://placehold.co/150x150?text=User';
+    if (!imageUrl) return null;
 
-    // If it's already a full URL, return it as is
-    if (imageUrl.startsWith('http')) {
-      return imageUrl;
-    }
+    // Already a full URL (Cloudinary, http, https)
+    if (imageUrl.startsWith('http')) return imageUrl;
 
-    // Use the same format as AccountSettings.jsx
-    // This assumes the API returns paths without 'storage/' prefix
-    return `${API_BASE_URL}/storage/${imageUrl.replace(/^\/+/, '')}`;
+    // Remove leading slashes and 'storage/' prefix if present
+    const cleanPath = imageUrl.replace(/^\/+/, '').replace(/^storage\//, '');
+    return `${API_BASE_URL}/storage/${cleanPath}`;
+  };
+
+  const getAvatarColor = (name, id) => {
+    const colors = [
+      'from-blue-400 to-blue-600',
+      'from-indigo-400 to-indigo-600',
+      'from-violet-400 to-violet-600',
+      'from-emerald-400 to-emerald-600',
+      'from-rose-400 to-rose-600',
+      'from-amber-400 to-amber-600',
+      'from-cyan-400 to-cyan-600',
+      'from-pink-400 to-pink-600',
+    ];
+    const index = (id || 0) % colors.length;
+    return colors[index];
+  };
+
+  const getInitials = (name) => {
+    if (!name) return '?';
+    return name.trim().split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
   };
 
   useEffect(() => {
@@ -284,21 +302,23 @@ const ManageUsers = () => {
                 <div className="flex items-start gap-5 mb-8">
                   <div className="relative shrink-0">
                     <div className="w-20 h-20 rounded-[24px] overflow-hidden border-2 border-gray-50 shadow-inner bg-gray-50 group-hover:scale-105 transition-transform duration-500">
-                      {user.profile_photo ? (
+                      {user.profile_photo && getImageUrl(user.profile_photo) ? (
                         <img
                           src={getImageUrl(user.profile_photo)}
                           alt={user.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = 'https://placehold.co/150x150?text=User';
+                            e.target.style.display = 'none';
+                            e.target.parentNode.querySelector('.avatar-fallback').style.display = 'flex';
                           }}
                         />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">
-                          <FontAwesomeIcon icon={faUser} />
-                        </div>
-                      )}
+                      ) : null}
+                      <div
+                        className={`avatar-fallback w-full h-full bg-gradient-to-br ${getAvatarColor(user.name, user.id)} flex items-center justify-center ${user.profile_photo && getImageUrl(user.profile_photo) ? 'hidden' : 'flex'}`}
+                      >
+                        <span className="text-white text-xl font-black">{getInitials(user.name)}</span>
+                      </div>
                     </div>
                     {user.role === 'admin' && (
                       <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-amber-400 text-amber-900 rounded-xl flex items-center justify-center text-xs shadow-lg border-2 border-white">

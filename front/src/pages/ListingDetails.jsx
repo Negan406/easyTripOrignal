@@ -368,24 +368,32 @@ const ListingDetails = () => {
       <main className="max-w-[1280px] mx-auto px-4 md:px-10 lg:px-20 pt-8 pb-20">
         {/* Gallery Section */}
         <div className="mb-10">
-          <div className="relative aspect-[16/9] md:aspect-[21/9] w-full rounded-3xl overflow-hidden bg-gray-100 shadow-xl group mb-4">
+          <div className="relative w-full rounded-3xl overflow-hidden bg-gray-100 shadow-xl group mb-4" style={{ maxHeight: '520px' }}>
             <img
               src={selectedPhoto || getImageUrl(listing.mainPhoto)}
               alt={listing.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              style={{ height: '480px', objectFit: 'cover' }}
             />
-            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent group-hover:opacity-0 transition-opacity duration-300"></div>
           </div>
 
           {allPhotos.length > 1 && (
-            <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+            <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
               {allPhotos.map((photo, index) => (
                 <button
                   key={index}
-                  className={`relative flex-shrink-0 w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden border-2 transition-all ${selectedPhoto === photo ? 'border-blue-600 scale-95' : 'border-transparent hover:border-gray-300'}`}
                   onClick={() => handlePhotoClick(photo)}
+                  className={`relative flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 ${selectedPhoto === photo
+                      ? 'border-blue-500 ring-2 ring-blue-500/30 scale-[0.97]'
+                      : 'border-transparent hover:border-gray-300 hover:scale-[0.97]'
+                    }`}
+                  style={{ width: '100px', height: '72px' }}
                 >
                   <img src={photo} alt="" className="w-full h-full object-cover" />
+                  {selectedPhoto === photo && (
+                    <div className="absolute inset-0 bg-blue-600/10" />
+                  )}
                 </button>
               ))}
             </div>

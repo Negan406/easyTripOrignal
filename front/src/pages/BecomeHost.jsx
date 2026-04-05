@@ -29,8 +29,10 @@ const BecomeHost = () => {
 
   useEffect(() => {
     AOS.init({
-      duration: 1000,
-      once: true
+      duration: 900,
+      once: true,
+      easing: 'ease-out-cubic',
+      offset: 80
     });
   }, []);
 
@@ -166,10 +168,13 @@ const BecomeHost = () => {
             ].map((feature, i) => (
               <div
                 key={i}
-                className={`flex flex-col ${feature.side === 'left' ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-12 lg:gap-24 animate-in fade-in slide-in-from-bottom-12 duration-1000`}
-                style={{ animationDelay: `${i * 200}ms` }}
+                className={`flex flex-col ${feature.side === 'left' ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-12 lg:gap-24`}
               >
-                <div className="w-full lg:w-1/2 group">
+                <div
+                  className="w-full lg:w-1/2 group"
+                  data-aos={feature.side === 'left' ? 'fade-right' : 'fade-left'}
+                  data-aos-delay={i * 50}
+                >
                   <div className="relative overflow-hidden rounded-[40px] shadow-2xl shadow-gray-200 group-hover:shadow-blue-200/50 transition-all duration-700">
                     <img
                       src={feature.img}
@@ -180,7 +185,11 @@ const BecomeHost = () => {
                   </div>
                 </div>
 
-                <div className="w-full lg:w-1/2">
+                <div
+                  className="w-full lg:w-1/2"
+                  data-aos={feature.side === 'left' ? 'fade-left' : 'fade-right'}
+                  data-aos-delay={i * 50 + 100}
+                >
                   <div className="max-w-md">
                     <span className="inline-block px-4 py-2 bg-blue-50 text-blue-600 rounded-2xl text-[10px] font-black uppercase tracking-widest mb-6">
                       Feature 0{i + 1}

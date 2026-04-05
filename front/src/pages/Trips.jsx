@@ -177,31 +177,28 @@ const Trips = () => {
 
                     return (
                       <div key={trip.id} className="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-gray-200/40 transition-all group flex flex-col relative">
-                        <div className="absolute top-4 right-4 z-10">
-                          <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-md ${isCompleted ? 'bg-emerald-500/90 text-white' :
-                            paymentStatus === 'cancelled' ? 'bg-rose-500/90 text-white' :
-                              'bg-amber-500/90 text-white'
-                            }`}>
-                            {paymentStatus}
-                          </span>
-                        </div>
-
-                        {isCompleted ? (
-                          <div className="relative h-52 overflow-hidden shrink-0">
-                            <img
-                              src={getImageUrl(trip.listing?.main_photo)}
-                              alt={trip.listing?.title || "Trip Image"}
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = 'https://placehold.co/300x200?text=No+Image';
-                              }}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                        {/* Listing Photo – always shown */}
+                        <div className="relative h-48 overflow-hidden shrink-0">
+                          <img
+                            src={getImageUrl(trip.listing?.main_photo)}
+                            alt={trip.listing?.title || "Trip Image"}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = 'https://placehold.co/300x200?text=No+Image';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                          {/* Status badge over image */}
+                          <div className="absolute top-3 right-3">
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow backdrop-blur-md ${isCompleted ? 'bg-emerald-500/90 text-white' :
+                                paymentStatus === 'cancelled' ? 'bg-rose-500/90 text-white' :
+                                  'bg-amber-500/90 text-white'
+                              }`}>
+                              {paymentStatus}
+                            </span>
                           </div>
-                        ) : (
-                          <div className="h-4 p-4 shrink-0"></div>
-                        )}
+                        </div>
 
                         <div className="p-6 pt-2 flex-1 flex flex-col">
                           <h3 className="text-xl font-black text-gray-900 mb-6 line-clamp-1 group-hover:text-blue-600 transition-colors">
