@@ -64,15 +64,17 @@ class ListingController extends Controller
             'description' => 'required|string',
             'location'    => 'required|string',
             'price'       => 'required|numeric|min:0',
-            'category'    => 'required|string|in:beach-houses,city-apartments,mountain-cabins,luxury-villas,pools',
+            'category'    => 'required|string|in:beach-houses,city-apartments,mountain-cabins,luxury-villas,pools,desert',
             'main_photo'  => 'required|image|mimes:jpeg,png,jpg|max:5120',
             'photos.*'    => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
         if ($validator->fails()) {
+            \Illuminate\Support\Facades\Log::error('Validation failed: ' . json_encode($validator->errors()));
             return response()->json([
                 'success' => false,
-                'message' => $validator->errors()->first()
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
             ], 422);
         }
 

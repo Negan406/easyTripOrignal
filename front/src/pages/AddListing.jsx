@@ -55,28 +55,57 @@ const AddListing = () => {
     }
   };
 
-  const handleAdditionalPhotosChange = (e) => {
-    const files = Array.from(e.target.files).slice(0, 4); // Limit to 4 additional photos
-    const oversizedFiles = files.filter(file => file.size > 5 * 1024 * 1024);
+  const handleAdditionalPhotosChange = (index, e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
 
+    // Check sizes
+    const oversizedFiles = files.filter(file => file.size > 5 * 1024 * 1024);
     if (oversizedFiles.length > 0) {
       setError('All photos must be less than 5MB');
       return;
     }
 
-    setNewListing({ ...newListing, photos: files });
+    // Copy existing arrays to retain previously uploaded files
+    const updatedPhotos = [...newListing.photos];
+    const updatedPreviews = [...previews.additional];
 
-    const newPreviews = [];
-    files.forEach(file => {
+    // Ensure the arrays have a length of 3 to insert at precise indexes
+    while (updatedPhotos.length < 3) updatedPhotos.push(null);
+    while (updatedPreviews.length < 3) updatedPreviews.push(null);
+
+    // Populate from the selected index onwards
+    let fileIdx = 0;
+    for (let i = index; i < 3 && fileIdx < files.length; i++) {
+      updatedPhotos[i] = files[fileIdx++];
+    }
+
+    // Filter out nulls for the final form data payload but keep track of actual content
+    setNewListing({ ...newListing, photos: updatedPhotos.filter(Boolean) });
+
+    // Generate previews
+    let loadedCount = 0;
+    const totalToLoad = files.length;
+
+    // Quick helper to read file as data url
+    const readFile = (file, i) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        newPreviews.push(reader.result);
-        if (newPreviews.length === files.length) {
-          setPreviews({ ...previews, additional: newPreviews });
+        updatedPreviews[i] = reader.result;
+        loadedCount++;
+        if (loadedCount >= Math.min(totalToLoad, 3 - index)) {
+          // We are done loading all selected images
+          setPreviews({ ...previews, additional: updatedPreviews });
         }
       };
       reader.readAsDataURL(file);
-    });
+    };
+
+    // Trigger file reads
+    let readIdx = 0;
+    for (let i = index; i < 3 && readIdx < files.length; i++) {
+      readFile(files[readIdx++], i);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -288,24 +317,22 @@ const AddListing = () => {
 
                     {/* Additional Photos */}
                     <div className="space-y-4">
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Additional Photos (Max 4)</p>
-                      <div className="grid grid-cols-4 gap-3">
-                        {[0, 1, 2, 3].map((i) => (
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Additional Photos (Max 3)</p>
+                      <div className="grid grid-cols-3 gap-3">
+                        {[0, 1, 2].map((i) => (
                           <div key={i} className="aspect-square rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center relative overflow-hidden group">
                             {previews.additional[i] ? (
                               <img src={previews.additional[i]} alt={`Preview ${i}`} className="w-full h-full object-cover" />
                             ) : (
                               <FontAwesomeIcon icon={faPlus} className="text-gray-300 group-hover:scale-125 transition-transform text-xs" />
                             )}
-                            {i === 0 && (
-                              <input
-                                type="file"
-                                accept="image/jpeg,image/png,image/jpg"
-                                multiple
-                                onChange={handleAdditionalPhotosChange}
-                                className="absolute inset-0 opacity-0 cursor-pointer"
-                              />
-                            )}
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/png,image/jpg"
+                              multiple
+                              onChange={(e) => handleAdditionalPhotosChange(i, e)}
+                              className="absolute inset-0 opacity-0 cursor-pointer"
+                            />
                           </div>
                         ))}
                       </div>
