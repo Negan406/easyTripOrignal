@@ -51,6 +51,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('listings', ListingController::class);
     Route::apiResource('bookings', BookingController::class);
     Route::apiResource('reviews', ReviewController::class);
+    Route::get('/wishlists/check/{listing}', [WishlistController::class, 'check']);
     Route::apiResource('wishlists', WishlistController::class);
     
     // Additional routes

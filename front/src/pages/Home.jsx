@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from 'react-router-dom';
 import ListingCard from "../components/ListingCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,7 +20,8 @@ import {
   faPlane,
   faHotel,
   faMapMarkedAlt,
-  faCompass
+  faCompass,
+  faTrash
 } from "@fortawesome/free-solid-svg-icons";
 import axios, { API_BASE_URL } from "../utils/axios";
 
@@ -278,28 +280,31 @@ const Home = ({ searchTerm }) => {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-[1440px] mx-auto px-4 md:px-10 lg:px-20 pb-20">
-        {showSuccessMsg && (
-          <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-xl shadow-xl animate-in slide-in-from-top-4 duration-300">
+        {showSuccessMsg && createPortal(
+          <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[9999] bg-green-500 text-white px-6 py-3 rounded-xl shadow-xl animate-in slide-in-from-top-4 duration-300">
             Listing deleted successfully!
-          </div>
+          </div>,
+          document.body
         )}
 
-        {notification && (
-          <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-xl animate-in slide-in-from-top-4 duration-300 ${notification.type === 'error' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'}`}>
+        {notification && createPortal(
+          <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-[9999] px-6 py-3 rounded-xl shadow-xl animate-in slide-in-from-top-4 duration-300 ${notification.type === 'error' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'}`}>
             <div className="flex items-center gap-4">
               <span>{notification.message}</span>
               <button onClick={() => setNotification(null)} className="hover:opacity-75 transition-opacity">×</button>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
 
-        {wishlistNotification && (
-          <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-2xl shadow-2xl animate-in slide-in-from-bottom-10 duration-300 ${wishlistNotification.type === 'error' ? 'bg-gray-900 text-white' : 'bg-white text-gray-900 border border-gray-100'}`}>
+        {wishlistNotification && createPortal(
+          <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] px-6 py-4 rounded-2xl shadow-2xl animate-in slide-in-from-bottom-10 duration-300 ${wishlistNotification.type === 'error' ? 'bg-gray-900 text-white' : 'bg-white text-gray-900 border border-gray-100'}`}>
             <div className="flex items-center gap-4">
               <span className="font-medium">{wishlistNotification.message}</span>
-              <button onClick={() => setWishlistNotification(null)} className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">×</button>
+              <button onClick={() => setWishlistNotification(null)} className="hover:opacity-75 transition-opacity">×</button>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
 
         {/* Categories Bar */}
@@ -369,14 +374,15 @@ const Home = ({ searchTerm }) => {
                       />
                       {isLoggedIn && role === 'admin' && (
                         <button
-                          className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-red-600 p-2.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-500 hover:text-white"
+                          className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-sm text-red-600 p-2.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-500 hover:text-white"
                           onClick={(e) => {
+                            e.preventDefault();
                             e.stopPropagation();
                             handleDeleteClick(listing.id);
                           }}
                           disabled={deleteLoading}
                         >
-                          <FontAwesomeIcon icon="trash" />
+                          <FontAwesomeIcon icon={faTrash} />
                         </button>
                       )}
                     </div>
@@ -388,8 +394,8 @@ const Home = ({ searchTerm }) => {
         </div>
       </div>
 
-      {deleteConfirmation && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {deleteConfirmation && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleCancelDelete}></div>
           <div className="relative bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl animate-in zoom-in-95 duration-300">
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Confirm Delete</h3>
@@ -413,7 +419,8 @@ const Home = ({ searchTerm }) => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
